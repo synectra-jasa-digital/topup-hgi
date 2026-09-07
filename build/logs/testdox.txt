@@ -1,0 +1,4 @@
+Catalog Page (Tests\Feature\CatalogPage)
+ [x] Catalog renders full width design and product navigation
+ [x] Catalog empty state remains available
+

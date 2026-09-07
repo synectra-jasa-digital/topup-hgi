@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\CatalogPageTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" tests="2" assertions="9" errors="0" failures="0" skipped="0" time="0.117688">
+    <testcase name="testCatalogRendersFullWidthDesignAndProductNavigation" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="27" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="7" time="0.098708"/>
+    <testcase name="testCatalogEmptyStateRemainsAvailable" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="60" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.018979"/>
+  </testsuite>
+</testsuites>
