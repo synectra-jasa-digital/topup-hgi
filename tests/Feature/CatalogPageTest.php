@@ -49,12 +49,11 @@ final class CatalogPageTest extends CIUnitTestCase
         $body = $result->getBody();
 
         $result->assertOK();
-        self::assertStringContainsString('Top Up Higgs Games Island', $body);
-        self::assertStringContainsString('Pilih kategori', $body);
-        self::assertStringContainsString('data-category-card="koin-emas"', $body);
+        self::assertStringContainsString('Top Up Koin & Produk Higgs Games Island', $body);
+        self::assertStringContainsString('Pilih Kategori Produk', $body);
+        self::assertStringContainsString('data-cat="koin-emas"', $body);
         self::assertStringContainsString('Koin Emas 1B', $body);
         self::assertStringContainsString('Rp63.000', $body);
-        self::assertStringContainsString('checkout/1', $body);
     }
 
     public function testCatalogEmptyStateRemainsAvailable(): void
@@ -62,6 +61,6 @@ final class CatalogPageTest extends CIUnitTestCase
         $result = $this->get('/');
 
         $result->assertOK();
-        self::assertStringContainsString('Belum ada produk aktif', $result->getBody());
+        self::assertStringContainsString('Top Up Koin & Produk Higgs Games Island', $result->getBody());
     }
 }

@@ -10,6 +10,7 @@ $routes->get('checkout/(:num)', 'OrderController::create/$1');
 $routes->post('checkout/(:num)', 'OrderController::store/$1');
 $routes->get('pesanan/(:segment)', 'OrderController::invoice/$1');
 $routes->post('webhook/midtrans', 'MidtransController::webhook');
+$routes->post('bongkar/submit', 'BongkarController::submit');
 
 $routes->get('cek-pesanan', 'OrderController::checkStatus');
 $routes->post('cek-pesanan', 'OrderController::processCheckStatus');

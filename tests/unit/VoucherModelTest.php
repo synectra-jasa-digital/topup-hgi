@@ -10,13 +10,17 @@ class VoucherModelTest extends CIUnitTestCase
 {
     use DatabaseTestTrait;
 
-    protected $migrate     = false;
-    protected $refresh     = false;
+    protected $migrate     = true;
+    protected $refresh     = true;
     protected VoucherModel $vouchers;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->db = db_connect('tests');
+        $migrate = \Config\Services::migrations();
+        $migrate->setNamespace('App')->setGroup('tests');
+        $migrate->latest();
         $this->vouchers = new VoucherModel();
     }
 

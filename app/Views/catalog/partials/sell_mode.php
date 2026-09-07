@@ -29,7 +29,7 @@
                 $rateLabel = 'Rp' . number_format($rate, 0, ',', '.');
                 $isSelected = $index === 0;
               ?>
-              <button type="button" class="bongkar-card <?= $isSelected ? 'selected border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20' : 'border border-slate-200 bg-white hover:border-blue-300' ?> p-3 rounded-xl text-left transition-all relative cursor-pointer shadow-2xs" data-label="<?= esc($catalog['name']) ?>" data-rate="<?= esc($rate) ?>" data-unit="<?= esc($catalog['unit_label']) ?>">
+              <button type="button" class="bongkar-card <?= $isSelected ? 'selected border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20' : 'border border-slate-200 bg-white hover:border-blue-300' ?> p-3 rounded-xl text-left transition-all relative cursor-pointer shadow-2xs" data-bongkar-catalog-id="<?= esc($catalog['id']) ?>" data-label="<?= esc($catalog['name']) ?>" data-rate="<?= esc($rate) ?>" data-unit="<?= esc($catalog['unit_label']) ?>">
                 <?php if ($isSelected): ?>
                   <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Rekomendasi</span>
                 <?php endif; ?>
@@ -42,7 +42,7 @@
           </div>
         <?php else: ?>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <button type="button" class="bongkar-card selected border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20 p-3 rounded-xl text-left transition-all relative cursor-pointer shadow-2xs" data-label="Kartu Ungu" data-rate="65000" data-unit="kartu">
+            <button type="button" class="bongkar-card selected border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20 p-3 rounded-xl text-left transition-all relative cursor-pointer shadow-2xs" data-bongkar-catalog-id="default-1" data-label="Kartu Ungu" data-rate="65000" data-unit="kartu">
               <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Rekomendasi</span>
               <div class="flex items-center justify-between">
                 <span class="font-display font-bold text-neutral-900 text-xs sm:text-sm">Kartu Ungu</span>
