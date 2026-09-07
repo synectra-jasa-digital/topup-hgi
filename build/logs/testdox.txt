@@ -1,4 +1,20 @@
-Catalog Page (Tests\Feature\CatalogPage)
- [x] Catalog renders full width design and product navigation
- [x] Catalog empty state remains available
+Health
+ [x] Is defined app path
+ [x] Base url has been set
+
+Order Model (Tests\Unit\OrderModel)
+ [x] Status transition only updates diproses and sets audit fields
+ [x] Invalid status cannot complete
+
+Store Setting Model (Tests\Unit\StoreSettingModel)
+ [ ] Set and get val
+ [ ] Update existing key
+ [ ] Default when missing
+ [ ] Batch save
+
+Voucher Model (Tests\Unit\VoucherModel)
+ [ ] Insert and find
+ [ ] Duplicate code fails
+ [ ] Toggle active
+ [ ] Delete
 

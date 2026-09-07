@@ -33,4 +33,31 @@ class OrderModel extends Model
     {
         return $this->where('invoice_number', $invoiceNumber)->first();
     }
+
+    public function adminList(?string $status = null, int $perPage = 15): array
+    {
+        $query = $this->orderBy('created_at', 'DESC');
+        if ($status !== null && in_array($status, self::adminStatuses(), true)) {
+            $query->where('status', $status);
+        }
+        return $query->paginate($perPage);
+    }
+
+    public static function adminStatuses(): array
+    {
+        return ['menunggu_pembayaran', 'dibayar', 'diproses', 'selesai', 'gagal', 'dibatalkan'];
+    }
+
+    public function complete(int $orderId, int $adminId): bool
+    {
+        $now = date('Y-m-d H:i:s');
+        $this->db->transStart();
+        $this->builder()->where('id', $orderId)->where('status', 'diproses')->update([
+            'status' => 'selesai', 'processed_by' => $adminId,
+            'completed_at' => $now, 'updated_at' => $now,
+        ]);
+        $affected = $this->db->affectedRows();
+        $this->db->transComplete();
+        return $this->db->transStatus() && $affected === 1;
+    }
 }

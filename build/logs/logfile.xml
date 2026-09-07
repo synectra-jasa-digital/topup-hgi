@@ -1,7 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Feature\CatalogPageTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" tests="2" assertions="9" errors="0" failures="0" skipped="0" time="0.117688">
-    <testcase name="testCatalogRendersFullWidthDesignAndProductNavigation" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="27" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="7" time="0.098708"/>
-    <testcase name="testCatalogEmptyStateRemainsAvailable" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="60" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.018979"/>
+  <testsuite name="CLI Arguments" tests="12" assertions="6" errors="8" failures="0" skipped="0" time="0.116930">
+    <testsuite name="HealthTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.033349">
+      <testcase name="testIsDefinedAppPath" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="12" class="HealthTest" classname="HealthTest" assertions="1" time="0.022583"/>
+      <testcase name="testBaseUrlHasBeenSet" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="17" class="HealthTest" classname="HealthTest" assertions="2" time="0.010765"/>
+    </testsuite>
+    <testsuite name="Tests\Unit\OrderModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.038337">
+      <testcase name="testStatusTransitionOnlyUpdatesDiprosesAndSetsAuditFields" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="6" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="2" time="0.009080"/>
+      <testcase name="testInvalidStatusCannotComplete" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="10" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="1" time="0.029258"/>
+    </testsuite>
+    <testsuite name="Tests\Unit\StoreSettingModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.034150">
+      <testcase name="testSetAndGetVal" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="23" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.023713">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testSetAndGetVal&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to prepare statement: no such table: db_store_settings
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:1659
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:297
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:714
+D:\Alternatif_D\laragon\www\topup-hgi\app\Models\StoreSettingModel.php:24
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php:25</error>
+      </testcase>
+      <testcase name="testUpdateExistingKey" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="29" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.002774">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testUpdateExistingKey&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to prepare statement: no such table: db_store_settings
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:1659
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:297
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:714
+D:\Alternatif_D\laragon\www\topup-hgi\app\Models\StoreSettingModel.php:24
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php:31</error>
+      </testcase>
+      <testcase name="testDefaultWhenMissing" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="36" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.005365">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testDefaultWhenMissing&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to prepare statement: no such table: db_store_settings
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:1659
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:297
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:714
+D:\Alternatif_D\laragon\www\topup-hgi\app\Models\StoreSettingModel.php:18
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php:38</error>
+      </testcase>
+      <testcase name="testBatchSave" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="41" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.002298">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testBatchSave&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Unable to prepare statement: no such table: db_store_settings
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:1659
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:297
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:714
+D:\Alternatif_D\laragon\www\topup-hgi\app\Models\StoreSettingModel.php:24
+D:\Alternatif_D\laragon\www\topup-hgi\app\Models\StoreSettingModel.php:53
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php:43</error>
+      </testcase>
+    </testsuite>
+    <testsuite name="Tests\Unit\VoucherModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.011094">
+      <testcase name="testInsertAndFind" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="24" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.003475">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testInsertAndFind&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: no such table: db_vouchers
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:2355
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:357
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:899
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:670
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:27</error>
+      </testcase>
+      <testcase name="testDuplicateCodeFails" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="46" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.002228">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testDuplicateCodeFails&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: no such table: db_vouchers
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:2355
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:357
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:899
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:670
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:49</error>
+      </testcase>
+      <testcase name="testToggleActive" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="70" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.002163">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testToggleActive&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: no such table: db_vouchers
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:2355
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:357
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:899
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:670
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:72</error>
+      </testcase>
+      <testcase name="testDelete" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="86" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.003228">
+        <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testDelete&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: no such table: db_vouchers
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:2355
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:357
+D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:899
+D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:670
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:88</error>
+      </testcase>
+    </testsuite>
   </testsuite>
 </testsuites>

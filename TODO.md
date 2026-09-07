@@ -69,20 +69,20 @@ Dikerjakan satu fase per satu, ditandai `[x]` setelah lulus uji manual (skenario
 - [x] Uji: pesan terkirim, gagal kirim tidak menggagalkan proses order
 
 ## Fase 10 - Manajemen Pesanan (Admin)
-- [ ] List + detail order (filter status)
-- [ ] Ubah status manual (Diproses -> Selesai) + trigger WA customer
-- [ ] Uji: perubahan status tercatat, notifikasi terkirim
+- [x] List + detail order (filter status)
+- [x] Ubah status manual (Diproses -> Selesai) + trigger WA customer
+- [x] Uji: perubahan status tercatat, notifikasi terkirim
 
 ## Fase 11 - Voucher, Log Aktivitas, Halaman Statis, Akun Admin
-- [ ] CRUD voucher
-- [ ] Activity log otomatis di aksi penting (siapa, kapan, apa)
-- [ ] CRUD halaman statis (FAQ/Syarat Ketentuan/Kontak Kami) + tampilan publik
-- [ ] CRUD akun Admin (Owner only)
-- [ ] Uji: Admin tidak bisa akses menu akun Admin
+- [x] CRUD voucher
+- [x] Activity log otomatis di aksi penting (siapa, kapan, apa)
+- [x] CRUD halaman statis (FAQ/Syarat Ketentuan/Kontak Kami) + tampilan publik
+- [x] CRUD akun Admin (Owner only)
+- [x] Uji: Admin tidak bisa akses menu akun Admin
 
 ## Fase 12 - Laporan Penjualan & Dashboard
-- [ ] Laporan harian/bulanan/tahunan + export Excel/PDF (Owner)
-- [ ] Dashboard grafik (penjualan, pesanan tertunda, produk terlaris)
+- [x] Laporan harian/bulanan/tahunan + export Excel/PDF (Owner)
+- [x] Dashboard grafik (penjualan, pesanan tertunda, produk terlaris)
 - [ ] Uji: angka laporan cocok dengan data contoh
 
 ## Fase 13 - Pengaturan Toko & Polish

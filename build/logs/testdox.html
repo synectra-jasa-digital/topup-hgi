@@ -51,10 +51,29 @@
         </style>
     </head>
     <body>
-        <h2>Catalog Page (Tests\Feature\CatalogPage)</h2>
+        <h2>Health</h2>
         <ul>
-            <li class="success">Catalog renders full width design and product navigation</li>
-            <li class="success">Catalog empty state remains available</li>
+            <li class="success">Is defined app path</li>
+            <li class="success">Base url has been set</li>
+        </ul>
+        <h2>Order Model (Tests\Unit\OrderModel)</h2>
+        <ul>
+            <li class="success">Status transition only updates diproses and sets audit fields</li>
+            <li class="success">Invalid status cannot complete</li>
+        </ul>
+        <h2>Store Setting Model (Tests\Unit\StoreSettingModel)</h2>
+        <ul>
+            <li class="defect">Set and get val</li>
+            <li class="defect">Update existing key</li>
+            <li class="defect">Default when missing</li>
+            <li class="defect">Batch save</li>
+        </ul>
+        <h2>Voucher Model (Tests\Unit\VoucherModel)</h2>
+        <ul>
+            <li class="defect">Insert and find</li>
+            <li class="defect">Duplicate code fails</li>
+            <li class="defect">Toggle active</li>
+            <li class="defect">Delete</li>
         </ul>
     </body>
 </html>
