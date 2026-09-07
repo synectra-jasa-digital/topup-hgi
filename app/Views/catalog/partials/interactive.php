@@ -207,31 +207,26 @@
       const unit = state.bongkarUnit || 'kartu';
       const estimated = qty * rate;
 
+      // Main estimated total
       const estimatedEl = document.getElementById('bongkar-estimated');
-      if (estimatedEl) {
-        estimatedEl.textContent = formatRupiah(estimated);
-      }
-      const statusEl = document.getElementById('bongkar-status');
-      if (statusEl) {
-        statusEl.textContent = `${state.bongkarType || 'Kartu Ungu'} • ${qty} ${unit}`;
-      }
+      if (estimatedEl) estimatedEl.textContent = formatRupiah(estimated);
+
+      // Unit label in qty input
       const unitLabelEl = document.getElementById('bongkar-unit-label');
-      if (unitLabelEl) {
-        unitLabelEl.textContent = unit;
-      }
+      if (unitLabelEl) unitLabelEl.textContent = unit;
 
-      // Live Summary Card (Right Column)
-      const receiptBongkarName = document.getElementById('receipt-bongkar-name');
-      const receiptBongkarUnit = document.getElementById('receipt-bongkar-unit');
-      const receiptBongkarQty = document.getElementById('receipt-bongkar-qty');
-      const receiptBongkarPayout = document.getElementById('receipt-bongkar-payout');
-      const receiptBongkarTotal = document.getElementById('receipt-bongkar-total');
+      // Right column summary card
+      const receiptLabel = document.getElementById('bongkar-receipt-label');
+      const receiptRate  = document.getElementById('bongkar-receipt-rate');
+      const receiptQty   = document.getElementById('bongkar-receipt-qty');
+      const receiptPayout = document.getElementById('bongkar-receipt-payout');
+      const receiptWa    = document.getElementById('bongkar-receipt-wa');
 
-      if (receiptBongkarName) receiptBongkarName.textContent = state.bongkarType || 'Kartu Ungu';
-      if (receiptBongkarUnit) receiptBongkarUnit.textContent = `${formatRupiah(rate)} / ${unit}`;
-      if (receiptBongkarQty) receiptBongkarQty.textContent = `${qty} ${unit}`;
-      if (receiptBongkarPayout) receiptBongkarPayout.textContent = state.bongkarPayout || 'BCA';
-      if (receiptBongkarTotal) receiptBongkarTotal.textContent = formatRupiah(estimated);
+      if (receiptLabel)  receiptLabel.textContent  = state.bongkarType || 'Kartu Ungu';
+      if (receiptRate)   receiptRate.textContent   = `${formatRupiah(rate)} / ${unit}`;
+      if (receiptQty)    receiptQty.textContent    = `${qty} ${unit}`;
+      if (receiptPayout) receiptPayout.textContent = state.bongkarPayout || 'BCA';
+      if (receiptWa)     receiptWa.textContent     = (bongkarWaInput ? bongkarWaInput.value.trim() : '') || '-';
     }
 
     const bongkarCards = document.querySelectorAll('.bongkar-card');
@@ -301,6 +296,7 @@
     if (bongkarWaInput) {
       bongkarWaInput.addEventListener('input', (e) => {
         state.bongkarWa = e.target.value.trim();
+        refreshBongkarEstimate();
       });
     }
 

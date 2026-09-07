@@ -1,20 +1,20 @@
 <!-- VIEW MODE: BELI / TOP UP -->
-<div id="view-mode-buy" class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
+<div id="view-mode-buy" class="flex flex-col lg:flex-row gap-6 items-start">
 
-<!-- LEFT COLUMN (7 Cols): The Cockpit Ordering Wizard (Step 1 -> Step 4) -->
-<div class="lg:col-span-7 xl:col-span-7 space-y-4">
+<!-- LEFT COLUMN: Ordering Wizard (Step 1 → Step 4) -->
+<div class="w-full lg:w-7/12 xl:w-8/12 space-y-4 min-w-0">
 
 <!-- STEP 1: PILIH KATEGORI PRODUK -->
 <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm relative overflow-hidden">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm">1</div>
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">1</div>
 <div>
 <h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Pilih Kategori Produk</h2>
 <p class="text-xs text-slate-500">Daftar denominasi koin emas dan durasi kartu member resmi</p>
 </div>
 </div>
-<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200"><span class="material-symbols-outlined text-[14px]">verified</span> Jalur Resmi ID</span>
+<span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[14px]">verified</span> Jalur Resmi ID</span>
 </div>
 
 <!-- Segmented Deck Tabs (Light Mode) -->
@@ -37,9 +37,9 @@
                 default => 'text-slate-500',
             };
         ?>
-        <button class="category-pill <?= $index === 0 ? 'active bg-blue-600 text-white shadow-sm border border-blue-700' : 'text-slate-700 hover:text-neutral-900 hover:bg-white' ?> flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all" data-cat="<?= esc($category['slug']) ?>" type="button">
-            <span class="material-symbols-outlined text-[19px] <?= $index === 0 ? 'text-yellow-300' : $color ?>" <?= $index === 0 && $category['slug'] === 'koin-emas' ? "style=\"font-variation-settings: 'FILL' 1;\"" : '' ?>><?= esc($icon) ?></span>
-            <span><?= esc($category['name']) ?></span>
+        <button class="category-pill <?= $index === 0 ? 'active bg-blue-600 text-white shadow-sm border border-blue-700' : 'text-slate-700 hover:text-neutral-900 hover:bg-white' ?> flex items-center justify-center gap-1.5 py-2.5 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all" data-cat="<?= esc($category['slug']) ?>" type="button">
+            <span class="material-symbols-outlined text-[17px] <?= $index === 0 ? 'text-yellow-300' : $color ?>" <?= $index === 0 && $category['slug'] === 'koin-emas' ? "style=\"font-variation-settings: 'FILL' 1;\"" : '' ?>><?= esc($icon) ?></span>
+            <span class="truncate"><?= esc($category['name']) ?></span>
         </button>
     <?php endforeach; ?>
 <?php endif; ?>
@@ -50,13 +50,13 @@
 <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm relative">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm">2</div>
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">2</div>
 <div>
 <h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Pilih Nominal Top Up HGD</h2>
 <p class="text-xs text-slate-500">Pilih pecahan koin chip atau masa durasi VIP Domino</p>
 </div>
 </div>
-<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-300">
+<span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-300 shrink-0">
 <span class="material-symbols-outlined text-[14px] text-amber-600">bolt</span> Flash 1 Detik
 </span>
 </div>
@@ -164,13 +164,13 @@
 </section>
 
 <!-- STEP 3: MASUKKAN DATA USER ID HIGGS & KONTAK -->
-<section class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm">
+<section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm">3</div>
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">3</div>
 <div><h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Data Akun &amp; Kontak</h2><p class="text-xs text-slate-500">ID akun untuk tujuan pengiriman koin &amp; konfirmasi pemesanan</p></div>
 </div>
-<span class="text-xs text-emerald-700 flex items-center gap-1 font-semibold">
+<span class="hidden sm:flex text-xs text-emerald-700 items-center gap-1 font-semibold shrink-0">
 <span class="material-symbols-outlined text-[16px]">verified_user</span> Tanpa Password
 </span>
 </div>
@@ -205,16 +205,16 @@
 </section>
 
 <!-- STEP 4: PILIH METODE PEMBAYARAN -->
-<section class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm">
+<section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm">4</div>
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">4</div>
 <div>
 <h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Metode Pembayaran Resmi</h2>
 <p class="text-xs text-slate-500">Pilihan saluran pembayaran resmi yang disiapkan untuk peluncuran</p>
 </div>
 </div>
-<span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-300 flex items-center gap-1">
+<span class="hidden sm:flex text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-300 items-center gap-1 shrink-0">
 <span class="material-symbols-outlined text-[14px] text-amber-600">flash_on</span> Konfirmasi 1 Detik
 </span>
 </div>
@@ -297,18 +297,19 @@
 </button>
 </div>
 </div>
-</div>
-</div>
+</section>
 
-<!-- RIGHT COLUMN (5 Cols): STICKY LIVE ORDER CARD & VIP BENEFITS -->
-<div class="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-22 space-y-4">
+</div><!-- END LEFT COLUMN -->
+
+<!-- RIGHT COLUMN: Sticky Live Order Card & VIP Benefits -->
+<div class="w-full lg:w-5/12 xl:w-4/12 lg:sticky lg:top-24 space-y-4 shrink-0">
 <!-- Live Ticket Receipt Gaming Cockpit (Crisp White Card) -->
 <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-md overflow-hidden relative">
 <!-- Gaming Ticket Header -->
 <div class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-4 text-white relative border-b border-blue-800">
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-2">
-<div class="w-8 h-8 rounded-lg bg-white text-blue-700 flex items-center justify-center font-bold shadow-sm"><span class="material-symbols-outlined text-[20px]">receipt_long</span></div>
+<div class="w-8 h-8 rounded-lg bg-white text-blue-700 flex items-center justify-center font-bold shadow-sm shrink-0"><span class="material-symbols-outlined text-[20px]">receipt_long</span></div>
 <div><div class="font-display font-bold text-sm tracking-wide text-white">Ringkasan Pesanan</div><div class="text-[10px] text-blue-100">Rincian Pembayaran Resmi</div></div>
 </div>
 <div class="flex flex-col items-end">
@@ -361,11 +362,11 @@
 <!-- Price Calculation Breakdown -->
 <div class="space-y-1.5 pt-1 text-xs">
 <div class="flex justify-between text-slate-600">
-<span class="">Harga Produk Koin:</span>
+<span>Harga Produk Koin:</span>
 <span class="font-bold text-neutral-900 font-mono" id="calc-subtotal">Rp63.000</span>
 </div>
 <div class="flex justify-between text-slate-600">
-<span class="">Biaya Layanan Gateway:</span>
+<span>Biaya Layanan Gateway:</span>
 <span class="font-bold text-emerald-700 font-mono" id="calc-admin-fee">Rp0 (Gratis)</span>
 </div>
 <div class="flex justify-between text-rose-600 hidden" id="calc-discount-row">
@@ -390,23 +391,23 @@
 </div>
 <!-- Checkout Button -->
 <button class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-display font-black text-base shadow-md transition-all flex items-center justify-center gap-2 group cursor-pointer border border-blue-700" id="btn-pay-now" type="button">
-<span class="material-symbols-outlined text-[20px] text-amber-300">lock</span><span class="">Bayar Sekarang</span>
+<span class="material-symbols-outlined text-[20px] text-amber-300">lock</span><span>Bayar Sekarang</span>
 </button>
 </div>
 </div>
 <!-- VIP Benefits Box (Clean Light) -->
 <div class="rounded-2xl border border-slate-200 bg-white p-4 text-xs shadow-xs space-y-3">
 <div class="flex items-center gap-2.5">
-<div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold shadow-xs border border-blue-200"><span class="material-symbols-outlined text-[20px]">verified</span></div>
+<div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold shadow-xs border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[20px]">verified</span></div>
 <div><div class="font-display font-bold text-neutral-900 text-sm">Jaminan Layanan Ayong Store</div><div class="text-slate-500 text-[11px]">Standar keamanan &amp; keandalan transaksi terbaik</div></div>
 </div>
 <ul class="space-y-1.5 text-slate-600 text-[11px] pl-1">
-<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-blue-600">check_circle</span><span class="">Integrasi jalur API resmi langsung ke akun Higgs</span></li>
-<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-blue-600">check_circle</span><span class="">Harga transparan tanpa biaya tersembunyi</span></li>
-<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-blue-600">check_circle</span><span class="">Dukungan CS WhatsApp 24 jam siap melayani</span></li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-blue-600">check_circle</span><span>Integrasi jalur API resmi langsung ke akun Higgs</span></li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-blue-600">check_circle</span><span>Harga transparan tanpa biaya tersembunyi</span></li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px] text-blue-600">check_circle</span><span>Dukungan CS WhatsApp 24 jam siap melayani</span></li>
 </ul>
-<div class="pt-2 border-t border-slate-200 flex items-center justify-between"><span class="text-[11px] text-slate-500">Butuh bantuan transaksi?</span><a class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 transition-colors" href="https://wa.me/" rel="noopener noreferrer" target="_blank"><span class="">Hubungi CS</span><span class="material-symbols-outlined text-[14px]">arrow_forward</span></a></div>
+<div class="pt-2 border-t border-slate-200 flex items-center justify-between"><span class="text-[11px] text-slate-500">Butuh bantuan transaksi?</span><a class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 transition-colors" href="https://wa.me/" rel="noopener noreferrer" target="_blank"><span>Hubungi CS</span><span class="material-symbols-outlined text-[14px]">arrow_forward</span></a></div>
 </div>
-</div>
-</div>
+</div><!-- END RIGHT COLUMN -->
 
+</div><!-- END VIEW MODE BUY -->

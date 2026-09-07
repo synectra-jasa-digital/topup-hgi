@@ -1,6 +1,29 @@
+Bongkar Request (Tests\Feature\BongkarRequest)
+ [ ] Home page renders bongkar catalog from database
+ [ ] Bongkar submit stores request and returns whats app url
+
+Catalog Page (Tests\Feature\CatalogPage)
+ [ ] Catalog renders full width design and product navigation
+ [ ] Catalog empty state remains available
+
+Check Status (Tests\Feature\CheckStatus)
+ [x] Check status found
+ [x] Check status not found
+
+Example Database
+ [x] Model find all
+ [x] Soft delete leaves row
+
+Example Session
+ [x] Session simple
+
 Health
  [x] Is defined app path
  [x] Base url has been set
+
+Midtrans Webhook (Tests\Feature\MidtransWebhook)
+ [x] Invalid signature rejected
+ [x] Valid signature updates order
 
 Order Model (Tests\Unit\OrderModel)
  [x] Status transition only updates diproses and sets audit fields
@@ -17,4 +40,8 @@ Voucher Model (Tests\Unit\VoucherModel)
  [ ] Duplicate code fails
  [ ] Toggle active
  [ ] Delete
+
+Wablas (Tests\Feature\Wablas)
+ [x] Send to admin returns true
+ [x] Send to customer returns true
 

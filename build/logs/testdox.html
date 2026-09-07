@@ -51,10 +51,39 @@
         </style>
     </head>
     <body>
+        <h2>Bongkar Request (Tests\Feature\BongkarRequest)</h2>
+        <ul>
+            <li class="defect">Home page renders bongkar catalog from database</li>
+            <li class="defect">Bongkar submit stores request and returns whats app url</li>
+        </ul>
+        <h2>Catalog Page (Tests\Feature\CatalogPage)</h2>
+        <ul>
+            <li class="defect">Catalog renders full width design and product navigation</li>
+            <li class="defect">Catalog empty state remains available</li>
+        </ul>
+        <h2>Check Status (Tests\Feature\CheckStatus)</h2>
+        <ul>
+            <li class="success">Check status found</li>
+            <li class="success">Check status not found</li>
+        </ul>
+        <h2>Example Database</h2>
+        <ul>
+            <li class="success">Model find all</li>
+            <li class="success">Soft delete leaves row</li>
+        </ul>
+        <h2>Example Session</h2>
+        <ul>
+            <li class="success">Session simple</li>
+        </ul>
         <h2>Health</h2>
         <ul>
             <li class="success">Is defined app path</li>
             <li class="success">Base url has been set</li>
+        </ul>
+        <h2>Midtrans Webhook (Tests\Feature\MidtransWebhook)</h2>
+        <ul>
+            <li class="success">Invalid signature rejected</li>
+            <li class="success">Valid signature updates order</li>
         </ul>
         <h2>Order Model (Tests\Unit\OrderModel)</h2>
         <ul>
@@ -74,6 +103,11 @@
             <li class="defect">Duplicate code fails</li>
             <li class="defect">Toggle active</li>
             <li class="defect">Delete</li>
+        </ul>
+        <h2>Wablas (Tests\Feature\Wablas)</h2>
+        <ul>
+            <li class="success">Send to admin returns true</li>
+            <li class="success">Send to customer returns true</li>
         </ul>
     </body>
 </html>
