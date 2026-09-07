@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\BannerModel;
+use App\Models\BongkarCatalogModel;
 use App\Models\ProductCategoryModel;
 use App\Models\ProductModel;
 use App\Models\StoreSettingModel;
@@ -13,8 +14,9 @@ class Home extends BaseController
     public function index(): string
     {
         $categories = (new ProductCategoryModel())->listActive();
-        $products   = new ProductModel();
-        $settings   = new StoreSettingModel();
+        $products        = new ProductModel();
+        $settings        = new StoreSettingModel();
+        $bongkarCatalogs = new BongkarCatalogModel();
 
         $sections = [];
         foreach ($categories as $category) {
@@ -31,8 +33,9 @@ class Home extends BaseController
             'title'          => 'Ayong Store - Top Up Higgs Games Island',
             'banners'        => (new BannerModel())->listActiveForDisplay(),
             'categories'     => $categories,
-            'sections'       => $sections,
-            'adminWhatsapp'  => $adminWhatsapp,
+            'sections'        => $sections,
+            'bongkarCatalogs' => $bongkarCatalogs->listActive(),
+            'adminWhatsapp'   => $adminWhatsapp,
         ]);
     }
 
