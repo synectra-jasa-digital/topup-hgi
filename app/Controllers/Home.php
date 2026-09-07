@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\BannerModel;
 use App\Models\ProductCategoryModel;
 use App\Models\ProductModel;
+use App\Models\StoreSettingModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Home extends BaseController
@@ -13,6 +14,7 @@ class Home extends BaseController
     {
         $categories = (new ProductCategoryModel())->listActive();
         $products   = new ProductModel();
+        $settings   = new StoreSettingModel();
 
         $sections = [];
         foreach ($categories as $category) {
@@ -23,11 +25,14 @@ class Home extends BaseController
             $sections[] = ['category' => $category, 'products' => $items];
         }
 
+        $adminWhatsapp = trim($settings->getVal('store_contact', (string) (getenv('wablas.adminPhone') ?: '')));
+
         return view('catalog/index', [
-            'title'      => 'Ayong Store - Top Up Higgs Games Island',
-            'banners'    => (new BannerModel())->listActiveForDisplay(),
-            'categories' => $categories,
-            'sections'   => $sections,
+            'title'          => 'Ayong Store - Top Up Higgs Games Island',
+            'banners'        => (new BannerModel())->listActiveForDisplay(),
+            'categories'     => $categories,
+            'sections'       => $sections,
+            'adminWhatsapp'  => $adminWhatsapp,
         ]);
     }
 

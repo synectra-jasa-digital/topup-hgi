@@ -332,28 +332,28 @@
     <div>
       <label class="block font-bold text-neutral-700 mb-2">Pilih Jenis Kartu / Koin yang Dijual <span class="text-rose-500">*</span></label>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div class="p-3 rounded-xl border-2 border-blue-600 bg-blue-50/70 text-left cursor-pointer transition-all relative ring-2 ring-blue-500/20 shadow-xs">
+        <button type="button" class="bongkar-card selected p-3 rounded-xl border-2 border-blue-600 bg-blue-50/70 text-left cursor-pointer transition-all relative ring-2 ring-blue-500/20 shadow-xs" data-label="Kartu Ungu" data-rate="65000" data-unit="kartu">
           <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-black bg-blue-600 text-white uppercase">Populer</span>
           <div class="font-display font-bold text-neutral-900 text-xs sm:text-sm">Kartu Ungu</div>
           <div class="text-[10px] text-slate-500 mt-0.5">Rate Tinggi Resmi</div>
           <div class="mt-2 pt-1.5 border-t border-blue-200/60 font-bold text-blue-700 font-mono text-[11px]">Rp65.000 / kartu</div>
-        </div>
-        <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-slate-50 text-left cursor-pointer transition-all relative shadow-xs">
+        </button>
+        <button type="button" class="bongkar-card p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-slate-50 text-left cursor-pointer transition-all relative shadow-xs" data-label="Kartu Emas 1H" data-rate="14000" data-unit="kartu">
           <div class="font-display font-bold text-neutral-900 text-xs sm:text-sm">Kartu Emas 1H</div>
           <div class="text-[10px] text-slate-500 mt-0.5">Durasi 24 Jam VIP</div>
           <div class="mt-2 pt-1.5 border-t border-slate-100 font-bold text-blue-600 font-mono text-[11px]">Rp14.000 / kartu</div>
-        </div>
-        <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-slate-50 text-left cursor-pointer transition-all relative shadow-xs">
+        </button>
+        <button type="button" class="bongkar-card p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-slate-50 text-left cursor-pointer transition-all relative shadow-xs" data-label="Kartu Emas 30H" data-rate="110000" data-unit="kartu">
           <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-500 text-neutral-950 uppercase">Best Rate</span>
           <div class="font-display font-bold text-neutral-900 text-xs sm:text-sm">Kartu Emas 30H</div>
           <div class="text-[10px] text-slate-500 mt-0.5">Durasi 30 Hari VIP</div>
           <div class="mt-2 pt-1.5 border-t border-slate-100 font-bold text-blue-600 font-mono text-[11px]">Rp110.000 / kartu</div>
-        </div>
-        <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-slate-50 text-left cursor-pointer transition-all relative shadow-xs">
+        </button>
+        <button type="button" class="bongkar-card p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-slate-50 text-left cursor-pointer transition-all relative shadow-xs" data-label="Koin MD Bongkar" data-rate="60000" data-unit="1B">
           <div class="font-display font-bold text-neutral-900 text-xs sm:text-sm">Koin MD Bongkar</div>
           <div class="text-[10px] text-slate-500 mt-0.5">Pecahan Koin Chip</div>
           <div class="mt-2 pt-1.5 border-t border-slate-100 font-bold text-blue-600 font-mono text-[11px]">Rp60.000 / 1B</div>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -398,22 +398,22 @@
         </div>
         <div>
           <div class="text-[10px] uppercase font-bold text-slate-500">Estimasi Saldo Diterima</div>
-          <div class="text-lg font-black text-blue-700 font-display">Rp65.000 <span class="text-[11px] font-normal text-slate-500">(Bersih tanpa potongan)</span></div>
+          <div class="text-lg font-black text-blue-700 font-display"><span id="bongkar-estimated">Rp65.000</span> <span class="text-[11px] font-normal text-slate-500">(Bersih tanpa potongan)</span></div>
         </div>
       </div>
       <div class="flex items-center gap-1.5 text-[11px] text-emerald-700 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 font-semibold">
         <span class="material-symbols-outlined text-[15px]">verified</span>
-        <span class="">Proses 1-5 Menit Langsung Masuk</span>
+        <span class="" id="bongkar-status">Proses 1-5 Menit Langsung Masuk</span>
       </div>
     </div>
 
-    <button type="button" onclick="alert('Pengajuan jual kartu berhasil dikirim! Admin akan menghubungi nomor WhatsApp Anda.')" class="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-display font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 shadow-sm border border-blue-700 cursor-pointer">
+    <button type="button" id="btn-submit-bongkar" class="w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-display font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 shadow-sm border border-blue-700 cursor-pointer">
       <span class="material-symbols-outlined text-[20px]">send</span>
       <span class="">Ajukan Jual Kartu</span>
     </button>
 
     <p class="text-[11px] text-slate-500 text-center pt-1">
-      Pengajuan akan diproses admin via WhatsApp secara manual &amp; aman tanpa perlu login atau membuat akun.
+      Pengajuan akan dibuka di WhatsApp admin setelah form diisi.
     </p>
   </div>
 </section>
@@ -626,6 +626,7 @@
 <!-- State & Interactive Script -->
 <script>
   (function() {
+    const adminWhatsapp = <?= json_encode($adminWhatsapp ?? '') ?>;
     const state = {
       productId: null,
       itemTitle: "1B (1 Miliar) Koin Emas",
@@ -638,7 +639,10 @@
       payMethod: "QRIS Resmi",
       adminFee: 0,
       discount: 0,
-      couponApplied: false
+      couponApplied: false,
+      bongkarType: "Kartu Ungu",
+      bongkarQty: 1,
+      bongkarPayout: "BCA"
     };
 
     function formatRupiah(num) {
@@ -762,6 +766,105 @@
         updateReceiptUI();
       });
     });
+
+    function normalizePhone(phone) {
+      return String(phone || '').replace(/\D+/g, '').replace(/^0/, '62');
+    }
+
+    function refreshBongkarEstimate() {
+      const estimated = state.bongkarQty * parseInt(state.bongkarRate || '0', 10);
+      const estimatedEl = document.getElementById('bongkar-estimated');
+      if (estimatedEl) {
+        estimatedEl.textContent = formatRupiah(estimated);
+      }
+      const statusEl = document.getElementById('bongkar-status');
+      if (statusEl) {
+        statusEl.textContent = `${state.bongkarType} • ${state.bongkarQty} ${state.bongkarUnit}`;
+      }
+    }
+
+    const bongkarCards = document.querySelectorAll('.bongkar-card');
+    const bongkarQtyInput = document.getElementById('input-card-qty');
+    const bongkarWaInput = document.getElementById('input-sell-wa');
+    const bongkarPayoutButtons = document.querySelectorAll('[data-bongkar-payout]');
+    const btnSubmitBongkar = document.getElementById('btn-submit-bongkar');
+
+    bongkarCards.forEach(card => {
+      card.addEventListener('click', () => {
+        bongkarCards.forEach(item => {
+          item.classList.remove('selected', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
+          item.classList.add('border-slate-200', 'bg-white');
+        });
+        card.classList.add('selected', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
+        card.classList.remove('border-slate-200', 'bg-white');
+        state.bongkarType = card.getAttribute('data-label') || state.bongkarType;
+        state.bongkarRate = card.getAttribute('data-rate') || state.bongkarRate;
+        state.bongkarUnit = card.getAttribute('data-unit') || state.bongkarUnit;
+        refreshBongkarEstimate();
+      });
+    });
+
+    if (bongkarQtyInput) {
+      bongkarQtyInput.addEventListener('input', (e) => {
+        const qty = Math.max(1, parseInt(e.target.value || '1', 10) || 1);
+        state.bongkarQty = qty;
+        refreshBongkarEstimate();
+      });
+    }
+
+    if (bongkarWaInput) {
+      bongkarWaInput.addEventListener('input', (e) => {
+        state.bongkarWa = e.target.value.trim();
+      });
+    }
+
+    bongkarPayoutButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        bongkarPayoutButtons.forEach(item => {
+          item.classList.remove('border-2', 'border-blue-600', 'bg-blue-50/70', 'text-blue-700');
+          item.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+        });
+        button.classList.add('border-2', 'border-blue-600', 'bg-blue-50/70', 'text-blue-700');
+        button.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+        state.bongkarPayout = button.textContent.trim();
+      });
+    });
+
+    if (btnSubmitBongkar) {
+      btnSubmitBongkar.addEventListener('click', () => {
+        const phone = normalizePhone(adminWhatsapp);
+        const qty = Math.max(1, parseInt(bongkarQtyInput?.value || '1', 10) || 1);
+        const sellerWa = bongkarWaInput ? bongkarWaInput.value.trim() : '';
+        const payout = state.bongkarPayout || 'BCA';
+        const rate = parseInt(state.bongkarRate || '0', 10);
+        const estimated = qty * rate;
+
+        if (!state.bongkarType || !sellerWa) {
+          alert('Lengkapi jenis kartu, jumlah, dan nomor WhatsApp terlebih dahulu.');
+          return;
+        }
+
+        if (!phone) {
+          alert('Nomor WhatsApp admin belum diset di pengaturan toko.');
+          return;
+        }
+
+        const message = [
+          'Halo Admin, saya mau bongkar kartu.',
+          '',
+          `Jenis: ${state.bongkarType}`,
+          `Jumlah: ${qty} ${state.bongkarUnit || 'kartu'}`,
+          `Rate: Rp${rate.toLocaleString('id-ID')} / ${state.bongkarUnit || 'kartu'}`,
+          `Estimasi: Rp${estimated.toLocaleString('id-ID')}`,
+          `WA Customer: ${sellerWa}`,
+          `Pencairan: ${payout}`,
+          '',
+          'Mohon dibantu cek dan proses.'
+        ].join('\n');
+
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+      });
+    }
 
     // Coupon Voucher
     const btnApplyCoupon = document.getElementById('btn-apply-coupon');
