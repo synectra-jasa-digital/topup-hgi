@@ -67,7 +67,8 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    <div class="mt-4"><?= $pager ? $pager->links('default', 'default_full') : '' ?></div>
+    <?php if ($pager && $pager->getPageCount() > 1): ?>
+        <div class="mt-4"><?= $pager->links('default', 'default_full') ?></div>
+    <?php endif; ?>
 <?php endif; ?>
 <?= $this->endSection() ?>

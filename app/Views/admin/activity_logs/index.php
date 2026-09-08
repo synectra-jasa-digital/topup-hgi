@@ -41,7 +41,8 @@
                 </tbody>
             </table>
         </div>
-    </div>
-    <div class="mt-4"><?= $pager ? $pager->links() : '' ?></div>
+    <?php if ($pager && $pager->getPageCount() > 1): ?>
+        <div class="mt-4"><?= $pager->links() ?></div>
+    <?php endif; ?>
 <?php endif; ?>
 <?= $this->endSection() ?>

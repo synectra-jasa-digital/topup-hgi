@@ -60,6 +60,14 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('pesanan/(:num)', 'Admin\OrderController::show/$1');
     $routes->post('pesanan/(:num)/selesai', 'Admin\OrderController::complete/$1');
 
+    // Info Berjalan (ticker beranda)
+    $routes->get('info-berjalan', 'Admin\AnnouncementController::index');
+    $routes->get('info-berjalan/tambah', 'Admin\AnnouncementController::create');
+    $routes->post('info-berjalan/tambah', 'Admin\AnnouncementController::store');
+    $routes->get('info-berjalan/(:num)/ubah', 'Admin\AnnouncementController::edit/$1');
+    $routes->post('info-berjalan/(:num)/ubah', 'Admin\AnnouncementController::update/$1');
+    $routes->post('info-berjalan/(:num)/hapus', 'Admin\AnnouncementController::delete/$1');
+
     // Bongkar / Jual Kartu
     $routes->get('bongkar-katalog', 'Admin\BongkarCatalogController::index');
     $routes->get('bongkar-katalog/tambah', 'Admin\BongkarCatalogController::create');
@@ -80,8 +88,14 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->post('voucher/(:num)/ubah', 'Admin\VoucherController::update/$1');
     $routes->post('voucher/(:num)/hapus', 'Admin\VoucherController::delete/$1');
 
-    // Fase 11b - Log Aktivitas
-    $routes->get('log-aktivitas', 'Admin\ActivityLogController::index');
+    // Fase 11b - Log Aktivitas (Owner only)
+    $routes->get('log-aktivitas', 'Admin\ActivityLogController::index', ['filter' => 'role:owner']);
+
+    // Backup Database (Owner only)
+    $routes->get('backup-database', 'Admin\BackupController::index', ['filter' => 'role:owner']);
+    $routes->post('backup-database/buat', 'Admin\BackupController::create', ['filter' => 'role:owner']);
+    $routes->get('backup-database/(:any)/unduh', 'Admin\BackupController::download/$1', ['filter' => 'role:owner']);
+    $routes->post('backup-database/(:any)/hapus', 'Admin\BackupController::delete/$1', ['filter' => 'role:owner']);
 
     // Fase 11c - Halaman Statis
     $routes->get('halaman-statis', 'Admin\StaticPageController::index');

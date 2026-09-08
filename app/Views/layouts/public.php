@@ -160,6 +160,8 @@
     </header>
 
     <!-- Live Gaming Ticker -->
+    <?php $announcements = (new \App\Models\AnnouncementModel())->listActive(); ?>
+    <?php if (! empty($announcements)): ?>
     <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-neutral-900 text-xs py-1.5 px-4 font-bold shadow-xs relative overflow-hidden border-b border-amber-300">
         <div class="max-w-[1360px] mx-auto flex items-center gap-3 overflow-hidden text-xs">
             <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-900 text-amber-300 font-extrabold text-[10px] uppercase tracking-wider shrink-0 shadow-xs">
@@ -168,18 +170,15 @@
             </div>
             <div class="flex-1 overflow-hidden relative">
                 <div class="animate-marquee whitespace-nowrap flex items-center gap-8 text-neutral-900 font-semibold text-xs">
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-700"></span>🔥 Kode Promo Hemat: Gunakan voucher <strong class="text-blue-900 font-black underline decoration-blue-700">AYONGHEMAT</strong> untuk potongan langsung Rp5.000!</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>⚡ Kirim Kilat 1-3 Detik: Sistem integrasi server resmi otomatis tanpa login &amp; tanpa sandi akun.</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-700"></span>🛡️ Legal &amp; Anti Banned: Semua transaksi menggunakan jalur distribusi ID resmi terlisensi 100%.</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>💬 Layanan Bantuan CS: Customer Service WhatsApp siap melayani 24 Jam Nonstop setiap hari.</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-700"></span>🔥 Kode Promo Hemat: Gunakan voucher <strong class="text-blue-900 font-black underline decoration-blue-700">AYONGHEMAT</strong> untuk potongan langsung Rp5.000!</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>⚡ Kirim Kilat 1-3 Detik: Sistem integrasi server resmi otomatis tanpa login &amp; tanpa sandi akun.</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-700"></span>🛡️ Legal &amp; Anti Banned: Semua transaksi menggunakan jalur distribusi ID resmi terlisensi 100%.</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>💬 Layanan Bantuan CS: Customer Service WhatsApp siap melayani 24 Jam Nonstop setiap hari.</span>
+                    <?php // Daftar digandakan 2x agar animasi marquee (translateX -50%) terlihat menyambung tanpa jeda. ?>
+                    <?php foreach (array_merge($announcements, $announcements) as $i => $announcement): ?>
+                        <span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full <?= $i % 2 === 0 ? 'bg-blue-700' : 'bg-emerald-700' ?>"></span><?= esc($announcement['message']) ?></span>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- MAIN CONTENT SECTION -->
     <?= $this->renderSection('content') ?>

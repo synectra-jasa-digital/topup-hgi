@@ -12,7 +12,6 @@ $topbarTitle = $title ?? 'Dashboard';
             </button>
             <div class="min-w-0">
                 <h1 class="topbar-title truncate"><?= esc($topbarTitle) ?></h1>
-                <p class="hidden text-xs text-neutral-500 md:block">Panel admin Ayong Store</p>
             </div>
         </div>
 

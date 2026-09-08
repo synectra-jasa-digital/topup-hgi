@@ -26,6 +26,9 @@
 !/writable/uploads/index.html
 !/writable/uploads/.gitkeep
 
+/writable/backups/*
+!/writable/backups/.gitkeep
+
 # Public Uploads (User uploaded assets)
 /public/uploads/*
 !/public/uploads/index.html

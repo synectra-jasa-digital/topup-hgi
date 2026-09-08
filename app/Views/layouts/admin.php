@@ -29,6 +29,7 @@
         ['label' => 'Produk Top Up', 'icon' => 'inventory_2', 'href' => base_url('admin/produk'), 'match' => 'admin/produk'],
         ['label' => 'Kategori Banner', 'icon' => 'bookmarks', 'href' => base_url('admin/kategori-banner'), 'match' => 'kategori-banner'],
         ['label' => 'Banner Promo', 'icon' => 'view_carousel', 'href' => base_url('admin/banner'), 'match' => 'admin/banner'],
+        ['label' => 'Info Berjalan', 'icon' => 'campaign', 'href' => base_url('admin/info-berjalan'), 'match' => 'info-berjalan'],
         ['label' => 'Daftar Pesanan', 'icon' => 'shopping_cart', 'href' => base_url('admin/pesanan'), 'match' => 'admin/pesanan'],
         ['label' => 'Voucher Diskon', 'icon' => 'confirmation_number', 'href' => base_url('admin/voucher'), 'match' => 'admin/voucher'],
         ['label' => 'Katalog Bongkar', 'icon' => 'inventory', 'href' => base_url('admin/bongkar-katalog'), 'match' => 'bongkar-katalog'],
@@ -85,6 +86,14 @@
                 <a href="<?= base_url('admin/akun-admin') ?>" class="sidebar-link <?= str_contains($currentUrl, 'akun-admin') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
                     <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'akun-admin') ? 'text-primary' : 'text-neutral-400' ?>">manage_accounts</span>
                     <span>Akun Admin</span>
+                </a>
+                <a href="<?= base_url('admin/log-aktivitas') ?>" class="sidebar-link <?= str_contains($currentUrl, 'log-aktivitas') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
+                    <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'log-aktivitas') ? 'text-primary' : 'text-neutral-400' ?>">fact_check</span>
+                    <span>Log Aktivitas</span>
+                </a>
+                <a href="<?= base_url('admin/backup-database') ?>" class="sidebar-link <?= str_contains($currentUrl, 'backup-database') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
+                    <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'backup-database') ? 'text-primary' : 'text-neutral-400' ?>">database</span>
+                    <span>Backup Database</span>
                 </a>
             <?php endif; ?>
         </nav>

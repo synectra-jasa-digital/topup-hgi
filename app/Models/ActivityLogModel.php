@@ -9,7 +9,7 @@ class ActivityLogModel extends Model
     protected $table         = 'activity_logs';
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';
-    protected $allowedFields = ['admin_id', 'action', 'description', 'ip_address'];
+    protected $allowedFields = ['admin_id', 'action', 'description', 'ip_address', 'created_at'];
     protected $useTimestamps = false;
 
     public function log(int $adminId, string $action, string $description): void
