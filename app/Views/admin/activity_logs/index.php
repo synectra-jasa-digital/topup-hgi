@@ -1,39 +1,44 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<h1 class="text-2xl font-bold text-neutral-900 mb-6">Log Aktivitas Admin</h1>
+<div>
+    <h1 class="text-xl font-semibold text-neutral-900">Log Aktivitas Admin</h1>
+    <p class="mt-1 text-sm text-neutral-500">Catatan aksi yang dilakukan oleh pengguna panel.</p>
+</div>
 
 <?php if (empty($logs)): ?>
-    <div class="card p-8 text-center text-neutral-500">Belum ada log aktivitas.</div>
+    <div class="panel-surface flex flex-col items-center px-6 py-16 text-center">
+        <span class="material-symbols-outlined text-[36px] text-neutral-300">fact_check</span>
+        <h2 class="mt-3 text-base font-semibold text-neutral-900">Belum ada log aktivitas</h2>
+        <p class="mt-1 text-sm text-neutral-500">Aksi admin akan tercatat di sini.</p>
+    </div>
 <?php else: ?>
-    <div class="card overflow-x-auto">
-        <table class="w-full text-sm text-left">
-            <thead class="border-b border-neutral-200 text-neutral-500">
-                <tr>
-                    <th class="px-4 py-3">Waktu</th>
-                    <th class="px-4 py-3">Admin</th>
-                    <th class="px-4 py-3">Aksi</th>
-                    <th class="px-4 py-3">Deskripsi</th>
-                    <th class="px-4 py-3">IP</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-neutral-100">
-                <?php foreach ($logs as $log): ?>
-                    <tr class="even:bg-neutral-50">
-                        <td class="px-4 py-3 text-neutral-500 whitespace-nowrap"><?= esc($log['created_at']) ?></td>
-                        <td class="px-4 py-3 font-semibold"><?= esc($log['admin_name'] ?? '—') ?></td>
-                        <td class="px-4 py-3">
-                            <span class="badge-neutral px-2 py-0.5 rounded text-xs font-mono"><?= esc($log['action']) ?></span>
-                        </td>
-                        <td class="px-4 py-3"><?= esc($log['description']) ?></td>
-                        <td class="px-4 py-3 font-mono text-neutral-500"><?= esc($log['ip_address']) ?></td>
+    <div class="table-shell">
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-sm">
+                <thead class="table-head">
+                    <tr>
+                        <th class="border-b border-neutral-100 px-4 py-3">Waktu</th>
+                        <th class="border-b border-neutral-100 px-4 py-3">Admin</th>
+                        <th class="border-b border-neutral-100 px-4 py-3">Aksi</th>
+                        <th class="border-b border-neutral-100 px-4 py-3">Deskripsi</th>
+                        <th class="border-b border-neutral-100 px-4 py-3">IP</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($logs as $log): ?>
+                        <tr class="table-row">
+                            <td class="whitespace-nowrap px-4 py-3 text-neutral-500"><?= esc($log['created_at']) ?></td>
+                            <td class="px-4 py-3 font-medium text-neutral-900"><?= esc($log['admin_name'] ?? '—') ?></td>
+                            <td class="px-4 py-3"><span class="badge badge-neutral font-mono"><?= esc($log['action']) ?></span></td>
+                            <td class="px-4 py-3 text-neutral-700"><?= esc($log['description']) ?></td>
+                            <td class="px-4 py-3 font-mono text-neutral-500"><?= esc($log['ip_address']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="mt-4">
-        <?= $pager->links() ?>
-    </div>
+    <div class="mt-4"><?= $pager->links() ?></div>
 <?php endif; ?>
 <?= $this->endSection() ?>

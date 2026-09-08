@@ -3,107 +3,56 @@
 <?= $this->section('content') ?>
 <?php helper('order'); ?>
 
-<div class="mb-6 flex items-center justify-between">
+<div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
     <div>
-        <a href="<?= base_url('admin/pesanan') ?>" class="text-sm text-primary hover:underline flex items-center gap-1">
-            <span class="material-symbols-outlined text-[16px]">arrow_back</span> Kembali ke Daftar Pesanan
-        </a>
-        <h1 class="text-2xl font-bold text-neutral-900 mt-1">Detail Pesanan</h1>
+        <h1 class="text-xl font-semibold text-neutral-900">Detail Pesanan</h1>
+        <p class="mt-1 text-sm text-neutral-500">Pantau detail transaksi, status pembayaran, dan aksi penyelesaian.</p>
     </div>
-    <?php if (session()->getFlashdata('warning')): ?>
-        <div class="rounded-xl bg-warning/10 text-warning border border-warning/20 px-4 py-2 text-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">warning</span>
-            <span><?= esc(session()->getFlashdata('warning')) ?></span>
-        </div>
-    <?php endif; ?>
+    <span class="badge w-fit <?= order_status_badge_class($order['status']) ?>"><?= esc(order_status_label($order['status'])) ?></span>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Info Pesanan -->
-    <div class="card p-6 space-y-4">
-        <h2 class="font-bold text-on-surface">Informasi Pesanan</h2>
-        <div class="space-y-2 text-sm">
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">No. Invoice</span>
-                <span class="font-mono font-bold"><?= esc($order['invoice_number']) ?></span>
-            </div>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">Produk</span>
-                <span class="font-semibold"><?= esc($order['product_name_snapshot']) ?></span>
-            </div>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">Nominal</span>
-                <span><?= esc($order['nominal_snapshot']) ?></span>
-            </div>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">ID Akun Game</span>
-                <span class="font-mono font-bold text-primary"><?= esc($order['game_id']) ?></span>
-            </div>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">No. WhatsApp</span>
-                <span><?= esc($order['whatsapp_number']) ?></span>
-            </div>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">Harga Produk</span>
-                <span>Rp<?= number_format((float)$order['price_snapshot'], 0, ',', '.') ?></span>
-            </div>
-            <?php if ((float)$order['discount_amount'] > 0): ?>
-            <div class="flex justify-between border-b border-neutral-100 pb-2 text-success">
-                <span>Diskon Voucher</span>
-                <span class="font-bold">-Rp<?= number_format((float)$order['discount_amount'], 0, ',', '.') ?></span>
-            </div>
+<div class="grid gap-6 lg:grid-cols-2">
+    <section class="panel-surface p-6">
+        <h2 class="text-base font-semibold text-neutral-900">Informasi Pesanan</h2>
+        <dl class="mt-5 space-y-4 text-sm">
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">No. Invoice</dt><dd class="font-mono font-medium text-neutral-900"><?= esc($order['invoice_number']) ?></dd></div>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Produk</dt><dd class="font-medium text-neutral-900"><?= esc($order['product_name_snapshot']) ?></dd></div>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Nominal</dt><dd class="text-neutral-700"><?= esc($order['nominal_snapshot']) ?></dd></div>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">ID Akun Game</dt><dd class="font-mono font-medium text-primary"><?= esc($order['game_id']) ?></dd></div>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">No. WhatsApp</dt><dd class="text-neutral-700"><?= esc($order['whatsapp_number']) ?></dd></div>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Harga Produk</dt><dd class="font-medium text-neutral-900">Rp<?= number_format((float) $order['price_snapshot'], 0, ',', '.') ?></dd></div>
+            <?php if ((float) $order['discount_amount'] > 0): ?>
+                <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3 text-emerald-700"><dt class="text-neutral-500">Diskon Voucher</dt><dd class="font-medium">-Rp<?= number_format((float) $order['discount_amount'], 0, ',', '.') ?></dd></div>
             <?php endif; ?>
-            <div class="flex justify-between pt-1">
-                <span class="font-bold text-on-surface">Total Pembayaran</span>
-                <span class="font-extrabold text-primary text-base">Rp<?= number_format((float)$order['total_amount'], 0, ',', '.') ?></span>
-            </div>
-        </div>
-    </div>
+            <div class="flex items-center justify-between gap-4 pt-1"><dt class="text-sm font-semibold text-neutral-900">Total Pembayaran</dt><dd class="text-base font-semibold text-primary">Rp<?= number_format((float) $order['total_amount'], 0, ',', '.') ?></dd></div>
+        </dl>
+    </section>
 
-    <!-- Status & Aksi -->
-    <div class="card p-6 space-y-4">
-        <h2 class="font-bold text-on-surface">Status & Aksi</h2>
-        <div class="space-y-2 text-sm">
-            <div class="flex justify-between border-b border-neutral-100 pb-2 items-center">
-                <span class="text-neutral-500">Status</span>
-                <span class="badge <?= order_status_badge_class($order['status']) ?>"><?= esc(order_status_label($order['status'])) ?></span>
-            </div>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">Dibuat pada</span>
-                <span><?= esc(date('d/m/Y H:i', strtotime($order['created_at']))) ?></span>
-            </div>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">Diperbarui pada</span>
-                <span><?= esc(date('d/m/Y H:i', strtotime($order['updated_at']))) ?></span>
-            </div>
+    <section class="panel-surface p-6">
+        <h2 class="text-base font-semibold text-neutral-900">Status & Aksi</h2>
+        <dl class="mt-5 space-y-4 text-sm">
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Status</dt><dd><span class="badge <?= order_status_badge_class($order['status']) ?>"><?= esc(order_status_label($order['status'])) ?></span></dd></div>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Dibuat pada</dt><dd class="text-neutral-700"><?= esc(date('d/m/Y H:i', strtotime($order['created_at']))) ?></dd></div>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Diperbarui pada</dt><dd class="text-neutral-700"><?= esc(date('d/m/Y H:i', strtotime($order['updated_at']))) ?></dd></div>
             <?php if ($order['completed_at']): ?>
-            <div class="flex justify-between border-b border-neutral-100 pb-2">
-                <span class="text-neutral-500">Diselesaikan pada</span>
-                <span class="text-success font-semibold"><?= esc(date('d/m/Y H:i', strtotime($order['completed_at']))) ?></span>
-            </div>
+                <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Diselesaikan pada</dt><dd class="font-medium text-emerald-700"><?= esc(date('d/m/Y H:i', strtotime($order['completed_at']))) ?></dd></div>
             <?php endif; ?>
-        </div>
+        </dl>
 
         <?php if ($order['status'] === 'diproses'): ?>
-            <form method="post" action="<?= base_url('admin/pesanan/' . $order['id'] . '/selesai') ?>"
-                  onsubmit="return confirm('Tandai pesanan ini sebagai Selesai dan kirim notifikasi WhatsApp ke customer?')">
+            <form method="post" action="<?= base_url('admin/pesanan/' . $order['id'] . '/selesai') ?>" class="mt-6" data-confirm="Tandai pesanan ini sebagai selesai dan kirim notifikasi WhatsApp ke customer?" data-confirm-title="Selesaikan Pesanan" data-confirm-button="Ya, selesaikan">
                 <?= csrf_field() ?>
-                <button type="submit" class="w-full btn btn-primary flex items-center justify-center gap-2">
+                <button type="submit" class="btn btn-primary w-full justify-center">
                     <span class="material-symbols-outlined text-[18px]">check_circle</span>
                     Tandai Selesai & Kirim Notif WA
                 </button>
             </form>
-            <p class="text-xs text-neutral-400 text-center">Pastikan chip sudah dikirim ke akun game customer sebelum menekan tombol ini.</p>
+            <p class="mt-3 text-center text-xs text-neutral-500">Pastikan item sudah dikirim sebelum menyelesaikan pesanan.</p>
         <?php elseif ($order['status'] === 'selesai'): ?>
-            <div class="text-center py-3 text-success font-semibold flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined">task_alt</span>
-                Pesanan telah selesai diproses
-            </div>
+            <div class="mt-6 rounded-lg bg-emerald-50 px-4 py-3 text-center text-sm font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">Pesanan telah selesai diproses</div>
         <?php else: ?>
-            <div class="text-center py-3 text-neutral-400 text-sm">
-                Tidak ada aksi tersedia untuk status saat ini.
-            </div>
+            <div class="mt-6 rounded-lg bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500 ring-1 ring-inset ring-neutral-200">Tidak ada aksi tersedia untuk status saat ini.</div>
         <?php endif; ?>
-    </div>
+    </section>
 </div>
 <?= $this->endSection() ?>

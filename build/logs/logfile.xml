@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\Alternatif_D\laragon\www\topup-hgi\phpunit.dist.xml" tests="12" assertions="26" errors="1" failures="3" skipped="0" time="0.253978">
-    <testsuite name="App" tests="12" assertions="26" errors="1" failures="3" skipped="0" time="0.253978">
-      <testsuite name="Tests\Feature\BongkarRequestTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" tests="2" assertions="12" errors="0" failures="1" skipped="0" time="0.088397">
-        <testcase name="testHomePageRendersBongkarCatalogFromDatabase" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="26" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="4" time="0.059967"/>
-        <testcase name="testBongkarSubmitStoresRequestAndReturnsWhatsAppUrl" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="47" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="8" time="0.028430">
+  <testsuite name="D:\Alternatif_D\laragon\www\topup-hgi\phpunit.dist.xml" tests="25" assertions="38" errors="7" failures="3" skipped="0" time="0.350529">
+    <testsuite name="App" tests="25" assertions="38" errors="7" failures="3" skipped="0" time="0.350529">
+      <testsuite name="Tests\Feature\BongkarRequestTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" tests="2" assertions="12" errors="0" failures="1" skipped="0" time="0.086617">
+        <testcase name="testHomePageRendersBongkarCatalogFromDatabase" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="26" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="4" time="0.059575"/>
+        <testcase name="testBongkarSubmitStoresRequestAndReturnsWhatsAppUrl" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="47" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="8" time="0.027042">
           <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\BongkarRequestTest::testBongkarSubmitStoresRequestAndReturnsWhatsAppUrl&#13;
 Failed asserting that two strings are identical.
 --- Expected
@@ -16,8 +16,8 @@ Failed asserting that two strings are identical.
 D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php:82</failure>
         </testcase>
       </testsuite>
-      <testsuite name="Tests\Feature\CatalogPageTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" tests="2" assertions="4" errors="0" failures="2" skipped="0" time="0.060194">
-        <testcase name="testCatalogRendersFullWidthDesignAndProductNavigation" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="27" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.029810">
+      <testsuite name="Tests\Feature\CatalogPageTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" tests="2" assertions="4" errors="0" failures="2" skipped="0" time="0.057306">
+        <testcase name="testCatalogRendersFullWidthDesignAndProductNavigation" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="27" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.028345">
           <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\CatalogPageTest::testCatalogRendersFullWidthDesignAndProductNavigation&#13;
 Failed asserting that '&lt;!DOCTYPE html&gt;\n
 &lt;html lang="id"&gt;\n
@@ -892,7 +892,7 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
 \r\n
 &lt;!-- Form tersembunyi untuk backend submit (bila ada productId) --&gt;\r\n
 &lt;form id="backend-checkout-form" method="POST" action="" class="hidden"&gt;\r\n
-    &lt;input type="hidden" name="csrf_test_name" value="6fa1286d7ccddee2c52896869ecee599"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
+    &lt;input type="hidden" name="csrf_test_name" value="c0d38aca9f77319fb0c9224c1ace7d48"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
     &lt;input type="hidden" name="whatsapp_number" id="hidden-whatsapp"&gt;\r\n
     &lt;input type="hidden" name="voucher_code" id="hidden-voucher"&gt;\r\n
 &lt;/form&gt;\r\n
@@ -1426,7 +1426,7 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
 &#13;
 D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php:52</failure>
         </testcase>
-        <testcase name="testCatalogEmptyStateRemainsAvailable" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="59" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.030384">
+        <testcase name="testCatalogEmptyStateRemainsAvailable" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="59" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.028961">
           <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\CatalogPageTest::testCatalogEmptyStateRemainsAvailable&#13;
 Failed asserting that '&lt;!DOCTYPE html&gt;\n
 &lt;html lang="id"&gt;\n
@@ -2332,7 +2332,7 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
 \r\n
 &lt;!-- Form tersembunyi untuk backend submit (bila ada productId) --&gt;\r\n
 &lt;form id="backend-checkout-form" method="POST" action="" class="hidden"&gt;\r\n
-    &lt;input type="hidden" name="csrf_test_name" value="6fa1286d7ccddee2c52896869ecee599"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
+    &lt;input type="hidden" name="csrf_test_name" value="c0d38aca9f77319fb0c9224c1ace7d48"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
     &lt;input type="hidden" name="whatsapp_number" id="hidden-whatsapp"&gt;\r\n
     &lt;input type="hidden" name="voucher_code" id="hidden-voucher"&gt;\r\n
 &lt;/form&gt;\r\n
@@ -2867,27 +2867,135 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
 D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php:64</failure>
         </testcase>
       </testsuite>
-      <testsuite name="Tests\Unit\StoreSettingModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" tests="4" assertions="5" errors="0" failures="0" skipped="0" time="0.051005">
-        <testcase name="testSetAndGetVal" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="27" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="1" time="0.013844"/>
-        <testcase name="testUpdateExistingKey" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="33" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="1" time="0.012535"/>
-        <testcase name="testDefaultWhenMissing" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="40" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="1" time="0.012873"/>
-        <testcase name="testBatchSave" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="45" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="2" time="0.011753"/>
+      <testsuite name="Tests\Feature\CheckStatusTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.037806">
+        <testcase name="testCheckStatusFound" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" line="26" class="Tests\Feature\CheckStatusTest" classname="Tests.Feature.CheckStatusTest" assertions="2" time="0.021770"/>
+        <testcase name="testCheckStatusNotFound" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" line="59" class="Tests\Feature\CheckStatusTest" classname="Tests.Feature.CheckStatusTest" assertions="2" time="0.016036"/>
       </testsuite>
-      <testsuite name="Tests\Unit\VoucherModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" tests="4" assertions="5" errors="1" failures="0" skipped="0" time="0.054382">
-        <testcase name="testInsertAndFind" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="28" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="3" time="0.012413"/>
-        <testcase name="testDuplicateCodeFails" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="50" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.015528">
-          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testDuplicateCodeFails&#13;
-CodeIgniter\Database\Exceptions\DatabaseException: UNIQUE constraint failed: db_vouchers.code
+      <testsuite name="Tests\Feature\MidtransWebhookTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" tests="2" assertions="5" errors="0" failures="0" skipped="0" time="0.106425">
+        <testcase name="testInvalidSignatureRejected" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" line="29" class="Tests\Feature\MidtransWebhookTest" classname="Tests.Feature.MidtransWebhookTest" assertions="1" time="0.017041"/>
+        <testcase name="testValidSignatureUpdatesOrder" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" line="45" class="Tests\Feature\MidtransWebhookTest" classname="Tests.Feature.MidtransWebhookTest" assertions="4" time="0.089384"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\WablasTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.030500">
+        <testcase name="testSendToAdminReturnsTrue" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" line="33" class="Tests\Feature\WablasTest" classname="Tests.Feature.WablasTest" assertions="1" time="0.028596"/>
+        <testcase name="testSendToCustomerReturnsTrue" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" line="52" class="Tests\Feature\WablasTest" classname="Tests.Feature.WablasTest" assertions="1" time="0.001903"/>
+      </testsuite>
+      <testsuite name="ExampleDatabaseTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.017508">
+        <testcase name="testModelFindAll" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" line="17" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="1" time="0.011166"/>
+        <testcase name="testSoftDeleteLeavesRow" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" line="28" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="2" time="0.006342"/>
+      </testsuite>
+      <testsuite name="ExampleSessionTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\session\ExampleSessionTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.000672">
+        <testcase name="testSessionSimple" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\session\ExampleSessionTest.php" line="10" class="ExampleSessionTest" classname="ExampleSessionTest" assertions="1" time="0.000672"/>
+      </testsuite>
+      <testsuite name="HealthTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.001568">
+        <testcase name="testIsDefinedAppPath" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="12" class="HealthTest" classname="HealthTest" assertions="1" time="0.000565"/>
+        <testcase name="testBaseUrlHasBeenSet" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="17" class="HealthTest" classname="HealthTest" assertions="2" time="0.001002"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\OrderModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.002641">
+        <testcase name="testStatusTransitionOnlyUpdatesDiprosesAndSetsAuditFields" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="6" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="2" time="0.000654"/>
+        <testcase name="testInvalidStatusCannotComplete" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="10" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="1" time="0.001987"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\StoreSettingModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" tests="4" assertions="1" errors="3" failures="0" skipped="0" time="0.009487">
+        <testcase name="testSetAndGetVal" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="27" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="1" time="0.009487"/>
+        <testcase name="testUpdateExistingKey" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="33" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testUpdateExistingKey&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.
 &#13;
-D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseConnection.php:863
-D:\Alternatif_D\laragon\www\topup-hgi\system\Database\BaseBuilder.php:2355
-D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:357
-D:\Alternatif_D\laragon\www\topup-hgi\system\BaseModel.php:899
-D:\Alternatif_D\laragon\www\topup-hgi\system\Model.php:670
-D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:61</error>
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\SQLite3\Forge.php:127
+D:\Alternatif_D\laragon\www\topup-hgi\app\Database\Migrations\2026-09-06-110000_AddSnapTokenToOrders.php:22
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:1014
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:323
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:155
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:122
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:68
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\CIUnitTestCase.php:254
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php:19</error>
         </testcase>
-        <testcase name="testToggleActive" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="74" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="1" time="0.012807"/>
-        <testcase name="testDelete" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="90" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="1" time="0.013634"/>
+        <testcase name="testDefaultWhenMissing" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="40" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testDefaultWhenMissing&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\SQLite3\Forge.php:127
+D:\Alternatif_D\laragon\www\topup-hgi\app\Database\Migrations\2026-09-06-110000_AddSnapTokenToOrders.php:22
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:1014
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:323
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:155
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:122
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:68
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\CIUnitTestCase.php:254
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php:19</error>
+        </testcase>
+        <testcase name="testBatchSave" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="45" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testBatchSave&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\SQLite3\Forge.php:127
+D:\Alternatif_D\laragon\www\topup-hgi\app\Database\Migrations\2026-09-06-110000_AddSnapTokenToOrders.php:22
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:1014
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:323
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:155
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:122
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:68
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\CIUnitTestCase.php:254
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php:19</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Unit\VoucherModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.000000">
+        <testcase name="testInsertAndFind" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="28" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testInsertAndFind&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\SQLite3\Forge.php:127
+D:\Alternatif_D\laragon\www\topup-hgi\app\Database\Migrations\2026-09-06-110000_AddSnapTokenToOrders.php:22
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:1014
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:323
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:155
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:122
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:68
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\CIUnitTestCase.php:254
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:19</error>
+        </testcase>
+        <testcase name="testDuplicateCodeFails" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="50" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testDuplicateCodeFails&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\SQLite3\Forge.php:127
+D:\Alternatif_D\laragon\www\topup-hgi\app\Database\Migrations\2026-09-06-110000_AddSnapTokenToOrders.php:22
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:1014
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:323
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:155
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:122
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:68
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\CIUnitTestCase.php:254
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:19</error>
+        </testcase>
+        <testcase name="testToggleActive" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="74" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testToggleActive&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\SQLite3\Forge.php:127
+D:\Alternatif_D\laragon\www\topup-hgi\app\Database\Migrations\2026-09-06-110000_AddSnapTokenToOrders.php:22
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:1014
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:323
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:155
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:122
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:68
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\CIUnitTestCase.php:254
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:19</error>
+        </testcase>
+        <testcase name="testDelete" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php" line="90" class="Tests\Unit\VoucherModelTest" classname="Tests.Unit.VoucherModelTest" assertions="0" time="0.000000">
+          <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\VoucherModelTest::testDelete&#13;
+CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.
+&#13;
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\SQLite3\Forge.php:127
+D:\Alternatif_D\laragon\www\topup-hgi\app\Database\Migrations\2026-09-06-110000_AddSnapTokenToOrders.php:22
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:1014
+D:\Alternatif_D\laragon\www\topup-hgi\system\Database\MigrationRunner.php:323
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:155
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:122
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\DatabaseTestTrait.php:68
+D:\Alternatif_D\laragon\www\topup-hgi\system\Test\CIUnitTestCase.php:254
+D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\VoucherModelTest.php:19</error>
+        </testcase>
       </testsuite>
     </testsuite>
   </testsuite>

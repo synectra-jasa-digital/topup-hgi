@@ -1,0 +1,14 @@
+uid=10_0 RootWebArea "Masuk Panel Admin — Ayong Store" url="http://localhost/topup-hgi/index.php/admin/login"
+  uid=10_1 StaticText "lock"
+  uid=10_2 heading "Masuk Panel Admin" level="1"
+  uid=10_3 StaticText "Gunakan akun admin untuk mengelola operasional toko."
+  uid=10_4 form
+    uid=10_5 StaticText "Email Admin"
+    uid=10_6 textbox "Email Admin" focusable focused required
+    uid=10_7 StaticText "Kata Sandi"
+    uid=10_8 textbox "Kata Sandi" required
+    uid=10_9 button "Tampilkan kata sandi"
+    uid=10_10 button "login Masuk ke Panel Admin"
+  uid=10_11 link "arrow_back Kembali ke Halaman Utama Toko" url="http://localhost/topup-hgi/"
+    uid=10_12 StaticText "arrow_back"
+    uid=10_13 StaticText "Kembali ke Halaman Utama Toko"

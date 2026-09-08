@@ -4,132 +4,204 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title ?? 'Panel Admin') ?> - Ayong Store</title>
-    
-    <!-- Google Fonts & Material Symbols -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
-<body class="min-h-screen flex bg-background font-sans text-on-background antialiased" x-data="{ sidebarOpen: false }">
-    <?php $role = session('admin_role'); ?>
-    <?php $current_url = current_url(); ?>
+<body class="min-h-screen bg-neutral-50 font-sans text-neutral-900 antialiased md:flex" x-data="{ sidebarOpen: false }">
+    <?php
+    $role = session('admin_role');
+    $currentUrl = current_url();
+    $flashSuccess = session()->getFlashdata('success');
+    $flashError = session()->getFlashdata('error');
+    $flashWarning = session()->getFlashdata('warning');
+    $sidebarItems = [
+        ['label' => 'Dashboard', 'icon' => 'dashboard', 'href' => base_url('admin/dashboard'), 'match' => 'admin/dashboard'],
+        ['label' => 'Kategori Produk', 'icon' => 'category', 'href' => base_url('admin/kategori-produk'), 'match' => 'kategori-produk'],
+        ['label' => 'Produk Top Up', 'icon' => 'inventory_2', 'href' => base_url('admin/produk'), 'match' => 'admin/produk'],
+        ['label' => 'Kategori Banner', 'icon' => 'bookmarks', 'href' => base_url('admin/kategori-banner'), 'match' => 'kategori-banner'],
+        ['label' => 'Banner Promo', 'icon' => 'view_carousel', 'href' => base_url('admin/banner'), 'match' => 'admin/banner'],
+        ['label' => 'Daftar Pesanan', 'icon' => 'shopping_cart', 'href' => base_url('admin/pesanan'), 'match' => 'admin/pesanan'],
+        ['label' => 'Voucher Diskon', 'icon' => 'confirmation_number', 'href' => base_url('admin/voucher'), 'match' => 'admin/voucher'],
+    ];
+    ?>
 
-    <!-- Sidebar -->
+    <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-40 bg-black/40 md:hidden" @click="sidebarOpen = false"></div>
+
     <aside
-        class="fixed inset-y-0 left-0 z-40 w-64 transform bg-surface-white border-r border-neutral-200 transition-transform md:static md:translate-x-0 flex flex-col shadow-sm"
+        class="fixed inset-y-0 left-0 z-50 flex w-60 -translate-x-full flex-col border-r border-neutral-200 bg-white transition-transform duration-300 md:sticky md:top-0 md:h-screen md:shrink-0 md:translate-x-0"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     >
-        <div class="h-16 flex items-center px-5 border-b border-neutral-200 justify-between">
-            <a href="<?= base_url('admin/dashboard') ?>" class="flex items-center gap-2 font-extrabold text-lg text-primary tracking-tight">
-                <span class="material-symbols-outlined text-primary text-[24px]">shield_person</span>
-                <span>Admin<span class="text-on-surface">Panel</span></span>
+        <div class="flex h-16 items-center justify-between border-b border-neutral-200 px-4">
+            <a href="<?= base_url('admin/dashboard') ?>" class="flex items-center gap-2.5">
+                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white">
+                    <span class="material-symbols-outlined text-[20px]">shield_person</span>
+                </span>
+                <span class="text-[15px] font-semibold tracking-tight text-neutral-900">Ayong Panel</span>
             </a>
-            <button class="md:hidden text-neutral-500 hover:text-neutral-900" @click="sidebarOpen = false">
-                <span class="material-symbols-outlined">close</span>
+            <button class="rounded-lg p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 md:hidden" @click="sidebarOpen = false" aria-label="Tutup sidebar">
+                <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
         </div>
 
-        <nav class="p-4 space-y-1.5 text-sm font-medium flex-1 overflow-y-auto font-inter">
-            <a href="<?= base_url('admin/dashboard') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'admin/dashboard') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
-                <span class="material-symbols-outlined text-[20px]">dashboard</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="<?= base_url('admin/kategori-produk') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'kategori-produk') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
-                <span class="material-symbols-outlined text-[20px]">category</span>
-                <span>Kategori Produk</span>
-            </a>
-            <a href="<?= base_url('admin/produk') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'admin/produk') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
-                <span class="material-symbols-outlined text-[20px]">inventory_2</span>
-                <span>Produk Top Up</span>
-            </a>
-            <a href="<?= base_url('admin/kategori-banner') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'kategori-banner') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
-                <span class="material-symbols-outlined text-[20px]">bookmarks</span>
-                <span>Kategori Banner</span>
-            </a>
-            <a href="<?= base_url('admin/banner') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'admin/banner') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
-                <span class="material-symbols-outlined text-[20px]">view_carousel</span>
-                <span>Banner Promo</span>
-            </a>
-            <a href="<?= base_url('admin/pesanan') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'admin/pesanan') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
-                <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
-                <span>Daftar Pesanan</span>
-            </a>
-            <a href="<?= base_url('admin/voucher') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'admin/voucher') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
-                <span class="material-symbols-outlined text-[20px]">confirmation_number</span>
-                <span>Voucher Diskon</span>
-            </a>
+        <div class="flex items-center gap-3 border-b border-neutral-200 px-4 py-4">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-700">
+                <?= strtoupper(substr(esc(session('admin_name') ?: 'A'), 0, 1)) ?>
+            </div>
+            <div class="flex min-w-0 flex-col">
+                <span class="truncate text-sm font-semibold text-neutral-900"><?= esc(session('admin_name')) ?></span>
+                <span class="truncate text-xs capitalize text-neutral-500"><?= esc($role) ?></span>
+            </div>
+        </div>
+
+        <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4 text-sm hide-scrollbar">
+            <?php foreach ($sidebarItems as $item): ?>
+                <?php $active = str_contains($currentUrl, $item['match']); ?>
+                <a href="<?= esc($item['href']) ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= $active ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
+                    <span class="material-symbols-outlined text-[20px]"><?= esc($item['icon']) ?></span>
+                    <span><?= esc($item['label']) ?></span>
+                </a>
+            <?php endforeach; ?>
 
             <?php if ($role === 'owner'): ?>
-                <div class="pt-4 mt-4 border-t border-neutral-200 text-[11px] font-bold uppercase tracking-wider text-neutral-400 px-3">Owner Menu</div>
-                <a href="<?= base_url('admin/laporan') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'admin/laporan') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
+                <div class="px-3 pt-5 text-xs text-neutral-400">Owner Menu</div>
+                <a href="<?= base_url('admin/laporan') ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= str_contains($currentUrl, 'admin/laporan') ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
                     <span class="material-symbols-outlined text-[20px]">bar_chart</span>
                     <span>Laporan Penjualan</span>
                 </a>
-                <a href="<?= base_url('admin/pengaturan-toko') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'pengaturan-toko') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
+                <a href="<?= base_url('admin/pengaturan-toko') ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= str_contains($currentUrl, 'pengaturan-toko') ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
                     <span class="material-symbols-outlined text-[20px]">settings</span>
                     <span>Pengaturan Toko</span>
                 </a>
-                <a href="<?= base_url('admin/akun-admin') ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors <?= str_contains($current_url, 'akun-admin') ? 'bg-primary-light/50 text-primary font-bold' : 'text-neutral-700 hover:bg-neutral-100' ?>">
+                <a href="<?= base_url('admin/akun-admin') ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= str_contains($currentUrl, 'akun-admin') ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
                     <span class="material-symbols-outlined text-[20px]">manage_accounts</span>
                     <span>Akun Admin</span>
                 </a>
             <?php endif; ?>
         </nav>
-        
-        <div class="p-4 border-t border-neutral-200">
-            <a href="<?= base_url('/') ?>" target="_blank" class="flex items-center justify-center gap-2 text-xs font-semibold text-primary hover:underline">
+
+        <div class="border-t border-neutral-200 p-3">
+            <a href="<?= base_url('/') ?>" target="_blank" class="btn btn-ghost w-full justify-start">
                 <span class="material-symbols-outlined text-[16px]">open_in_new</span>
                 <span>Lihat Storefront Publik</span>
             </a>
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col min-w-0">
-        <header class="h-16 bg-surface-white border-b border-neutral-200 flex items-center justify-between px-4 md:px-6">
-            <button class="md:hidden text-neutral-700 hover:text-neutral-900" @click="sidebarOpen = !sidebarOpen">
-                <span class="material-symbols-outlined text-[24px]">menu</span>
-            </button>
-            <div class="ml-auto flex items-center gap-4 text-sm font-inter">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold text-xs">
-                        <?= strtoupper(substr(session('admin_name') ?? 'A', 0, 1)) ?>
-                    </div>
-                    <div class="flex flex-col text-xs">
-                        <span class="font-bold text-on-surface"><?= esc(session('admin_name')) ?></span>
-                        <span class="text-neutral-500 capitalize"><?= esc($role) ?></span>
-                    </div>
+    <div class="flex min-w-0 flex-1 flex-col">
+        <?= $this->include('layouts/partials/topbar') ?>
+
+        <main class="flex-1 px-4 py-6 md:px-6 md:py-8">
+            <div class="mx-auto w-full max-w-7xl space-y-6">
+                <?php if ($flashSuccess): ?>
+                <div x-data="{ show: true }" x-show="show" x-cloak class="alert-success" role="alert">
+                    <span class="material-symbols-outlined mt-0.5 text-[18px]">check_circle</span>
+                    <p class="flex-1 text-sm leading-5"><?= esc($flashSuccess) ?></p>
+                    <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
                 </div>
-                <div class="h-4 w-px bg-neutral-200"></div>
-                <a href="<?= base_url('admin/logout') ?>" class="flex items-center gap-1 text-xs font-semibold text-danger hover:underline">
-                    <span class="material-symbols-outlined text-[16px]">logout</span>
-                    <span>Keluar</span>
-                </a>
+                <?php endif; ?>
+
+                <?php if ($flashError): ?>
+                <div x-data="{ show: true }" x-show="show" x-cloak class="alert-error" role="alert">
+                    <span class="material-symbols-outlined mt-0.5 text-[18px]">error</span>
+                    <p class="flex-1 text-sm leading-5"><?= esc($flashError) ?></p>
+                    <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+                <?php endif; ?>
+
+                <?php if ($flashWarning): ?>
+                <div x-data="{ show: true }" x-show="show" x-cloak class="alert-warning" role="alert">
+                    <span class="material-symbols-outlined mt-0.5 text-[18px]">warning</span>
+                    <p class="flex-1 text-sm leading-5"><?= esc($flashWarning) ?></p>
+                    <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+                <?php endif; ?>
+
+                <?= $this->renderSection('content') ?>
             </div>
-        </header>
-
-        <main class="flex-1 p-4 md:p-8 max-w-7xl w-full">
-            <?php if (session()->getFlashdata('success')): ?>
-                <div class="mb-6 rounded-xl bg-success-light text-success border border-success/20 px-4 py-3 text-sm flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[20px]">check_circle</span>
-                    <span><?= esc(session()->getFlashdata('success')) ?></span>
-                </div>
-            <?php endif; ?>
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="mb-6 rounded-xl bg-error-container text-on-error-container border border-error/20 px-4 py-3 text-sm flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[20px]">error</span>
-                    <span><?= esc(session()->getFlashdata('error')) ?></span>
-                </div>
-            <?php endif; ?>
-
-            <?= $this->renderSection('content') ?>
         </main>
     </div>
+
+    <div x-data="confirmDialog()" @keydown.escape.window="open = false">
+        <div x-show="open" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center p-4" x-transition.opacity>
+            <div class="absolute inset-0 bg-black/40" @click="open = false"></div>
+            <div class="relative w-full max-w-sm rounded-xl border border-neutral-200 bg-white p-6 shadow-xl" role="alertdialog" aria-modal="true">
+                <h3 class="text-base font-semibold text-neutral-900" x-text="title"></h3>
+                <p class="mt-2 text-sm leading-6 text-neutral-500" x-text="message"></p>
+                <div class="mt-6 flex items-center justify-end gap-3">
+                    <button type="button" class="btn btn-secondary" x-ref="cancelBtn" x-text="cancelText" @click="open = false"></button>
+                    <button type="button" class="btn btn-primary" x-text="confirmText" @click="proceed()"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmDialog() {
+            return {
+                open: false,
+                title: 'Konfirmasi',
+                message: '',
+                confirmText: 'Ya, lanjutkan',
+                cancelText: 'Batal',
+                action: null,
+                init() {
+                    const component = this;
+
+                    document.addEventListener('submit', (event) => {
+                        const form = event.target.closest('form[data-confirm]');
+                        if (!form) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        component.title = form.dataset.confirmTitle || 'Konfirmasi';
+                        component.message = form.dataset.confirm || 'Yakin melanjutkan aksi ini?';
+                        component.confirmText = form.dataset.confirmButton || 'Ya, lanjutkan';
+                        component.cancelText = form.dataset.confirmCancel || 'Batal';
+                        component.action = () => HTMLFormElement.prototype.submit.call(form);
+                        component.open = true;
+                        component.$nextTick(() => component.$refs.cancelBtn?.focus());
+                    });
+
+                    document.addEventListener('click', (event) => {
+                        const link = event.target.closest('a[data-confirm]');
+                        if (!link) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        component.title = link.dataset.confirmTitle || 'Konfirmasi';
+                        component.message = link.dataset.confirm || 'Yakin melanjutkan aksi ini?';
+                        component.confirmText = link.dataset.confirmButton || 'Ya, lanjutkan';
+                        component.cancelText = link.dataset.confirmCancel || 'Batal';
+                        component.action = () => {
+                            window.location.href = link.href;
+                        };
+                        component.open = true;
+                        component.$nextTick(() => component.$refs.cancelBtn?.focus());
+                    });
+                },
+                proceed() {
+                    this.open = false;
+                    if (typeof this.action === 'function') {
+                        setTimeout(() => this.action(), 0);
+                    }
+                },
+            };
+        }
+    </script>
 </body>
 </html>
-

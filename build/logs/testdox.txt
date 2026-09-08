@@ -6,15 +6,42 @@ Catalog Page (Tests\Feature\CatalogPage)
  [ ] Catalog renders full width design and product navigation
  [ ] Catalog empty state remains available
 
+Check Status (Tests\Feature\CheckStatus)
+ [x] Check status found
+ [x] Check status not found
+
+Example Database
+ [x] Model find all
+ [x] Soft delete leaves row
+
+Example Session
+ [x] Session simple
+
+Health
+ [x] Is defined app path
+ [x] Base url has been set
+
+Midtrans Webhook (Tests\Feature\MidtransWebhook)
+ [x] Invalid signature rejected
+ [x] Valid signature updates order
+
+Order Model (Tests\Unit\OrderModel)
+ [x] Status transition only updates diproses and sets audit fields
+ [x] Invalid status cannot complete
+
 Store Setting Model (Tests\Unit\StoreSettingModel)
  [x] Set and get val
- [x] Update existing key
- [x] Default when missing
- [x] Batch save
+ [ ] Update existing key
+ [ ] Default when missing
+ [ ] Batch save
 
 Voucher Model (Tests\Unit\VoucherModel)
- [x] Insert and find
+ [ ] Insert and find
  [ ] Duplicate code fails
- [x] Toggle active
- [x] Delete
+ [ ] Toggle active
+ [ ] Delete
+
+Wablas (Tests\Feature\Wablas)
+ [x] Send to admin returns true
+ [x] Send to customer returns true
 

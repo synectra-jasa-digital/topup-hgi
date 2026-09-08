@@ -132,16 +132,9 @@
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 h-18 py-2.5 flex items-center justify-between gap-4">
             <!-- Brand Logo -->
-            <a class="flex items-center gap-2.5 group transition-transform hover:scale-[1.01]" href="<?= base_url('/') ?>">
-                <div class="h-10 sm:h-11 px-2.5 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
+            <a class="flex items-center group transition-transform hover:scale-[1.01]" href="<?= base_url('/') ?>">
+                <div class="h-10 sm:h-11 px-3 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
                     <img alt="Ayong Store Logo" class="h-7 sm:h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UHDQp92Ue8fpcyg6Zi1x-4rli35Nx_qMLNjs4PD3xlchTo0ZkpU60pMkM_sa_kPn7V3KoSzdv0072y9UIj40Gzop8Lp-auwR9fPBICUpV6RID73WKKivk8bUDCQV_YvsavRb0vvNx8RJA-NvnNCQSOU8KHK0n7RUPx2z3-XovssOIjHSgoNg8SO3hUYRromj_1f2Xs4hyPFJg7tdz2a86bUQscanoY0AtA_5E_RZVa6dxK9j-TUOORGw">
-                </div>
-                <div class="flex flex-col">
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-display font-black text-base sm:text-lg text-neutral-900 tracking-tight leading-none">Ayong Store</span>
-                        <span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-300 text-[9px] font-black uppercase tracking-wider">HGD Resmi</span>
-                    </div>
-                    <span class="text-[10px] text-slate-500 font-medium leading-tight">Official Higgs Top Up 24 Jam</span>
                 </div>
             </a>
             <!-- Nav Links Cockpit Pill -->
@@ -152,11 +145,7 @@
             </nav>
             <!-- Header Action Support -->
             <div class="flex items-center gap-2.5">
-                <div class="hidden xl:flex flex-col text-right">
-                    <span class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center justify-end gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Layanan Aktif 24 Jam</span>
-                    <span class="text-xs font-mono text-slate-600">Higgs Games Island Resmi</span>
-                </div>
-                <a class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all shadow-sm border border-emerald-500/30" href="https://wa.me/" rel="noopener noreferrer" target="_blank">
+                <a class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all shadow-sm border border-emerald-500/30" href="https://wa.me/" rel="noopener noreferrer" target="_blank">
                     <span class="material-symbols-outlined text-[18px]">chat</span>
                     <span class="hidden sm:inline">CS WhatsApp 24 Jam</span>
                     <span class="sm:hidden">CS WA</span>
