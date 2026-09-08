@@ -128,13 +128,18 @@
     </script>
 </head>
 <body class="light-felt-pattern font-sans text-neutral-800 antialiased selection:bg-amber-100 selection:text-amber-900 min-h-screen">
+    <?php $storeLogo = (new \App\Models\StoreSettingModel())->getVal('store_logo'); ?>
     <!-- Top Navigation Bar (Clean Light Theme) -->
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 h-18 py-2.5 flex items-center justify-between gap-4">
             <!-- Brand Logo -->
             <a class="flex items-center group transition-transform hover:scale-[1.01]" href="<?= base_url('/') ?>">
                 <div class="h-10 sm:h-11 px-3 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
-                    <img alt="Ayong Store Logo" class="h-7 sm:h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UHDQp92Ue8fpcyg6Zi1x-4rli35Nx_qMLNjs4PD3xlchTo0ZkpU60pMkM_sa_kPn7V3KoSzdv0072y9UIj40Gzop8Lp-auwR9fPBICUpV6RID73WKKivk8bUDCQV_YvsavRb0vvNx8RJA-NvnNCQSOU8KHK0n7RUPx2z3-XovssOIjHSgoNg8SO3hUYRromj_1f2Xs4hyPFJg7tdz2a86bUQscanoY0AtA_5E_RZVa6dxK9j-TUOORGw">
+                    <?php if ($storeLogo): ?>
+                        <img alt="Ayong Store Logo" class="h-7 sm:h-8 w-auto object-contain" src="<?= base_url($storeLogo) ?>">
+                    <?php else: ?>
+                        <span class="font-display text-sm sm:text-base font-black text-primary tracking-tight">Ayong Store</span>
+                    <?php endif; ?>
                 </div>
             </a>
             <!-- Nav Links Cockpit Pill -->
@@ -186,7 +191,11 @@
                 <div class="space-y-4">
                     <div class="flex items-center gap-2.5">
                         <div class="h-10 px-2.5 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
-                            <img alt="Ayong Store Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UHDQp92Ue8fpcyg6Zi1x-4rli35Nx_qMLNjs4PD3xlchTo0ZkpU60pMkM_sa_kPn7V3KoSzdv0072y9UIj40Gzop8Lp-auwR9fPBICUpV6RID73WKKivk8bUDCQV_YvsavRb0vvNx8RJA-NvnNCQSOU8KHK0n7RUPx2z3-XovssOIjHSgoNg8SO3hUYRromj_1f2Xs4hyPFJg7tdz2a86bUQscanoY0AtA_5E_RZVa6dxK9j-TUOORGw">
+                            <?php if ($storeLogo): ?>
+                                <img alt="Ayong Store Logo" class="h-7 w-auto object-contain" src="<?= base_url($storeLogo) ?>">
+                            <?php else: ?>
+                                <span class="font-display text-sm font-black text-primary tracking-tight">Ayong Store</span>
+                            <?php endif; ?>
                         </div>
                         <div>
                             <span class="font-display font-black text-base text-neutral-900 tracking-tight block">Ayong Store</span>

@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
     <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="admin-shell min-h-screen bg-neutral-50 font-sans text-neutral-900 antialiased md:flex" x-data="{ sidebarOpen: false }">
     <?php
     $role = session('admin_role');
     $currentUrl = current_url();
+    $storeLogo = (new \App\Models\StoreSettingModel())->getVal('store_logo');
     $flashSuccess = session()->getFlashdata('success');
     $flashError = session()->getFlashdata('error');
     $flashWarning = session()->getFlashdata('warning');
@@ -40,9 +42,15 @@
     >
         <div class="flex h-16 items-center justify-between border-b border-neutral-200 px-4">
             <a href="<?= base_url('admin/dashboard') ?>" class="flex items-center gap-2.5">
-                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white">
-                    <span class="material-symbols-outlined text-[20px]">shield_person</span>
-                </span>
+                <?php if ($storeLogo): ?>
+                    <span class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-white">
+                        <img src="<?= base_url($storeLogo) ?>" alt="Logo Toko" class="h-full w-full object-contain p-1">
+                    </span>
+                <?php else: ?>
+                    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white">
+                        <span class="material-symbols-outlined text-[20px]">shield_person</span>
+                    </span>
+                <?php endif; ?>
                 <div class="flex flex-col">
                     <span class="font-display text-sm font-semibold tracking-tight text-neutral-900">Ayong Admin</span>
                     <span class="text-xs text-neutral-500">Panel operasional</span>
@@ -53,19 +61,7 @@
             </button>
         </div>
 
-        <div class="border-b border-neutral-200 px-4 py-4">
-            <div class="sidebar-meta flex items-center gap-3">
-                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-semibold text-neutral-700 ring-1 ring-inset ring-neutral-200">
-                    <?= strtoupper(substr(esc(session('admin_name') ?: 'A'), 0, 1)) ?>
-                </div>
-                <div class="min-w-0">
-                    <span class="block truncate text-sm font-medium text-neutral-900"><?= esc(session('admin_name')) ?></span>
-                    <span class="block truncate text-xs capitalize text-neutral-500"><?= esc($role) ?></span>
-                </div>
-            </div>
-        </div>
-
-        <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4 text-sm hide-scrollbar">
+        <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-3 text-sm hide-scrollbar">
             <?php foreach ($sidebarItems as $item): ?>
                 <?php $active = str_contains($currentUrl, $item['match']); ?>
                 <a href="<?= esc($item['href']) ?>" class="sidebar-link <?= $active ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
@@ -104,36 +100,6 @@
 
         <main class="flex-1 px-4 py-6 md:px-6 md:py-8">
             <div class="mx-auto w-full max-w-7xl space-y-5">
-                <?php if ($flashSuccess): ?>
-                <div x-data="{ show: true }" x-show="show" x-cloak class="alert-success" role="alert">
-                    <span class="material-symbols-outlined mt-0.5 text-[18px]">check_circle</span>
-                    <p class="flex-1 text-sm leading-6"><?= esc($flashSuccess) ?></p>
-                    <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                </div>
-                <?php endif; ?>
-
-                <?php if ($flashError): ?>
-                <div x-data="{ show: true }" x-show="show" x-cloak class="alert-error" role="alert">
-                    <span class="material-symbols-outlined mt-0.5 text-[18px]">error</span>
-                    <p class="flex-1 text-sm leading-6"><?= esc($flashError) ?></p>
-                    <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                </div>
-                <?php endif; ?>
-
-                <?php if ($flashWarning): ?>
-                <div x-data="{ show: true }" x-show="show" x-cloak class="alert-warning" role="alert">
-                    <span class="material-symbols-outlined mt-0.5 text-[18px]">warning</span>
-                    <p class="flex-1 text-sm leading-6"><?= esc($flashWarning) ?></p>
-                    <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                </div>
-                <?php endif; ?>
-
                 <?= $this->renderSection('content') ?>
             </div>
         </main>
@@ -154,6 +120,61 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashSuccess = <?= json_encode($flashSuccess) ?>;
+            const flashError = <?= json_encode($flashError) ?>;
+            const flashWarning = <?= json_encode($flashWarning) ?>;
+
+            if (typeof Swal === 'undefined') {
+                return;
+            }
+
+            const swalBase = {
+                confirmButtonColor: '#2563eb',
+                buttonsStyling: false,
+                customClass: {
+                    popup: '!rounded-2xl !p-6 font-sans shadow-2xl border border-neutral-100',
+                    title: '!text-lg !font-bold !text-neutral-900',
+                    htmlContainer: '!text-sm !text-neutral-600',
+                    confirmButton: 'btn btn-primary !py-2.5 !px-5 !rounded-xl !font-semibold',
+                },
+            };
+
+            if (flashSuccess) {
+                Swal.fire({
+                    ...swalBase,
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: flashSuccess,
+                    confirmButtonText: 'Tutup',
+                });
+            } else if (flashError) {
+                Swal.fire({
+                    ...swalBase,
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: flashError,
+                    confirmButtonText: 'Tutup',
+                    customClass: {
+                        ...swalBase.customClass,
+                        confirmButton: 'btn btn-primary !bg-rose-600 hover:!bg-rose-700 !py-2.5 !px-5 !rounded-xl !font-semibold',
+                    },
+                });
+            } else if (flashWarning) {
+                Swal.fire({
+                    ...swalBase,
+                    icon: 'warning',
+                    title: 'Perhatian!',
+                    text: flashWarning,
+                    confirmButtonText: 'Mengerti',
+                    customClass: {
+                        ...swalBase.customClass,
+                        confirmButton: 'btn btn-primary !bg-amber-600 hover:!bg-amber-700 !py-2.5 !px-5 !rounded-xl !font-semibold',
+                    },
+                });
+            }
+        });
+
         function confirmDialog() {
             return {
                 open: false,

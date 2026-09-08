@@ -24,6 +24,9 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('logout', 'Admin\AuthController::logout');
     $routes->get('dashboard', 'Admin\DashboardController::index');
 
+    $routes->get('profile', 'Admin\ProfileController::index');
+    $routes->post('profile', 'Admin\ProfileController::update');
+
     $routes->get('kategori-produk', 'Admin\ProductCategoryController::index');
     $routes->get('kategori-produk/tambah', 'Admin\ProductCategoryController::create');
     $routes->post('kategori-produk/tambah', 'Admin\ProductCategoryController::store');

@@ -9,7 +9,7 @@ class ProductCategoryModel extends Model
     protected $table         = 'product_categories';
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';
-    protected $allowedFields = ['name', 'slug', 'sort_order', 'is_active'];
+    protected $allowedFields = ['name', 'slug', 'icon', 'sort_order', 'is_active'];
     protected $useTimestamps = true;
     protected $validationRules = [
         'id'   => 'permit_empty|is_natural',

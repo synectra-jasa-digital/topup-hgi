@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
+<?php $errors = session()->getFlashdata('errors') ?? []; ?>
 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
     <div>
         <h1 class="section-title">Pengaturan Toko</h1>
@@ -8,8 +9,20 @@
     </div>
 </div>
 
-<form method="post" action="<?= base_url('admin/pengaturan-toko') ?>" class="max-w-3xl space-y-5 panel-surface">
+<form method="post" action="<?= base_url('admin/pengaturan-toko') ?>" enctype="multipart/form-data" class="max-w-3xl space-y-5 panel-surface">
     <?= csrf_field() ?>
+    <div>
+        <label for="logo" class="form-label">Logo Toko</label>
+        <?php if (! empty($settings['store_logo'])): ?>
+            <div class="mb-3 flex items-center gap-3">
+                <img src="<?= base_url($settings['store_logo']) ?>" alt="Logo toko saat ini" class="h-14 w-14 rounded-lg border border-neutral-200 bg-white object-contain p-1.5">
+                <p class="text-sm text-neutral-500">Logo saat ini. Unggah gambar baru untuk menggantinya.</p>
+            </div>
+        <?php endif; ?>
+        <input type="file" id="logo" name="logo" accept="image/*" class="<?= isset($errors['logo']) ? 'form-input-error' : 'form-input' ?>">
+        <?php if (isset($errors['logo'])): ?><p class="form-error"><?= esc($errors['logo']) ?></p><?php endif; ?>
+        <p class="form-help">PNG/JPG, maksimum 2MB. Kosongkan jika tidak ingin mengubah logo.</p>
+    </div>
     <div>
         <label for="store_name" class="form-label">Nama Toko</label>
         <input type="text" id="store_name" name="store_name" value="<?= esc(old('store_name', $settings['store_name'] ?? '')) ?>" class="form-input" required>

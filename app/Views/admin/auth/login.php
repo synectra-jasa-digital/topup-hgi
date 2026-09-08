@@ -10,42 +10,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="admin-shell min-h-screen bg-neutral-50 px-4 py-8 font-sans text-neutral-900 antialiased">
 <?php
 $error = session()->getFlashdata('error');
 $success = session()->getFlashdata('success');
+$storeLogo = (new \App\Models\StoreSettingModel())->getVal('store_logo');
 ?>
 
 <div class="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col justify-center">
     <div class="panel-surface w-full p-6 md:p-8">
         <div class="text-center">
-            <div class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-white">
-                <span class="material-symbols-outlined text-[22px]">shield_person</span>
-            </div>
+            <?php if ($storeLogo): ?>
+                <div class="mx-auto flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-white">
+                    <img src="<?= base_url($storeLogo) ?>" alt="Logo Toko" class="h-full w-full object-contain p-1.5">
+                </div>
+            <?php else: ?>
+                <div class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-white">
+                    <span class="material-symbols-outlined text-[22px]">shield_person</span>
+                </div>
+            <?php endif; ?>
             <h1 class="mt-4 font-display text-xl font-semibold tracking-tight text-neutral-900">Masuk Panel Admin</h1>
             <p class="mt-1 text-sm leading-6 text-neutral-500">Gunakan akun admin untuk mengelola operasional toko.</p>
         </div>
-
-        <?php if ($error): ?>
-        <div class="alert-error mt-6" id="loginAlertError" role="alert">
-            <span class="material-symbols-outlined mt-0.5 text-[18px]">error</span>
-            <p class="flex-1 text-sm leading-6"><?= esc($error) ?></p>
-            <button type="button" data-dismiss="loginAlertError" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
-                <span class="material-symbols-outlined text-[18px]">close</span>
-            </button>
-        </div>
-        <?php endif; ?>
-
-        <?php if ($success): ?>
-        <div class="alert-success mt-6" id="loginAlertSuccess" role="alert">
-            <span class="material-symbols-outlined mt-0.5 text-[18px]">check_circle</span>
-            <p class="flex-1 text-sm leading-6"><?= esc($success) ?></p>
-            <button type="button" data-dismiss="loginAlertSuccess" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
-                <span class="material-symbols-outlined text-[18px]">close</span>
-            </button>
-        </div>
-        <?php endif; ?>
 
         <form method="POST" action="<?= base_url('admin/login') ?>" autocomplete="on" class="mt-6 space-y-4">
             <?= csrf_field() ?>
@@ -82,6 +70,41 @@ $success = session()->getFlashdata('success');
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const errorMsg = <?= json_encode($error) ?>;
+        const successMsg = <?= json_encode($success) ?>;
+
+        const swalBase = {
+            buttonsStyling: false,
+            customClass: {
+                popup: '!rounded-2xl !p-6 font-sans shadow-2xl border border-neutral-100',
+                title: '!text-lg !font-bold !text-neutral-900',
+                htmlContainer: '!text-sm !text-neutral-600',
+                confirmButton: 'btn btn-primary !py-2.5 !px-5 !rounded-xl !font-semibold',
+            },
+        };
+
+        if (errorMsg) {
+            Swal.fire({
+                ...swalBase,
+                icon: 'error',
+                title: 'Gagal Masuk',
+                text: errorMsg,
+                confirmButtonText: 'Tutup',
+                customClass: {
+                    ...swalBase.customClass,
+                    confirmButton: 'btn btn-primary !bg-rose-600 hover:!bg-rose-700 !py-2.5 !px-5 !rounded-xl !font-semibold',
+                },
+            });
+        } else if (successMsg) {
+            Swal.fire({
+                ...swalBase,
+                icon: 'success',
+                title: 'Berhasil',
+                text: successMsg,
+                confirmButtonText: 'Tutup',
+            });
+        }
+
         const toggleBtn = document.getElementById('togglePass');
         const passwordInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eyeIcon');
@@ -102,15 +125,6 @@ $success = session()->getFlashdata('success');
                 btnSubmit.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> <span>Memproses...</span>';
             });
         }
-
-        document.querySelectorAll('[data-dismiss]').forEach((button) => {
-            button.addEventListener('click', () => {
-                const target = document.getElementById(button.dataset.dismiss);
-                if (target) {
-                    target.remove();
-                }
-            });
-        });
     });
 </script>
 </body>

@@ -9,7 +9,7 @@ class AdminModel extends Model
     protected $table            = 'admins';
     protected $primaryKey       = 'id';
     protected $returnType       = 'array';
-    protected $allowedFields    = ['name', 'email', 'password', 'role', 'is_active'];
+    protected $allowedFields    = ['name', 'email', 'password', 'photo', 'role', 'is_active'];
     protected $useTimestamps    = true;
 
     public function findActiveByEmail(string $email): ?array

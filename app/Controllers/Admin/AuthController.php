@@ -37,6 +37,7 @@ class AuthController extends BaseController
             'admin_id'    => $admin['id'],
             'admin_name'  => $admin['name'],
             'admin_role'  => $admin['role'],
+            'admin_photo' => $admin['photo'] ?? null,
         ]);
 
         return redirect()->to('/admin/dashboard')->with('success', 'Berhasil masuk.');
@@ -44,7 +45,7 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        session()->remove(['admin_id', 'admin_name', 'admin_role']);
+        session()->remove(['admin_id', 'admin_name', 'admin_role', 'admin_photo']);
 
         return redirect()->to('/admin/login')->with('success', 'Berhasil keluar.');
     }

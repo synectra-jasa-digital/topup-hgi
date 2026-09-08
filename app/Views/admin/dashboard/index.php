@@ -102,79 +102,103 @@ $shortcutCards = $isOwner ? array_merge($adminCards, $ownerCards) : $adminCards;
         </div>
     </section>
 
-    <div class="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-        <div class="space-y-6">
-            <?php if ($isOwner): ?>
-                <section class="panel-surface">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 pb-4">
-                        <div>
-                            <h2 class="font-display text-base font-semibold tracking-tight text-neutral-900">Tren Pendapatan</h2>
-                            <p class="mt-1 text-sm text-neutral-500">Grafik ringkas performa harian.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="inline-flex rounded-lg border border-neutral-200 p-0.5">
-                                <button type="button" data-range="7" class="chart-range-btn rounded-md px-3 py-1.5 text-xs font-medium transition">7 Hari</button>
-                                <button type="button" data-range="30" class="chart-range-btn rounded-md px-3 py-1.5 text-xs font-medium transition">30 Hari</button>
-                            </div>
-                            <a href="<?= base_url('admin/laporan') ?>" class="text-sm font-medium text-primary hover:text-primary-dark">Lihat laporan</a>
-                        </div>
-                    </div>
-                    <canvas id="dashboardRevenueChart" height="110" class="mt-4"></canvas>
-                </section>
-
-                <section class="panel-surface">
-                    <div>
-                        <h2 class="font-display text-base font-semibold tracking-tight text-neutral-900">Kategori Terlaris (30 Hari)</h2>
-                        <p class="mt-1 text-sm text-neutral-500">Kontribusi kategori berdasarkan pendapatan.</p>
-                    </div>
-                    <?php if (empty($topCategories)): ?>
-                        <p class="mt-4 text-sm text-neutral-500">Belum ada data penjualan pada periode ini.</p>
-                    <?php else: ?>
-                        <?php $maxRevenue = max(array_column($topCategories, 'total_revenue')) ?: 1; ?>
-                        <div class="mt-4 space-y-4">
-                            <?php foreach ($topCategories as $cat): ?>
-                                <div>
-                                    <div class="flex items-center justify-between gap-4 text-sm">
-                                        <span class="font-medium text-neutral-900"><?= esc($cat['category_name']) ?></span>
-                                        <span class="text-neutral-500"><?= (int) $cat['total_quantity'] ?> transaksi · Rp <?= number_format($cat['total_revenue'], 0, ',', '.') ?></span>
-                                    </div>
-                                    <div class="mt-2 h-1.5 rounded-full bg-neutral-100">
-                                        <div class="h-1.5 rounded-full bg-primary" style="width: <?= (int) round(($cat['total_revenue'] / $maxRevenue) * 100) ?>%"></div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </section>
-            <?php endif; ?>
-
+    <?php if ($isOwner): ?>
+        <div class="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
             <section class="panel-surface">
-                <div>
-                    <h2 class="font-display text-base font-semibold tracking-tight text-neutral-900">Akses Cepat</h2>
-                    <p class="mt-1 text-sm text-neutral-500">Menu utama untuk pekerjaan harian.</p>
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 pb-4">
+                    <div>
+                        <h2 class="font-display text-base font-bold tracking-tight text-neutral-900">Tren Pendapatan</h2>
+                        <p class="mt-0.5 text-xs text-neutral-500">Grafik ringkas performa harian.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="inline-flex rounded-lg border border-neutral-200 p-0.5">
+                            <button type="button" data-range="7" class="chart-range-btn rounded-md px-3 py-1.5 text-xs font-medium transition">7 Hari</button>
+                            <button type="button" data-range="30" class="chart-range-btn rounded-md px-3 py-1.5 text-xs font-medium transition">30 Hari</button>
+                        </div>
+                        <a href="<?= base_url('admin/laporan') ?>" class="text-xs font-semibold text-primary hover:text-primary-dark">Lihat laporan</a>
+                    </div>
                 </div>
-                <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                    <?php foreach ($shortcutCards as $card): ?>
-                        <a href="<?= esc($card['href']) ?>" class="rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-primary/30 hover:bg-neutral-50">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-50 text-neutral-700">
-                                <span class="material-symbols-outlined text-[20px]"><?= esc($card['icon']) ?></span>
-                            </span>
-                            <h3 class="mt-3 font-display text-sm font-semibold tracking-tight text-neutral-900"><?= esc($card['label']) ?></h3>
-                            <p class="mt-1 text-sm leading-6 text-neutral-500"><?= esc($card['desc']) ?></p>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
+                <canvas id="dashboardRevenueChart" height="110" class="mt-4"></canvas>
             </section>
+
+            <aside class="panel-surface h-fit">
+                <div>
+                    <h2 class="font-display text-base font-bold tracking-tight text-neutral-900">Aktivitas Terbaru</h2>
+                    <p class="mt-0.5 text-xs text-neutral-500">Log terakhir dari panel admin.</p>
+                </div>
+                <div class="mt-4">
+                    <?php if (empty($recentLogs)): ?>
+                        <div class="empty-state py-10">
+                            <span class="empty-state-icon">
+                                <span class="material-symbols-outlined text-[20px]">fact_check</span>
+                            </span>
+                            <h3 class="empty-state-title mt-3">Belum ada aktivitas</h3>
+                            <p class="empty-state-copy mt-1">Aksi admin akan tampil di sini.</p>
+                        </div>
+                    <?php else: ?>
+                        <ul class="divide-y divide-neutral-100">
+                            <?php foreach ($recentLogs as $log): ?>
+                                <li class="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                                    <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-neutral-300"></span>
+                                    <div class="min-w-0">
+                                        <p class="text-sm leading-6 text-neutral-900">
+                                            <span class="font-medium"><?= esc($log['admin_name']) ?></span>
+                                            <?= esc($log['description']) ?>
+                                        </p>
+                                        <p class="mt-0.5 text-xs text-neutral-500"><?= esc(date('d M, H:i', strtotime($log['created_at']))) ?></p>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            </aside>
         </div>
 
-        <aside class="panel-surface h-fit">
+        <section class="panel-surface">
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3.5">
+                <div>
+                    <h2 class="font-display text-base font-bold tracking-tight text-neutral-900">Kategori Terlaris (30 Hari)</h2>
+                    <p class="mt-0.5 text-xs text-neutral-500">Kontribusi pendapatan berdasarkan kategori produk top up.</p>
+                </div>
+                <a href="<?= base_url('admin/laporan') ?>" class="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary-dark">
+                    <span>Lihat laporan</span>
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </a>
+            </div>
+            <?php if (empty($topCategories)): ?>
+                <p class="mt-4 text-xs text-neutral-500">Belum ada data penjualan pada periode ini.</p>
+            <?php else: ?>
+                <?php $maxRevenue = max(array_column($topCategories, 'total_revenue')) ?: 1; ?>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <?php foreach ($topCategories as $cat): ?>
+                        <?php $percentage = (int) round(($cat['total_revenue'] / $maxRevenue) * 100); ?>
+                        <div class="rounded-xl border border-neutral-200/80 bg-white p-3.5 shadow-2xs">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-display text-sm font-bold text-neutral-900 truncate"><?= esc($cat['category_name']) ?></span>
+                                <span class="rounded-md bg-primary-light px-2 py-0.5 text-[11px] font-bold text-primary"><?= $percentage ?>%</span>
+                            </div>
+                            <div class="mt-2.5 flex items-baseline justify-between">
+                                <span class="text-xs font-medium text-neutral-500"><?= (int) $cat['total_quantity'] ?> transaksi</span>
+                                <span class="font-display text-sm font-bold text-neutral-900">Rp <?= number_format($cat['total_revenue'], 0, ',', '.') ?></span>
+                            </div>
+                            <div class="mt-2.5 h-1.5 w-full rounded-full bg-neutral-100 overflow-hidden">
+                                <div class="h-1.5 rounded-full bg-primary transition-all duration-300" style="width: <?= $percentage ?>%"></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </section>
+    <?php else: ?>
+        <aside class="panel-surface">
             <div>
-                <h2 class="font-display text-base font-semibold tracking-tight text-neutral-900">Aktivitas Terbaru</h2>
-                <p class="mt-1 text-sm text-neutral-500">Log terakhir dari panel admin.</p>
+                <h2 class="font-display text-base font-bold tracking-tight text-neutral-900">Aktivitas Terbaru</h2>
+                <p class="mt-0.5 text-xs text-neutral-500">Log terakhir dari panel admin.</p>
             </div>
             <div class="mt-4">
                 <?php if (empty($recentLogs)): ?>
-                    <div class="empty-state py-10">
+                    <div class="empty-state py-8">
                         <span class="empty-state-icon">
                             <span class="material-symbols-outlined text-[20px]">fact_check</span>
                         </span>
@@ -199,7 +223,33 @@ $shortcutCards = $isOwner ? array_merge($adminCards, $ownerCards) : $adminCards;
                 <?php endif; ?>
             </div>
         </aside>
-    </div>
+    <?php endif; ?>
+
+    <section class="panel-surface">
+        <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3.5">
+            <div>
+                <h2 class="font-display text-base font-bold tracking-tight text-neutral-900">Akses Cepat</h2>
+                <p class="mt-0.5 text-xs text-neutral-500">Pintasan menu utama untuk manajemen harian toko.</p>
+            </div>
+            <span class="rounded-lg bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-600"><?= count($shortcutCards) ?> menu</span>
+        </div>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <?php foreach ($shortcutCards as $card): ?>
+                <a href="<?= esc($card['href']) ?>" class="group flex items-start gap-3.5 rounded-xl border border-neutral-200/80 bg-white p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                        <span class="material-symbols-outlined text-[20px]"><?= esc($card['icon']) ?></span>
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1">
+                            <h3 class="font-display text-sm font-bold tracking-tight text-neutral-900 transition-colors group-hover:text-primary"><?= esc($card['label']) ?></h3>
+                            <span class="material-symbols-outlined text-[16px] text-neutral-400 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100 group-hover:text-primary">arrow_forward</span>
+                        </div>
+                        <p class="mt-0.5 text-xs leading-relaxed text-neutral-500 line-clamp-2"><?= esc($card['desc']) ?></p>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </section>
 </div>
 
 <?php if ($isOwner): ?>
