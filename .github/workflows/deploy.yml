@@ -88,6 +88,8 @@ jobs:
             **/node_modules/**/*
             .github/**
             .github/**/*
+            .claude/**
+            .claude/**/*
             tests/**
             tests/**/*
             .env
