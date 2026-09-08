@@ -2,20 +2,25 @@
 
 <?= $this->section('content') ?>
 
-<div class="max-w-md mx-auto space-y-6">
+<?php
+  $adminWhatsapp = (new \App\Models\StoreSettingModel())->getVal('store_contact', (string) (getenv('wablas.adminPhone') ?: ''));
+  $waNum = ! empty($adminWhatsapp) ? preg_replace('/[^0-9]/', '', $adminWhatsapp) : '';
+  $waUrl = ! empty($waNum) ? 'https://wa.me/' . $waNum : 'https://wa.me/';
+?>
 
-    <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-primary-light text-primary flex items-center justify-center font-bold mx-auto">
-            <span class="material-symbols-outlined text-[28px]">search_check</span>
-        </div>
-        <h1 class="text-2xl font-bold text-on-surface font-sans">Lacak Pesanan</h1>
-        <p class="text-xs text-neutral-500 font-inter">Masukkan nomor invoice Anda untuk memeriksa status transaksi.</p>
+<div class="max-w-md mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-6">
+
+    <!-- Header Title -->
+    <div class="text-center space-y-1.5">
+        <h1 class="text-2xl font-display font-bold text-neutral-900">Lacak Status Pesanan</h1>
+        <p class="text-xs text-slate-500 max-w-xs mx-auto">Masukkan nomor invoice transaksi Anda untuk memeriksa status pembayaran &amp; pengiriman.</p>
     </div>
     
-    <div class="bg-surface-white border border-neutral-200 rounded-2xl p-6 shadow-sm font-inter">
+    <!-- Clean Simple Form Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-5">
         <?php if (session()->getFlashdata('error')) : ?>
-            <div class="bg-error-container text-on-error-container p-3 rounded-xl mb-4 text-xs font-semibold flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">error</span>
+            <div class="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs font-medium flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px] text-rose-600 shrink-0">error</span>
                 <span><?= esc(session()->getFlashdata('error')) ?></span>
             </div>
         <?php endif ?>
@@ -24,28 +29,26 @@
             <?= csrf_field() ?>
             
             <div class="space-y-1.5">
-                <label for="invoice_number" class="text-xs font-semibold text-on-surface block">Nomor Invoice Transactions</label>
-                <div class="relative flex items-center">
+                <label for="invoice_number" class="block text-xs font-bold text-neutral-800">Nomor Invoice <span class="text-rose-500">*</span></label>
+                <div class="relative">
                     <input type="text" name="invoice_number" id="invoice_number" value="<?= old('invoice_number') ?>" 
-                        class="w-full rounded-xl border border-neutral-200 p-3 pl-10 text-sm font-mono uppercase tracking-wider focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all <?= session('errors.invoice_number') ? 'border-danger' : '' ?>" 
-                        placeholder="Contoh: INV20260906ABCDEF" required>
-                    <span class="material-symbols-outlined text-[20px] text-neutral-400 absolute left-3">receipt</span>
+                        class="w-full rounded-xl border border-slate-300 bg-slate-50/50 py-2.5 px-3.5 text-sm font-mono font-bold uppercase tracking-wider text-neutral-900 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:font-normal placeholder:normal-case placeholder:text-slate-400 <?= session('errors.invoice_number') ? 'border-rose-500' : '' ?>" 
+                        placeholder="Contoh: INV20260906ABCDEF" required autocomplete="off">
                 </div>
                 <?php if (session('errors.invoice_number')) : ?>
-                    <p class="text-danger text-xs mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">error</span> <?= esc(session('errors.invoice_number')) ?></p>
+                    <p class="text-rose-600 text-xs mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">error</span> <?= esc(session('errors.invoice_number')) ?></p>
                 <?php endif ?>
             </div>
 
-            <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white font-bold text-sm py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 active:scale-[0.99]">
+            <button type="submit" class="w-full py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-display font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer border border-blue-700">
                 <span class="material-symbols-outlined text-[18px]">search</span>
-                <span>Cek Status Transaksi</span>
+                <span>Cek Status Pesanan</span>
             </button>
         </form>
-    </div>
 
-    <div class="bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-center text-xs text-neutral-500 font-inter space-y-1">
-        <p class="font-semibold text-neutral-700">Lupa Nomor Invoice?</p>
-        <p>Nomor invoice juga telah kami kirimkan ke WhatsApp yang Anda daftarkan saat checkout.</p>
+        <div class="pt-4 border-t border-slate-100 text-center text-xs text-slate-500 leading-relaxed">
+            Lupa nomor invoice? Kode transaksi telah dikirim ke WhatsApp Anda. <a href="<?= esc($waUrl) ?>" target="_blank" rel="noopener noreferrer" class="font-bold text-blue-600 hover:underline inline-flex items-center gap-0.5">Bantuan CS <span class="material-symbols-outlined text-[13px]">open_in_new</span></a>
+        </div>
     </div>
 
 </div>

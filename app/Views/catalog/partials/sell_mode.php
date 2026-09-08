@@ -12,7 +12,7 @@
         </div>
         <div>
           <h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Jual atau Bongkar Kartu</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Tukar kartu Higgs Games Island menjadi saldo atau uang tunai langsung ke rekening/e-wallet.</p>
+          <p class="text-xs text-slate-500 mt-0.5">Tukar kartu atau koin game menjadi saldo atau uang tunai langsung ke rekening/e-wallet.</p>
         </div>
       </div>
     </div>
@@ -90,7 +90,7 @@
             <label class="block font-bold text-neutral-700" for="input-card-game-id">User ID Game <span class="text-[10px] font-normal text-slate-400">(Opsional)</span></label>
             <div class="relative">
               <span class="material-symbols-outlined absolute left-3 top-2 text-[18px] text-slate-400">sports_esports</span>
-              <input id="input-card-game-id" type="text" placeholder="ID Higgs Anda" class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400">
+              <input id="input-card-game-id" type="text" placeholder="ID Game Anda" class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400">
             </div>
           </div>
 

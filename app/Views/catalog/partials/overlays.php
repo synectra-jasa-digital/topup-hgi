@@ -14,7 +14,7 @@
 <span class="font-bold text-neutral-900" id="modal-item">Belum memilih produk</span>
 </div>
 <div class="flex justify-between">
-<span class="text-slate-500">User ID Higgs:</span>
+<span class="text-slate-500">User ID Game:</span>
 <span class="font-mono font-bold text-neutral-900" id="modal-id">-</span>
 </div>
 <div class="flex justify-between">
@@ -28,7 +28,7 @@
 </div>
 <div class="mt-4 flex items-center gap-2 text-[11px] text-slate-600 bg-blue-50 p-2.5 rounded-lg border border-blue-200">
 <span class="material-symbols-outlined text-[18px] text-blue-600 shrink-0">info</span>
-<span class="">Jendela instruksi pembayaran resmi akan dibuka. Koin chip otomatis dikirim ke akun Anda 1-3 detik setelah verifikasi.</span>
+<span class="">Jendela instruksi pembayaran resmi akan dibuka. Produk otomatis dikirim ke akun Anda 1-3 detik setelah verifikasi.</span>
 </div>
 <div class="mt-5 flex gap-3">
 <button class="flex-1 py-2.5 rounded-xl border border-slate-300 font-bold text-xs text-slate-700 hover:bg-slate-100 transition-colors" id="btn-cancel-checkout" type="button">Batal</button>

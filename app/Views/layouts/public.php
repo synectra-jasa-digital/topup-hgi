@@ -2,7 +2,7 @@
     $storeSettings = new \App\Models\StoreSettingModel();
     $storeName = $storeSettings->getVal('store_name', 'Ayong Store');
     $storeLogo = $storeSettings->getVal('store_logo');
-    $metaTitle = isset($title) ? $title : ($storeName . ' - Top Up Higgs Games Island Express');
+    $metaTitle = isset($title) ? $title : ($storeName . ' - Top Up & Game Store Express');
 ?>
 <!DOCTYPE html>
 <html lang="id">

@@ -30,7 +30,7 @@ class Home extends BaseController
         $adminWhatsapp = trim($settings->getVal('store_contact', (string) (getenv('wablas.adminPhone') ?: '')));
 
         return view('catalog/index', [
-            'title'          => 'Ayong Store - Top Up Higgs Games Island',
+            'title'          => $settings->getVal('store_name', 'Ayong Store') . ' - Top Up & Game Store',
             'banners'        => (new BannerModel())->listActiveForDisplay(),
             'categories'     => $categories,
             'sections'        => $sections,

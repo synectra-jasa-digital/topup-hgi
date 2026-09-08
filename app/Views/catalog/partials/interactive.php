@@ -381,7 +381,7 @@
           `• *Rate*: Rp${rate.toLocaleString('id-ID')} / ${state.bongkarUnit || 'kartu'}`,
           `• *Total Estimasi Cair*: *Rp${estimated.toLocaleString('id-ID')}*`,
           '---------------------------------------------',
-          `• *User ID Higgs Pengirim*: ${sellerGameId || '-'}`,
+          `• *User ID Game Pengirim*: ${sellerGameId || '-'}`,
           `• *WA Seller*: ${sellerWa}`,
           '---------------------------------------------',
           '🏦 *REKENING PENCAIRAN SALDO*:',
@@ -389,7 +389,7 @@
           `• *No. Rekening/HP*: ${accountNo}`,
           `• *Atas Nama*: ${accountName}`,
           '=============================',
-          'Mohon info ID Higgs Admin & instruksi transfer kartu.',
+          'Mohon info ID Admin & instruksi transfer kartu/koin.',
           'Terima kasih!'
         ].join('\n');
 
@@ -441,7 +441,7 @@
       }
 
       if (!state.userId) {
-        alert("Silakan ketik ID Akun Higgs Games Island Anda terlebih dahulu!");
+        alert("Silakan ketik User ID Game Anda terlebih dahulu!");
         inputUserId?.focus();
         return;
       }
