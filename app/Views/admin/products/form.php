@@ -1,20 +1,22 @@
 <?= $this->extend('layouts/admin') ?>
-
 <?= $this->section('content') ?>
-<?php $errors = session()->getFlashdata('errors') ?? []; ?>
+<?php $product = $product ?? null; $errors = session()->getFlashdata('errors') ?? []; ?>
 
 <div>
-    <h1 class="text-xl font-semibold text-neutral-900"><?= $product ? 'Ubah' : 'Tambah' ?> Produk</h1>
+    <h1 class="section-title"><?= $product ? 'Ubah' : 'Tambah' ?> Produk</h1>
+    <p class="section-subtitle">Lengkapi detail produk dengan data yang akurat.</p>
 </div>
 
 <?php if (empty($categories)): ?>
-    <div class="panel-surface flex flex-col items-center px-6 py-16 text-center">
-        <span class="material-symbols-outlined text-[36px] text-neutral-300">category</span>
-        <h2 class="mt-3 text-base font-semibold text-neutral-900">Belum ada kategori produk</h2>
-        <p class="mt-1 text-sm text-neutral-500">Tambahkan kategori produk terlebih dahulu sebelum membuat produk baru.</p>
+    <div class="empty-state">
+        <span class="empty-state-icon">
+            <span class="material-symbols-outlined text-[20px]">category</span>
+        </span>
+        <h2 class="empty-state-title">Belum ada kategori produk</h2>
+        <p class="empty-state-copy">Tambahkan kategori produk terlebih dahulu sebelum membuat produk baru.</p>
     </div>
 <?php else: ?>
-    <form method="post" action="<?= $product ? base_url('admin/produk/' . $product['id'] . '/ubah') : base_url('admin/produk/tambah') ?>" class="max-w-2xl space-y-5 panel-surface p-6">
+    <form method="post" action="<?= $product ? base_url('admin/produk/' . $product['id'] . '/ubah') : base_url('admin/produk/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
         <?= csrf_field() ?>
         <div>
             <label for="category_id" class="form-label">Kategori</label>
@@ -51,7 +53,7 @@
             <input type="number" id="sort_order" name="sort_order" value="<?= esc(old('sort_order', $product['sort_order'] ?? 0)) ?>" class="form-input">
         </div>
         <label class="flex items-center gap-2.5 text-sm text-neutral-700">
-            <input type="checkbox" id="is_active" name="is_active" value="1" <?= (old('is_active', $product['is_active'] ?? 1)) ? 'checked' : '' ?> class="h-4 w-4 rounded accent-primary">
+            <input type="checkbox" id="is_active" name="is_active" value="1" <?= (old('is_active', $product['is_active'] ?? 1)) ? 'checked' : '' ?> class="h-4 w-4 rounded border-neutral-300 accent-primary">
             Aktif
         </label>
         <div class="flex gap-3 pt-2">

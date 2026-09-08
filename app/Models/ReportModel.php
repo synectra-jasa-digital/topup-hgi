@@ -42,6 +42,30 @@ class ReportModel extends Model
         ];
     }
 
+    // --- Tren Pendapatan Harian (untuk grafik) - satu query, bukan loop per hari ---
+    public function revenueRange(int $days = 30): array
+    {
+        $from = date('Y-m-d', strtotime('-' . ($days - 1) . ' days'));
+
+        $rows = $this->db->table('orders o')
+            ->select("DATE(o.created_at) as date, SUM(o.total_amount) as revenue, COUNT(o.id) as order_count")
+            ->where('o.status', 'selesai')
+            ->where('DATE(o.created_at) >=', $from)
+            ->groupBy('DATE(o.created_at)')
+            ->get()
+            ->getResultArray();
+
+        $byDate = array_column($rows, null, 'date');
+
+        $result = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $result[] = $byDate[$date] ?? ['date' => $date, 'revenue' => 0, 'order_count' => 0];
+        }
+
+        return $result;
+    }
+
     // --- Ringkasan Bulanan ---
     public function monthlySummary(int $year, int $month): array
     {

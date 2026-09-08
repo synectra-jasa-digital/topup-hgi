@@ -1,12 +1,14 @@
 <?= $this->extend('layouts/admin') ?>
+
 <?= $this->section('content') ?>
-<?php $errors = session()->getFlashdata('errors') ?? []; ?>
+<?php $voucher = $voucher ?? null; $errors = session()->getFlashdata('errors') ?? []; ?>
 
 <div>
-    <h1 class="text-xl font-semibold text-neutral-900"><?= $voucher ? 'Ubah' : 'Tambah' ?> Voucher</h1>
+    <h1 class="section-title"><?= $voucher ? 'Ubah' : 'Tambah' ?> Voucher</h1>
+    <p class="section-subtitle">Atur potongan harga dengan konfigurasi yang jelas.</p>
 </div>
 
-<form method="post" action="<?= $voucher ? base_url('admin/voucher/' . $voucher['id'] . '/ubah') : base_url('admin/voucher/tambah') ?>" class="max-w-2xl space-y-5 panel-surface p-6">
+<form method="post" action="<?= $voucher ? base_url('admin/voucher/' . $voucher['id'] . '/ubah') : base_url('admin/voucher/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
     <?= csrf_field() ?>
     <div>
         <label for="code" class="form-label">Kode Voucher</label>
@@ -53,7 +55,7 @@
         </div>
     </div>
     <label class="flex items-center gap-2.5 text-sm text-neutral-700">
-        <input type="checkbox" id="is_active" name="is_active" value="1" <?= (old('is_active', $voucher['is_active'] ?? 1)) ? 'checked' : '' ?> class="h-4 w-4 rounded accent-primary">
+        <input type="checkbox" id="is_active" name="is_active" value="1" <?= (old('is_active', $voucher['is_active'] ?? 1)) ? 'checked' : '' ?> class="h-4 w-4 rounded border-neutral-300 accent-primary">
         Aktif
     </label>
     <div class="flex gap-3 pt-2">

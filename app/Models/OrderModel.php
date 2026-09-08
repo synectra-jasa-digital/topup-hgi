@@ -48,6 +48,18 @@ class OrderModel extends Model
         return ['menunggu_pembayaran', 'dibayar', 'diproses', 'selesai', 'gagal', 'dibatalkan'];
     }
 
+    public function countByStatus(): array
+    {
+        $rows = $this->select('status, COUNT(id) as total')->groupBy('status')->findAll();
+
+        $counts = array_fill_keys(self::adminStatuses(), 0);
+        foreach ($rows as $row) {
+            $counts[$row['status']] = (int) $row['total'];
+        }
+
+        return $counts;
+    }
+
     public function complete(int $orderId, int $adminId): bool
     {
         $now = date('Y-m-d H:i:s');

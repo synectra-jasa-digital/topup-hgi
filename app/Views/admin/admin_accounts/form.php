@@ -1,12 +1,13 @@
 <?= $this->extend('layouts/admin') ?>
 <?= $this->section('content') ?>
-<?php $errors = session()->getFlashdata('errors') ?? []; ?>
+<?php $admin = $admin ?? null; $errors = session()->getFlashdata('errors') ?? []; ?>
 
 <div>
-    <h1 class="text-xl font-semibold text-neutral-900"><?= $admin ? 'Ubah' : 'Tambah' ?> Akun Admin</h1>
+    <h1 class="section-title"><?= $admin ? 'Ubah' : 'Tambah' ?> Akun Admin</h1>
+    <p class="section-subtitle">Atur kredensial dan peran akses dengan hati-hati.</p>
 </div>
 
-<form method="post" action="<?= $admin ? base_url('admin/akun-admin/' . $admin['id'] . '/ubah') : base_url('admin/akun-admin/tambah') ?>" class="max-w-2xl space-y-5 panel-surface p-6">
+<form method="post" action="<?= $admin ? base_url('admin/akun-admin/' . $admin['id'] . '/ubah') : base_url('admin/akun-admin/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
     <?= csrf_field() ?>
     <div>
         <label for="name" class="form-label">Nama</label>
@@ -32,7 +33,7 @@
         <?php if (isset($errors['role'])): ?><p class="form-error"><?= esc($errors['role']) ?></p><?php endif; ?>
     </div>
     <label class="flex items-center gap-2.5 text-sm text-neutral-700">
-        <input type="checkbox" id="is_active" name="is_active" value="1" <?= old('is_active', $admin['is_active'] ?? 1) ? 'checked' : '' ?> class="h-4 w-4 rounded accent-primary">
+        <input type="checkbox" id="is_active" name="is_active" value="1" <?= old('is_active', $admin['is_active'] ?? 1) ? 'checked' : '' ?> class="h-4 w-4 rounded border-neutral-300 accent-primary">
         Aktif
     </label>
     <div class="flex gap-3 pt-2">

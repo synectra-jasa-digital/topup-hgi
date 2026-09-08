@@ -1,12 +1,13 @@
 <?= $this->extend('layouts/admin') ?>
 <?= $this->section('content') ?>
-<?php $errors = session()->getFlashdata('errors') ?? []; ?>
+<?php $page = $page ?? null; $errors = session()->getFlashdata('errors') ?? []; ?>
 
 <div>
-    <h1 class="text-xl font-semibold text-neutral-900"><?= $page ? 'Ubah' : 'Tambah' ?> Halaman Statis</h1>
+    <h1 class="section-title"><?= $page ? 'Ubah' : 'Tambah' ?> Halaman Statis</h1>
+    <p class="section-subtitle">Tulis konten yang jelas dan ringkas untuk pelanggan.</p>
 </div>
 
-<form method="post" action="<?= $page ? base_url('admin/halaman-statis/' . $page['id'] . '/ubah') : base_url('admin/halaman-statis/tambah') ?>" class="max-w-4xl space-y-5 panel-surface p-6">
+<form method="post" action="<?= $page ? base_url('admin/halaman-statis/' . $page['id'] . '/ubah') : base_url('admin/halaman-statis/tambah') ?>" class="max-w-4xl space-y-5 panel-surface">
     <?= csrf_field() ?>
     <div>
         <label for="title" class="form-label">Judul</label>

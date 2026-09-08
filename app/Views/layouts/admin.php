@@ -7,14 +7,14 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
     <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
-<body class="min-h-screen bg-neutral-50 font-sans text-neutral-900 antialiased md:flex" x-data="{ sidebarOpen: false }">
+<body class="admin-shell min-h-screen bg-neutral-50 font-sans text-neutral-900 antialiased md:flex" x-data="{ sidebarOpen: false }">
     <?php
     $role = session('admin_role');
     $currentUrl = current_url();
@@ -35,7 +35,7 @@
     <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-40 bg-black/40 md:hidden" @click="sidebarOpen = false"></div>
 
     <aside
-        class="fixed inset-y-0 left-0 z-50 flex w-60 -translate-x-full flex-col border-r border-neutral-200 bg-white transition-transform duration-300 md:sticky md:top-0 md:h-screen md:shrink-0 md:translate-x-0"
+        class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col border-r border-neutral-200 bg-white transition-transform duration-300 md:sticky md:top-0 md:h-screen md:shrink-0 md:translate-x-0"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     >
         <div class="flex h-16 items-center justify-between border-b border-neutral-200 px-4">
@@ -43,44 +43,49 @@
                 <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white">
                     <span class="material-symbols-outlined text-[20px]">shield_person</span>
                 </span>
-                <span class="text-[15px] font-semibold tracking-tight text-neutral-900">Ayong Panel</span>
+                <div class="flex flex-col">
+                    <span class="font-display text-sm font-semibold tracking-tight text-neutral-900">Ayong Admin</span>
+                    <span class="text-xs text-neutral-500">Panel operasional</span>
+                </div>
             </a>
-            <button class="rounded-lg p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 md:hidden" @click="sidebarOpen = false" aria-label="Tutup sidebar">
+            <button class="rounded-lg p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 md:hidden" @click="sidebarOpen = false" aria-label="Tutup sidebar">
                 <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
         </div>
 
-        <div class="flex items-center gap-3 border-b border-neutral-200 px-4 py-4">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-sm font-semibold text-neutral-700">
-                <?= strtoupper(substr(esc(session('admin_name') ?: 'A'), 0, 1)) ?>
-            </div>
-            <div class="flex min-w-0 flex-col">
-                <span class="truncate text-sm font-semibold text-neutral-900"><?= esc(session('admin_name')) ?></span>
-                <span class="truncate text-xs capitalize text-neutral-500"><?= esc($role) ?></span>
+        <div class="border-b border-neutral-200 px-4 py-4">
+            <div class="sidebar-meta flex items-center gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-semibold text-neutral-700 ring-1 ring-inset ring-neutral-200">
+                    <?= strtoupper(substr(esc(session('admin_name') ?: 'A'), 0, 1)) ?>
+                </div>
+                <div class="min-w-0">
+                    <span class="block truncate text-sm font-medium text-neutral-900"><?= esc(session('admin_name')) ?></span>
+                    <span class="block truncate text-xs capitalize text-neutral-500"><?= esc($role) ?></span>
+                </div>
             </div>
         </div>
 
         <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4 text-sm hide-scrollbar">
             <?php foreach ($sidebarItems as $item): ?>
                 <?php $active = str_contains($currentUrl, $item['match']); ?>
-                <a href="<?= esc($item['href']) ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= $active ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
-                    <span class="material-symbols-outlined text-[20px]"><?= esc($item['icon']) ?></span>
+                <a href="<?= esc($item['href']) ?>" class="sidebar-link <?= $active ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
+                    <span class="material-symbols-outlined text-[20px] <?= $active ? 'text-primary' : 'text-neutral-400' ?>"><?= esc($item['icon']) ?></span>
                     <span><?= esc($item['label']) ?></span>
                 </a>
             <?php endforeach; ?>
 
             <?php if ($role === 'owner'): ?>
-                <div class="px-3 pt-5 text-xs text-neutral-400">Owner Menu</div>
-                <a href="<?= base_url('admin/laporan') ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= str_contains($currentUrl, 'admin/laporan') ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
-                    <span class="material-symbols-outlined text-[20px]">bar_chart</span>
+                <div class="sidebar-section">Owner Menu</div>
+                <a href="<?= base_url('admin/laporan') ?>" class="sidebar-link <?= str_contains($currentUrl, 'admin/laporan') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
+                    <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'admin/laporan') ? 'text-primary' : 'text-neutral-400' ?>">bar_chart</span>
                     <span>Laporan Penjualan</span>
                 </a>
-                <a href="<?= base_url('admin/pengaturan-toko') ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= str_contains($currentUrl, 'pengaturan-toko') ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
-                    <span class="material-symbols-outlined text-[20px]">settings</span>
+                <a href="<?= base_url('admin/pengaturan-toko') ?>" class="sidebar-link <?= str_contains($currentUrl, 'pengaturan-toko') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
+                    <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'pengaturan-toko') ? 'text-primary' : 'text-neutral-400' ?>">settings</span>
                     <span>Pengaturan Toko</span>
                 </a>
-                <a href="<?= base_url('admin/akun-admin') ?>" class="flex h-10 items-center gap-3 rounded-lg px-3 transition <?= str_contains($currentUrl, 'akun-admin') ? 'bg-neutral-100 font-medium text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900' ?>">
-                    <span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+                <a href="<?= base_url('admin/akun-admin') ?>" class="sidebar-link <?= str_contains($currentUrl, 'akun-admin') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
+                    <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'akun-admin') ? 'text-primary' : 'text-neutral-400' ?>">manage_accounts</span>
                     <span>Akun Admin</span>
                 </a>
             <?php endif; ?>
@@ -89,7 +94,7 @@
         <div class="border-t border-neutral-200 p-3">
             <a href="<?= base_url('/') ?>" target="_blank" class="btn btn-ghost w-full justify-start">
                 <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                <span>Lihat Storefront Publik</span>
+                <span>Lihat Storefront</span>
             </a>
         </div>
     </aside>
@@ -98,11 +103,11 @@
         <?= $this->include('layouts/partials/topbar') ?>
 
         <main class="flex-1 px-4 py-6 md:px-6 md:py-8">
-            <div class="mx-auto w-full max-w-7xl space-y-6">
+            <div class="mx-auto w-full max-w-7xl space-y-5">
                 <?php if ($flashSuccess): ?>
                 <div x-data="{ show: true }" x-show="show" x-cloak class="alert-success" role="alert">
                     <span class="material-symbols-outlined mt-0.5 text-[18px]">check_circle</span>
-                    <p class="flex-1 text-sm leading-5"><?= esc($flashSuccess) ?></p>
+                    <p class="flex-1 text-sm leading-6"><?= esc($flashSuccess) ?></p>
                     <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
                         <span class="material-symbols-outlined text-[18px]">close</span>
                     </button>
@@ -112,7 +117,7 @@
                 <?php if ($flashError): ?>
                 <div x-data="{ show: true }" x-show="show" x-cloak class="alert-error" role="alert">
                     <span class="material-symbols-outlined mt-0.5 text-[18px]">error</span>
-                    <p class="flex-1 text-sm leading-5"><?= esc($flashError) ?></p>
+                    <p class="flex-1 text-sm leading-6"><?= esc($flashError) ?></p>
                     <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
                         <span class="material-symbols-outlined text-[18px]">close</span>
                     </button>
@@ -122,7 +127,7 @@
                 <?php if ($flashWarning): ?>
                 <div x-data="{ show: true }" x-show="show" x-cloak class="alert-warning" role="alert">
                     <span class="material-symbols-outlined mt-0.5 text-[18px]">warning</span>
-                    <p class="flex-1 text-sm leading-5"><?= esc($flashWarning) ?></p>
+                    <p class="flex-1 text-sm leading-6"><?= esc($flashWarning) ?></p>
                     <button type="button" @click="show = false" class="rounded-md p-1 opacity-60 transition hover:opacity-100" aria-label="Tutup notifikasi">
                         <span class="material-symbols-outlined text-[18px]">close</span>
                     </button>
@@ -136,9 +141,9 @@
 
     <div x-data="confirmDialog()" @keydown.escape.window="open = false">
         <div x-show="open" x-cloak class="fixed inset-0 z-[60] flex items-center justify-center p-4" x-transition.opacity>
-            <div class="absolute inset-0 bg-black/40" @click="open = false"></div>
-            <div class="relative w-full max-w-sm rounded-xl border border-neutral-200 bg-white p-6 shadow-xl" role="alertdialog" aria-modal="true">
-                <h3 class="text-base font-semibold text-neutral-900" x-text="title"></h3>
+            <div class="absolute inset-0 bg-[rgba(31,41,55,0.48)]" @click="open = false"></div>
+            <div class="relative w-full max-w-sm rounded-xl border border-neutral-200 bg-white p-6 shadow-[0_12px_32px_rgba(30,58,138,0.12)]" role="alertdialog" aria-modal="true">
+                <h3 class="font-display text-base font-semibold tracking-tight text-neutral-900" x-text="title"></h3>
                 <p class="mt-2 text-sm leading-6 text-neutral-500" x-text="message"></p>
                 <div class="mt-6 flex items-center justify-end gap-3">
                     <button type="button" class="btn btn-secondary" x-ref="cancelBtn" x-text="cancelText" @click="open = false"></button>

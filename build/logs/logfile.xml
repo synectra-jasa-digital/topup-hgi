@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\Alternatif_D\laragon\www\topup-hgi\phpunit.dist.xml" tests="25" assertions="38" errors="7" failures="3" skipped="0" time="0.350529">
-    <testsuite name="App" tests="25" assertions="38" errors="7" failures="3" skipped="0" time="0.350529">
-      <testsuite name="Tests\Feature\BongkarRequestTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" tests="2" assertions="12" errors="0" failures="1" skipped="0" time="0.086617">
-        <testcase name="testHomePageRendersBongkarCatalogFromDatabase" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="26" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="4" time="0.059575"/>
-        <testcase name="testBongkarSubmitStoresRequestAndReturnsWhatsAppUrl" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="47" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="8" time="0.027042">
+  <testsuite name="D:\Alternatif_D\laragon\www\topup-hgi\phpunit.dist.xml" tests="25" assertions="38" errors="7" failures="3" skipped="0" time="0.325545">
+    <testsuite name="App" tests="25" assertions="38" errors="7" failures="3" skipped="0" time="0.325545">
+      <testsuite name="Tests\Feature\BongkarRequestTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" tests="2" assertions="12" errors="0" failures="1" skipped="0" time="0.088522">
+        <testcase name="testHomePageRendersBongkarCatalogFromDatabase" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="26" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="4" time="0.063088"/>
+        <testcase name="testBongkarSubmitStoresRequestAndReturnsWhatsAppUrl" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php" line="47" class="Tests\Feature\BongkarRequestTest" classname="Tests.Feature.BongkarRequestTest" assertions="8" time="0.025434">
           <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\BongkarRequestTest::testBongkarSubmitStoresRequestAndReturnsWhatsAppUrl&#13;
 Failed asserting that two strings are identical.
 --- Expected
@@ -16,8 +16,8 @@ Failed asserting that two strings are identical.
 D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\BongkarRequestTest.php:82</failure>
         </testcase>
       </testsuite>
-      <testsuite name="Tests\Feature\CatalogPageTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" tests="2" assertions="4" errors="0" failures="2" skipped="0" time="0.057306">
-        <testcase name="testCatalogRendersFullWidthDesignAndProductNavigation" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="27" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.028345">
+      <testsuite name="Tests\Feature\CatalogPageTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" tests="2" assertions="4" errors="0" failures="2" skipped="0" time="0.049845">
+        <testcase name="testCatalogRendersFullWidthDesignAndProductNavigation" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="27" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.026008">
           <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\CatalogPageTest::testCatalogRendersFullWidthDesignAndProductNavigation&#13;
 Failed asserting that '&lt;!DOCTYPE html&gt;\n
 &lt;html lang="id"&gt;\n
@@ -153,16 +153,9 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
     &lt;header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm"&gt;\n
         &lt;div class="max-w-[1360px] mx-auto px-4 sm:px-6 h-18 py-2.5 flex items-center justify-between gap-4"&gt;\n
             &lt;!-- Brand Logo --&gt;\n
-            &lt;a class="flex items-center gap-2.5 group transition-transform hover:scale-[1.01]" href="http://localhost/topup-hgi/"&gt;\n
-                &lt;div class="h-10 sm:h-11 px-2.5 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center"&gt;\n
+            &lt;a class="flex items-center group transition-transform hover:scale-[1.01]" href="http://localhost/topup-hgi/"&gt;\n
+                &lt;div class="h-10 sm:h-11 px-3 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center"&gt;\n
                     &lt;img alt="Ayong Store Logo" class="h-7 sm:h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UHDQp92Ue8fpcyg6Zi1x-4rli35Nx_qMLNjs4PD3xlchTo0ZkpU60pMkM_sa_kPn7V3KoSzdv0072y9UIj40Gzop8Lp-auwR9fPBICUpV6RID73WKKivk8bUDCQV_YvsavRb0vvNx8RJA-NvnNCQSOU8KHK0n7RUPx2z3-XovssOIjHSgoNg8SO3hUYRromj_1f2Xs4hyPFJg7tdz2a86bUQscanoY0AtA_5E_RZVa6dxK9j-TUOORGw"&gt;\n
-                &lt;/div&gt;\n
-                &lt;div class="flex flex-col"&gt;\n
-                    &lt;div class="flex items-center gap-1.5"&gt;\n
-                        &lt;span class="font-display font-black text-base sm:text-lg text-neutral-900 tracking-tight leading-none"&gt;Ayong Store&lt;/span&gt;\n
-                        &lt;span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-300 text-[9px] font-black uppercase tracking-wider"&gt;HGD Resmi&lt;/span&gt;\n
-                    &lt;/div&gt;\n
-                    &lt;span class="text-[10px] text-slate-500 font-medium leading-tight"&gt;Official Higgs Top Up 24 Jam&lt;/span&gt;\n
                 &lt;/div&gt;\n
             &lt;/a&gt;\n
             &lt;!-- Nav Links Cockpit Pill --&gt;\n
@@ -173,11 +166,7 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
             &lt;/nav&gt;\n
             &lt;!-- Header Action Support --&gt;\n
             &lt;div class="flex items-center gap-2.5"&gt;\n
-                &lt;div class="hidden xl:flex flex-col text-right"&gt;\n
-                    &lt;span class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center justify-end gap-1"&gt;&lt;span class="w-1.5 h-1.5 rounded-full bg-emerald-500"&gt;&lt;/span&gt; Layanan Aktif 24 Jam&lt;/span&gt;\n
-                    &lt;span class="text-xs font-mono text-slate-600"&gt;Higgs Games Island Resmi&lt;/span&gt;\n
-                &lt;/div&gt;\n
-                &lt;a class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all shadow-sm border border-emerald-500/30" href="https://wa.me/" rel="noopener noreferrer" target="_blank"&gt;\n
+                &lt;a class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all shadow-sm border border-emerald-500/30" href="https://wa.me/" rel="noopener noreferrer" target="_blank"&gt;\n
                     &lt;span class="material-symbols-outlined text-[18px]"&gt;chat&lt;/span&gt;\n
                     &lt;span class="hidden sm:inline"&gt;CS WhatsApp 24 Jam&lt;/span&gt;\n
                     &lt;span class="sm:hidden"&gt;CS WA&lt;/span&gt;\n
@@ -892,7 +881,7 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
 \r\n
 &lt;!-- Form tersembunyi untuk backend submit (bila ada productId) --&gt;\r\n
 &lt;form id="backend-checkout-form" method="POST" action="" class="hidden"&gt;\r\n
-    &lt;input type="hidden" name="csrf_test_name" value="c0d38aca9f77319fb0c9224c1ace7d48"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
+    &lt;input type="hidden" name="csrf_test_name" value="d230c58f8bd6c6a504da21ad7b518142"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
     &lt;input type="hidden" name="whatsapp_number" id="hidden-whatsapp"&gt;\r\n
     &lt;input type="hidden" name="voucher_code" id="hidden-voucher"&gt;\r\n
 &lt;/form&gt;\r\n
@@ -1422,11 +1411,11 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
     &lt;/footer&gt;\n
 &lt;/body&gt;\n
 &lt;/html&gt;\n
-' [ASCII](length: 89351) contains "Top Up Koin &amp; Produk Higgs Games Island" [ASCII](length: 39).
+' [ASCII](length: 88329) contains "Top Up Koin &amp; Produk Higgs Games Island" [ASCII](length: 39).
 &#13;
 D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php:52</failure>
         </testcase>
-        <testcase name="testCatalogEmptyStateRemainsAvailable" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="59" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.028961">
+        <testcase name="testCatalogEmptyStateRemainsAvailable" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php" line="59" class="Tests\Feature\CatalogPageTest" classname="Tests.Feature.CatalogPageTest" assertions="2" time="0.023837">
           <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\CatalogPageTest::testCatalogEmptyStateRemainsAvailable&#13;
 Failed asserting that '&lt;!DOCTYPE html&gt;\n
 &lt;html lang="id"&gt;\n
@@ -1562,16 +1551,9 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
     &lt;header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm"&gt;\n
         &lt;div class="max-w-[1360px] mx-auto px-4 sm:px-6 h-18 py-2.5 flex items-center justify-between gap-4"&gt;\n
             &lt;!-- Brand Logo --&gt;\n
-            &lt;a class="flex items-center gap-2.5 group transition-transform hover:scale-[1.01]" href="http://localhost/topup-hgi/"&gt;\n
-                &lt;div class="h-10 sm:h-11 px-2.5 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center"&gt;\n
+            &lt;a class="flex items-center group transition-transform hover:scale-[1.01]" href="http://localhost/topup-hgi/"&gt;\n
+                &lt;div class="h-10 sm:h-11 px-3 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center"&gt;\n
                     &lt;img alt="Ayong Store Logo" class="h-7 sm:h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UHDQp92Ue8fpcyg6Zi1x-4rli35Nx_qMLNjs4PD3xlchTo0ZkpU60pMkM_sa_kPn7V3KoSzdv0072y9UIj40Gzop8Lp-auwR9fPBICUpV6RID73WKKivk8bUDCQV_YvsavRb0vvNx8RJA-NvnNCQSOU8KHK0n7RUPx2z3-XovssOIjHSgoNg8SO3hUYRromj_1f2Xs4hyPFJg7tdz2a86bUQscanoY0AtA_5E_RZVa6dxK9j-TUOORGw"&gt;\n
-                &lt;/div&gt;\n
-                &lt;div class="flex flex-col"&gt;\n
-                    &lt;div class="flex items-center gap-1.5"&gt;\n
-                        &lt;span class="font-display font-black text-base sm:text-lg text-neutral-900 tracking-tight leading-none"&gt;Ayong Store&lt;/span&gt;\n
-                        &lt;span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-300 text-[9px] font-black uppercase tracking-wider"&gt;HGD Resmi&lt;/span&gt;\n
-                    &lt;/div&gt;\n
-                    &lt;span class="text-[10px] text-slate-500 font-medium leading-tight"&gt;Official Higgs Top Up 24 Jam&lt;/span&gt;\n
                 &lt;/div&gt;\n
             &lt;/a&gt;\n
             &lt;!-- Nav Links Cockpit Pill --&gt;\n
@@ -1582,11 +1564,7 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
             &lt;/nav&gt;\n
             &lt;!-- Header Action Support --&gt;\n
             &lt;div class="flex items-center gap-2.5"&gt;\n
-                &lt;div class="hidden xl:flex flex-col text-right"&gt;\n
-                    &lt;span class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center justify-end gap-1"&gt;&lt;span class="w-1.5 h-1.5 rounded-full bg-emerald-500"&gt;&lt;/span&gt; Layanan Aktif 24 Jam&lt;/span&gt;\n
-                    &lt;span class="text-xs font-mono text-slate-600"&gt;Higgs Games Island Resmi&lt;/span&gt;\n
-                &lt;/div&gt;\n
-                &lt;a class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all shadow-sm border border-emerald-500/30" href="https://wa.me/" rel="noopener noreferrer" target="_blank"&gt;\n
+                &lt;a class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all shadow-sm border border-emerald-500/30" href="https://wa.me/" rel="noopener noreferrer" target="_blank"&gt;\n
                     &lt;span class="material-symbols-outlined text-[18px]"&gt;chat&lt;/span&gt;\n
                     &lt;span class="hidden sm:inline"&gt;CS WhatsApp 24 Jam&lt;/span&gt;\n
                     &lt;span class="sm:hidden"&gt;CS WA&lt;/span&gt;\n
@@ -2332,7 +2310,7 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
 \r\n
 &lt;!-- Form tersembunyi untuk backend submit (bila ada productId) --&gt;\r\n
 &lt;form id="backend-checkout-form" method="POST" action="" class="hidden"&gt;\r\n
-    &lt;input type="hidden" name="csrf_test_name" value="c0d38aca9f77319fb0c9224c1ace7d48"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
+    &lt;input type="hidden" name="csrf_test_name" value="d230c58f8bd6c6a504da21ad7b518142"&gt;    &lt;input type="hidden" name="game_id" id="hidden-game-id"&gt;\r\n
     &lt;input type="hidden" name="whatsapp_number" id="hidden-whatsapp"&gt;\r\n
     &lt;input type="hidden" name="voucher_code" id="hidden-voucher"&gt;\r\n
 &lt;/form&gt;\r\n
@@ -2862,40 +2840,40 @@ Failed asserting that '&lt;!DOCTYPE html&gt;\n
     &lt;/footer&gt;\n
 &lt;/body&gt;\n
 &lt;/html&gt;\n
-' [ASCII](length: 95617) contains "Top Up Koin &amp; Produk Higgs Games Island" [ASCII](length: 39).
+' [ASCII](length: 94595) contains "Top Up Koin &amp; Produk Higgs Games Island" [ASCII](length: 39).
 &#13;
 D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CatalogPageTest.php:64</failure>
         </testcase>
       </testsuite>
-      <testsuite name="Tests\Feature\CheckStatusTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.037806">
-        <testcase name="testCheckStatusFound" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" line="26" class="Tests\Feature\CheckStatusTest" classname="Tests.Feature.CheckStatusTest" assertions="2" time="0.021770"/>
-        <testcase name="testCheckStatusNotFound" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" line="59" class="Tests\Feature\CheckStatusTest" classname="Tests.Feature.CheckStatusTest" assertions="2" time="0.016036"/>
+      <testsuite name="Tests\Feature\CheckStatusTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.036484">
+        <testcase name="testCheckStatusFound" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" line="26" class="Tests\Feature\CheckStatusTest" classname="Tests.Feature.CheckStatusTest" assertions="2" time="0.018996"/>
+        <testcase name="testCheckStatusNotFound" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\CheckStatusTest.php" line="59" class="Tests\Feature\CheckStatusTest" classname="Tests.Feature.CheckStatusTest" assertions="2" time="0.017489"/>
       </testsuite>
-      <testsuite name="Tests\Feature\MidtransWebhookTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" tests="2" assertions="5" errors="0" failures="0" skipped="0" time="0.106425">
-        <testcase name="testInvalidSignatureRejected" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" line="29" class="Tests\Feature\MidtransWebhookTest" classname="Tests.Feature.MidtransWebhookTest" assertions="1" time="0.017041"/>
-        <testcase name="testValidSignatureUpdatesOrder" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" line="45" class="Tests\Feature\MidtransWebhookTest" classname="Tests.Feature.MidtransWebhookTest" assertions="4" time="0.089384"/>
+      <testsuite name="Tests\Feature\MidtransWebhookTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" tests="2" assertions="5" errors="0" failures="0" skipped="0" time="0.098590">
+        <testcase name="testInvalidSignatureRejected" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" line="29" class="Tests\Feature\MidtransWebhookTest" classname="Tests.Feature.MidtransWebhookTest" assertions="1" time="0.017959"/>
+        <testcase name="testValidSignatureUpdatesOrder" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\MidtransWebhookTest.php" line="45" class="Tests\Feature\MidtransWebhookTest" classname="Tests.Feature.MidtransWebhookTest" assertions="4" time="0.080630"/>
       </testsuite>
-      <testsuite name="Tests\Feature\WablasTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.030500">
-        <testcase name="testSendToAdminReturnsTrue" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" line="33" class="Tests\Feature\WablasTest" classname="Tests.Feature.WablasTest" assertions="1" time="0.028596"/>
-        <testcase name="testSendToCustomerReturnsTrue" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" line="52" class="Tests\Feature\WablasTest" classname="Tests.Feature.WablasTest" assertions="1" time="0.001903"/>
+      <testsuite name="Tests\Feature\WablasTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.021851">
+        <testcase name="testSendToAdminReturnsTrue" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" line="33" class="Tests\Feature\WablasTest" classname="Tests.Feature.WablasTest" assertions="1" time="0.020975"/>
+        <testcase name="testSendToCustomerReturnsTrue" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\Feature\WablasTest.php" line="52" class="Tests\Feature\WablasTest" classname="Tests.Feature.WablasTest" assertions="1" time="0.000877"/>
       </testsuite>
-      <testsuite name="ExampleDatabaseTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.017508">
-        <testcase name="testModelFindAll" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" line="17" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="1" time="0.011166"/>
-        <testcase name="testSoftDeleteLeavesRow" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" line="28" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="2" time="0.006342"/>
+      <testsuite name="ExampleDatabaseTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.013919">
+        <testcase name="testModelFindAll" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" line="17" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="1" time="0.008748"/>
+        <testcase name="testSoftDeleteLeavesRow" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\database\ExampleDatabaseTest.php" line="28" class="ExampleDatabaseTest" classname="ExampleDatabaseTest" assertions="2" time="0.005171"/>
       </testsuite>
-      <testsuite name="ExampleSessionTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\session\ExampleSessionTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.000672">
-        <testcase name="testSessionSimple" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\session\ExampleSessionTest.php" line="10" class="ExampleSessionTest" classname="ExampleSessionTest" assertions="1" time="0.000672"/>
+      <testsuite name="ExampleSessionTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\session\ExampleSessionTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.000611">
+        <testcase name="testSessionSimple" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\session\ExampleSessionTest.php" line="10" class="ExampleSessionTest" classname="ExampleSessionTest" assertions="1" time="0.000611"/>
       </testsuite>
-      <testsuite name="HealthTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.001568">
-        <testcase name="testIsDefinedAppPath" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="12" class="HealthTest" classname="HealthTest" assertions="1" time="0.000565"/>
-        <testcase name="testBaseUrlHasBeenSet" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="17" class="HealthTest" classname="HealthTest" assertions="2" time="0.001002"/>
+      <testsuite name="HealthTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.001667">
+        <testcase name="testIsDefinedAppPath" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="12" class="HealthTest" classname="HealthTest" assertions="1" time="0.000591"/>
+        <testcase name="testBaseUrlHasBeenSet" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\HealthTest.php" line="17" class="HealthTest" classname="HealthTest" assertions="2" time="0.001076"/>
       </testsuite>
-      <testsuite name="Tests\Unit\OrderModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.002641">
-        <testcase name="testStatusTransitionOnlyUpdatesDiprosesAndSetsAuditFields" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="6" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="2" time="0.000654"/>
-        <testcase name="testInvalidStatusCannotComplete" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="10" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="1" time="0.001987"/>
+      <testsuite name="Tests\Unit\OrderModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" tests="2" assertions="3" errors="0" failures="0" skipped="0" time="0.002986">
+        <testcase name="testStatusTransitionOnlyUpdatesDiprosesAndSetsAuditFields" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="6" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="2" time="0.000770"/>
+        <testcase name="testInvalidStatusCannotComplete" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\OrderModelTest.php" line="10" class="Tests\Unit\OrderModelTest" classname="Tests.Unit.OrderModelTest" assertions="1" time="0.002216"/>
       </testsuite>
-      <testsuite name="Tests\Unit\StoreSettingModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" tests="4" assertions="1" errors="3" failures="0" skipped="0" time="0.009487">
-        <testcase name="testSetAndGetVal" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="27" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="1" time="0.009487"/>
+      <testsuite name="Tests\Unit\StoreSettingModelTest" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" tests="4" assertions="1" errors="3" failures="0" skipped="0" time="0.011070">
+        <testcase name="testSetAndGetVal" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="27" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="1" time="0.011070"/>
         <testcase name="testUpdateExistingKey" file="D:\Alternatif_D\laragon\www\topup-hgi\tests\unit\StoreSettingModelTest.php" line="33" class="Tests\Unit\StoreSettingModelTest" classname="Tests.Unit.StoreSettingModelTest" assertions="0" time="0.000000">
           <error type="CodeIgniter\Database\Exceptions\DatabaseException">Tests\Unit\StoreSettingModelTest::testUpdateExistingKey&#13;
 CodeIgniter\Database\Exceptions\DatabaseException: Failed to drop column "snap_token" on "orders" table.

@@ -1,20 +1,23 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<?php $errors = session()->getFlashdata('errors') ?? []; ?>
+<?php $banner = $banner ?? null; $errors = session()->getFlashdata('errors') ?? []; ?>
 
 <div>
-    <h1 class="text-xl font-semibold text-neutral-900"><?= $banner ? 'Ubah' : 'Tambah' ?> Banner</h1>
+    <h1 class="section-title"><?= $banner ? 'Ubah' : 'Tambah' ?> Banner</h1>
+    <p class="section-subtitle">Atur visual promosi yang muncul di beranda.</p>
 </div>
 
 <?php if (empty($categories)): ?>
-    <div class="panel-surface flex flex-col items-center px-6 py-16 text-center">
-        <span class="material-symbols-outlined text-[36px] text-neutral-300">bookmarks</span>
-        <h2 class="mt-3 text-base font-semibold text-neutral-900">Belum ada kategori banner</h2>
-        <p class="mt-1 text-sm text-neutral-500">Buat kategori banner terlebih dahulu sebelum membuat banner baru.</p>
+    <div class="empty-state">
+        <span class="empty-state-icon">
+            <span class="material-symbols-outlined text-[20px]">bookmarks</span>
+        </span>
+        <h2 class="empty-state-title">Belum ada kategori banner</h2>
+        <p class="empty-state-copy">Buat kategori banner terlebih dahulu sebelum membuat banner baru.</p>
     </div>
 <?php else: ?>
-    <form method="post" enctype="multipart/form-data" action="<?= $banner ? base_url('admin/banner/' . $banner['id'] . '/ubah') : base_url('admin/banner/tambah') ?>" class="max-w-2xl space-y-5 panel-surface p-6">
+    <form method="post" enctype="multipart/form-data" action="<?= $banner ? base_url('admin/banner/' . $banner['id'] . '/ubah') : base_url('admin/banner/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
         <?= csrf_field() ?>
         <div>
             <label for="banner_category_id" class="form-label">Kategori Banner</label>
@@ -26,7 +29,7 @@
         </div>
         <div>
             <label for="image" class="form-label">Gambar Banner<?= $banner ? ' (kosongkan jika tidak diubah)' : '' ?></label>
-            <?php if ($banner): ?><img src="<?= base_url($banner['image_path']) ?>" alt="Banner" class="mb-3 h-20 rounded-lg object-cover"><?php endif; ?>
+            <?php if ($banner): ?><img src="<?= base_url($banner['image_path']) ?>" alt="Banner" class="mb-3 h-20 rounded-lg object-cover ring-1 ring-neutral-200"><?php endif; ?>
             <input type="file" id="image" name="image" accept="image/*" class="<?= isset($errors['image']) ? 'form-input-error' : 'form-input' ?>">
             <?php if (isset($errors['image'])): ?><p class="form-error"><?= esc($errors['image']) ?></p><?php endif; ?>
         </div>
@@ -50,7 +53,7 @@
             <input type="number" id="sort_order" name="sort_order" value="<?= esc(old('sort_order', $banner['sort_order'] ?? 0)) ?>" class="form-input">
         </div>
         <label class="flex items-center gap-2.5 text-sm text-neutral-700">
-            <input type="checkbox" id="is_active" name="is_active" value="1" <?= (old('is_active', $banner['is_active'] ?? 1)) ? 'checked' : '' ?> class="h-4 w-4 rounded accent-primary">
+            <input type="checkbox" id="is_active" name="is_active" value="1" <?= (old('is_active', $banner['is_active'] ?? 1)) ? 'checked' : '' ?> class="h-4 w-4 rounded border-neutral-300 accent-primary">
             Aktif
         </label>
         <div class="flex gap-3 pt-2">

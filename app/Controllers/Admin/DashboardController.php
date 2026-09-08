@@ -19,20 +19,17 @@ class DashboardController extends BaseController
             'role'         => $role,
             'pendingCount' => $orders->whereIn('status', ['dibayar', 'diproses'])->countAllResults(),
             'recentLogs'   => $logs->listWithAdmin(null, 5),
+            'statusCounts' => $orders->countByStatus(),
         ];
 
         if ($role === 'owner') {
             $report = new ReportModel();
+            $range  = $report->revenueRange(30);
 
-            $last7 = [];
-            for ($i = 0; $i < 7; $i++) {
-                $last7[] = $report->dailySummary($i);
-            }
-
-            $data['today']        = $last7[0];
-            $data['yesterday']    = $last7[1];
-            $data['chartLabels']  = array_reverse(array_map(fn ($d) => $d['date'], $last7));
-            $data['chartData']    = array_reverse(array_map(fn ($d) => (float) $d['revenue'], $last7));
+            $data['today']         = $report->dailySummary();
+            $data['yesterday']     = $report->dailySummary(1);
+            $data['chartLabels30'] = array_map(fn ($d) => $d['date'], $range);
+            $data['chartData30']   = array_map(fn ($d) => (float) $d['revenue'], $range);
             $data['topCategories'] = $report->topCategories(30);
         } else {
             $data['today'] = (new ReportModel())->dailySummary();
