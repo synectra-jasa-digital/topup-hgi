@@ -1,5 +1,0 @@
-uid=1_0 RootWebArea "Masuk Panel Admin — Ayong Store" url="http://localhost/topup-hgi/index.php/admin/login"
-  uid=1_1 dialog "Gagal" description="Silakan login terlebih dahulu." live="assertive" modal relevant="additions text"
-    uid=1_2 heading "Gagal" level="2"
-    uid=1_3 StaticText "Silakan login terlebih dahulu."
-    uid=1_4 button "Tutup" focusable focused

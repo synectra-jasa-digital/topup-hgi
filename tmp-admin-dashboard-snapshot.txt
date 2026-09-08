@@ -1,5 +1,0 @@
-uid=4_0 RootWebArea "Panel Admin - Ayong Store" url="http://localhost/topup-hgi/index.php/admin/dashboard"
-  uid=4_1 dialog "Berhasil" description="Berhasil masuk." live="assertive" modal relevant="additions text"
-    uid=4_2 heading "Berhasil" level="2"
-    uid=4_3 StaticText "Berhasil masuk."
-    uid=4_4 button "Tutup" focusable focused
