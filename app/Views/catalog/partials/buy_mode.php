@@ -78,8 +78,7 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <?php foreach ($section['products'] as $pIndex => $p): ?>
                     <?php 
-                        $isDefaultActive = ! isset($defaultProductSelected) && $pIndex === 0;
-                        $defaultProductSelected = $defaultProductSelected ?? $isDefaultActive;
+                        $isDefaultActive = false;
                         $sellPrice = (float) $p['sell_price'];
                         $priceFormatted = 'Rp' . number_format($sellPrice, 0, ',', '.');
                         $catIconUrl = ! empty($section['category']['icon']) ? base_url($section['category']['icon']) : '';
@@ -127,12 +126,12 @@
     <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-600 font-display">Rp25.500</span><span class="text-[10px] text-slate-500 font-mono">Rp63.7k/B</span></div>
     </button>
     
-    <button class="product-card active group relative p-3.5 rounded-xl border-2 border-blue-600 bg-blue-50/70 text-left shadow-sm ring-2 ring-blue-500/20 transition-all focus:outline-none" data-cat="Koin Emas" data-price="63000" data-title="1B (1 Miliar) Koin Emas" data-unit="Rp63.000 / 1B" type="button">
+    <button class="product-card group relative p-3.5 rounded-xl border border-slate-200 text-left bg-white hover:border-blue-400 hover:bg-blue-50/40 transition-all focus:outline-none shadow-xs" data-cat="Koin Emas" data-price="63000" data-title="1B (1 Miliar) Koin Emas" data-unit="Rp63.000 / 1B" type="button">
     <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Terpopuler</span>
     <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-neutral-950 shadow-sm border border-amber-300 shrink-0"><span class="material-symbols-outlined text-[18px]">sports_esports</span></div><span class="text-[10px] font-bold text-blue-700 bg-white border border-blue-200 px-1.5 py-0.5 rounded">Paket Rekomendasi</span></div>
-    <div class="mt-2 font-display font-bold text-blue-700 text-base leading-snug">1B (1 Miliar)</div>
+    <div class="mt-2 font-display font-bold text-neutral-900 text-base leading-snug">1B (1 Miliar)</div>
     <div class="text-[11px] text-slate-600 font-medium">Koin Emas Resmi</div>
-    <div class="mt-2.5 pt-2 border-t border-blue-200/60 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-800 font-display">Rp63.000</span><span class="text-[10px] text-blue-700 font-mono font-bold">Rp63k/B</span></div>
+    <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-600 font-display">Rp63.000</span><span class="text-[10px] text-slate-500 font-mono">Rp63k/B</span></div>
     </button>
     
     <button class="product-card group relative p-3.5 rounded-xl border border-slate-200 text-left bg-white hover:border-blue-400 hover:bg-blue-50/40 transition-all focus:outline-none shadow-xs" data-cat="Koin Emas" data-price="125000" data-title="2B (2 Miliar) Koin Emas" data-unit="Rp62.500 / 1B" type="button">
@@ -195,7 +194,7 @@
 <div class="flex gap-2">
 <div class="relative flex-1">
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-slate-400">sports_esports</span>
-<input class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400" id="input-user-id" placeholder="Contoh: 123456789" type="text" value="123456789">
+<input class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400" id="input-user-id" placeholder="Contoh: 123456789" type="text" value="">
 </div>
 </div>
 <div class="flex items-center justify-between pt-1">
@@ -209,7 +208,7 @@
 </label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-emerald-600">chat</span>
-<input class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400" id="input-whatsapp" placeholder="08xxxxxxxxxx" type="tel" value="081234567890">
+<input class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400" id="input-whatsapp" placeholder="08xxxxxxxxxx" type="tel" value="">
 </div>
 <p class="text-[11px] text-slate-500 pt-1">Notifikasi bukti pengiriman chip &amp; invoice otomatis dikirimkan ke nomor WhatsApp ini.</p>
 </div>
@@ -239,8 +238,8 @@
 <span class="text-emerald-700 font-mono font-bold">Biaya Rp0</span>
 </div>
 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-<!-- QRIS (Default Selected) -->
-<button class="pay-method-card active p-3 rounded-xl border-2 border-blue-600 bg-blue-50/70 text-left transition-all relative ring-2 ring-blue-500/20 shadow-xs" data-badge="Bebas Biaya" data-fee="0" data-method="QRIS Resmi" type="button">
+<!-- QRIS -->
+<button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all relative shadow-xs" data-badge="Bebas Biaya" data-fee="0" data-method="QRIS Resmi" type="button">
 <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-600 text-white">INSTAN</span>
 <div class="text-xs font-black text-blue-700">QRIS Resmi</div>
 <div class="text-[10px] text-slate-600 truncate">Semua Bank / e-Wallet</div>
@@ -339,26 +338,26 @@
                         </div>
 <div class="min-w-0 flex-1">
 <div class="text-[10px] font-black text-amber-600 uppercase tracking-wide">Higgs Games Island ID</div>
-<div class="font-display font-extrabold text-neutral-900 text-sm truncate" id="receipt-item-name">1B (1 Miliar) Koin Emas</div>
-<div class="text-[11px] text-slate-500" id="receipt-unit-rate">Rp63.000 / 1B</div>
+<div class="font-display font-extrabold text-neutral-900 text-sm truncate" id="receipt-item-name">Belum memilih produk</div>
+<div class="text-[11px] text-slate-500" id="receipt-unit-rate">Silakan pilih nominal produk di samping</div>
 </div>
 <div class="text-right shrink-0">
-<span class="text-xs font-black text-blue-600 font-display" id="receipt-item-price">Rp63.000</span>
+<span class="text-xs font-black text-blue-600 font-display" id="receipt-item-price">Rp0</span>
 </div>
 </div>
 <!-- Destination Account & Order Specs -->
 <div class="space-y-2 py-3 border-y border-dashed border-slate-200 text-xs">
 <div class="flex justify-between items-center">
 <span class="text-slate-500">ID Higgs Tujuan:</span>
-<span class="font-mono font-bold text-neutral-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200" id="receipt-user-id">123456789</span>
+<span class="font-mono font-bold text-neutral-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200" id="receipt-user-id">-</span>
 </div>
 <div class="flex justify-between items-center">
 <span class="text-slate-500">WhatsApp Notif:</span>
-<span class="font-mono font-semibold text-neutral-800" id="receipt-wa">081234567890</span>
+<span class="font-mono font-semibold text-neutral-800" id="receipt-wa">-</span>
 </div>
 <div class="flex justify-between items-center">
 <span class="text-slate-500">Metode Bayar:</span>
-<span class="font-bold text-blue-700" id="receipt-method">QRIS Resmi</span>
+<span class="font-bold text-blue-700" id="receipt-method">-</span>
 </div>
 </div>
 <!-- Coupon Code Input -->
@@ -374,7 +373,7 @@
 <div class="space-y-1.5 pt-1 text-xs">
 <div class="flex justify-between text-slate-600">
 <span>Harga Produk Koin:</span>
-<span class="font-bold text-neutral-900 font-mono" id="calc-subtotal">Rp63.000</span>
+<span class="font-bold text-neutral-900 font-mono" id="calc-subtotal">Rp0</span>
 </div>
 <div class="flex justify-between text-slate-600">
 <span>Biaya Layanan Gateway:</span>
@@ -384,7 +383,7 @@
 <span class="flex items-center gap-1 font-bold">
 <span class="material-symbols-outlined text-[14px]">discount</span> Diskon Kupon:
 </span>
-<span class="font-black font-mono" id="calc-discount-val">-Rp5.000</span>
+<span class="font-black font-mono" id="calc-discount-val">-Rp0</span>
 </div>
 </div>
 <!-- Decorative Line -->
@@ -393,7 +392,7 @@
 <div class="pt-1 flex items-end justify-between">
 <div>
 <span class="text-[10px] uppercase font-black tracking-wider text-slate-500 block">Total Pembayaran Netto</span>
-<div class="text-2xl sm:text-3xl font-black text-blue-700 font-display flex items-baseline gap-1" id="calc-grand-total">Rp63.000</div>
+<div class="text-2xl sm:text-3xl font-black text-blue-700 font-display flex items-baseline gap-1" id="calc-grand-total">Rp0</div>
 </div>
 <div class="text-right">
 <span class="text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-300 block">Garansi Masuk 100%</span>

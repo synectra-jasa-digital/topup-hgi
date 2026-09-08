@@ -164,9 +164,9 @@
             </a>
             <!-- Nav Links Cockpit Pill -->
             <nav class="hidden md:flex items-center gap-1 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200 text-xs font-semibold shadow-inner">
-                <a class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-neutral-900 hover:bg-white transition-all flex items-center gap-1" href="<?= base_url('/') ?>"><span class="material-symbols-outlined text-[16px]">home</span> Beranda</a>
-                <a class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold shadow-sm flex items-center gap-1.5" href="<?= base_url('/#katalog-section') ?>"><span class="material-symbols-outlined text-[16px]">inventory_2</span> Katalog Produk</a>
-                <a class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-neutral-900 hover:bg-white transition-all flex items-center gap-1" href="<?= base_url('cek-pesanan') ?>"><span class="material-symbols-outlined text-[16px]">receipt_long</span> Cek Status Pesanan</a>
+                <a class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold shadow-sm flex items-center gap-1.5" href="<?= base_url('/') ?>"><span class="material-symbols-outlined text-[16px]">home</span> Beranda</a>
+                <a class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-neutral-900 hover:bg-white transition-all flex items-center gap-1.5" href="<?= base_url('/#katalog-section') ?>"><span class="material-symbols-outlined text-[16px]">inventory_2</span> Katalog Produk</a>
+                <a class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-neutral-900 hover:bg-white transition-all flex items-center gap-1.5" href="<?= base_url('cek-pesanan') ?>"><span class="material-symbols-outlined text-[16px]">receipt_long</span> Cek Status Pesanan</a>
             </nav>
             <!-- Header Action Support -->
             <div class="flex items-center gap-2.5">

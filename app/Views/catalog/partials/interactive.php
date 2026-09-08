@@ -43,21 +43,23 @@
 
     const state = {
       productId: null,
-      itemTitle: "1B (1 Miliar) Koin Emas",
-      category: "Koin Emas",
+      itemTitle: "Belum memilih produk",
+      category: "",
       categoryIcon: "",
-      basePrice: 63000,
-      unitRate: "Rp63.000 / 1B",
-      userId: "123456789",
-      nickname: "HiggsMaster",
-      whatsapp: "081234567890",
-      payMethod: "QRIS Resmi",
+      basePrice: 0,
+      unitRate: "Silakan pilih nominal produk di samping",
+      userId: "",
+      nickname: "",
+      whatsapp: "",
+      payMethod: "",
       adminFee: 0,
       discount: 0,
       couponApplied: false,
-      bongkarType: "Kartu Ungu",
+      bongkarType: "",
+      bongkarRate: 0,
+      bongkarUnit: "kartu",
       bongkarQty: 1,
-      bongkarPayout: "BCA"
+      bongkarPayout: ""
     };
 
     function formatRupiah(num) {
@@ -81,11 +83,11 @@
       const calcGrandTotal = document.getElementById('calc-grand-total');
       const mobileBottomTotal = document.getElementById('mobile-bottom-total');
 
-      if (receiptItemName) receiptItemName.textContent = state.itemTitle;
-      if (receiptUnitRate) receiptUnitRate.textContent = state.unitRate;
-      if (receiptItemPrice) receiptItemPrice.textContent = formatRupiah(state.basePrice);
+      if (receiptItemName) receiptItemName.textContent = state.productId ? state.itemTitle : 'Belum memilih produk';
+      if (receiptUnitRate) receiptUnitRate.textContent = state.productId ? state.unitRate : 'Silakan pilih nominal produk di samping';
+      if (receiptItemPrice) receiptItemPrice.textContent = state.productId ? formatRupiah(state.basePrice) : 'Rp0';
       if (receiptIconContainer) {
-        if (state.categoryIcon) {
+        if (state.productId && state.categoryIcon) {
           receiptIconContainer.innerHTML = `<img src="${state.categoryIcon}" alt="" class="w-full h-full object-contain">`;
         } else {
           receiptIconContainer.innerHTML = `<span class="material-symbols-outlined text-[22px]">sports_esports</span>`;
@@ -93,7 +95,7 @@
       }
       if (receiptUserId) receiptUserId.textContent = state.userId || '-';
       if (receiptWa) receiptWa.textContent = state.whatsapp || '-';
-      if (receiptMethod) receiptMethod.textContent = state.payMethod;
+      if (receiptMethod) receiptMethod.textContent = state.payMethod || '-';
       if (calcSubtotal) calcSubtotal.textContent = formatRupiah(state.basePrice);
       if (calcAdminFee) {
         calcAdminFee.textContent = state.adminFee > 0 ? formatRupiah(state.adminFee) : 'Rp0 (Gratis)';
@@ -144,15 +146,19 @@
 
     // Step 2: Product Nominal Selection
     const productCards = document.querySelectorAll('.product-card');
-    if (productCards.length > 0) {
-      const firstActive = document.querySelector('.product-card.active') || productCards[0];
-      if (firstActive) {
-        state.productId = firstActive.getAttribute('data-id') || null;
-        state.itemTitle = firstActive.getAttribute('data-title') || state.itemTitle;
-        state.basePrice = parseInt(firstActive.getAttribute('data-price') || "63000", 10);
-        state.unitRate = firstActive.getAttribute('data-unit') || state.unitRate;
-        state.categoryIcon = firstActive.getAttribute('data-icon') || "";
-      }
+    const activeProductCard = document.querySelector('.product-card.active');
+    if (activeProductCard) {
+      state.productId = activeProductCard.getAttribute('data-id') || null;
+      state.itemTitle = activeProductCard.getAttribute('data-title') || state.itemTitle;
+      state.basePrice = parseInt(activeProductCard.getAttribute('data-price') || "0", 10);
+      state.unitRate = activeProductCard.getAttribute('data-unit') || state.unitRate;
+      state.categoryIcon = activeProductCard.getAttribute('data-icon') || "";
+    } else {
+      state.productId = null;
+      state.itemTitle = "Belum memilih produk";
+      state.basePrice = 0;
+      state.unitRate = "Silakan pilih nominal produk di samping";
+      state.categoryIcon = "";
     }
 
     productCards.forEach(card => {
@@ -213,14 +219,15 @@
     }
 
     function refreshBongkarEstimate() {
-      const rate = parseInt(state.bongkarRate || '65000', 10);
+      const hasType = !!state.bongkarType;
+      const rate = parseInt(state.bongkarRate || '0', 10);
       const qty = state.bongkarQty || 1;
       const unit = state.bongkarUnit || 'kartu';
-      const estimated = qty * rate;
+      const estimated = hasType ? qty * rate : 0;
 
       // Main estimated total
       const estimatedEl = document.getElementById('bongkar-estimated');
-      if (estimatedEl) estimatedEl.textContent = formatRupiah(estimated);
+      if (estimatedEl) estimatedEl.textContent = hasType ? formatRupiah(estimated) : 'Rp0';
 
       // Unit label in qty input
       const unitLabelEl = document.getElementById('bongkar-unit-label');
@@ -233,10 +240,10 @@
       const receiptPayout = document.getElementById('bongkar-receipt-payout');
       const receiptWa    = document.getElementById('bongkar-receipt-wa');
 
-      if (receiptLabel)  receiptLabel.textContent  = state.bongkarType || 'Kartu Ungu';
-      if (receiptRate)   receiptRate.textContent   = `${formatRupiah(rate)} / ${unit}`;
-      if (receiptQty)    receiptQty.textContent    = `${qty} ${unit}`;
-      if (receiptPayout) receiptPayout.textContent = state.bongkarPayout || 'BCA';
+      if (receiptLabel)  receiptLabel.textContent  = hasType ? state.bongkarType : 'Belum memilih item';
+      if (receiptRate)   receiptRate.textContent   = hasType ? `${formatRupiah(rate)} / ${unit}` : '-';
+      if (receiptQty)    receiptQty.textContent    = hasType ? `${qty} ${unit}` : '-';
+      if (receiptPayout) receiptPayout.textContent = state.bongkarPayout || '-';
       if (receiptWa)     receiptWa.textContent     = (bongkarWaInput ? bongkarWaInput.value.trim() : '') || '-';
     }
 
@@ -271,13 +278,11 @@
       });
     }
 
-    if (bongkarCards.length > 0) {
-      const selectedBongkarCard = document.querySelector('.bongkar-card.selected') || bongkarCards[0];
-      if (selectedBongkarCard) {
-        state.bongkarType = selectedBongkarCard.getAttribute('data-label') || state.bongkarType;
-        state.bongkarRate = selectedBongkarCard.getAttribute('data-rate') || state.bongkarRate;
-        state.bongkarUnit = selectedBongkarCard.getAttribute('data-unit') || state.bongkarUnit;
-      }
+    const selectedBongkarCard = document.querySelector('.bongkar-card.selected');
+    if (selectedBongkarCard) {
+      state.bongkarType = selectedBongkarCard.getAttribute('data-label') || "";
+      state.bongkarRate = selectedBongkarCard.getAttribute('data-rate') || "0";
+      state.bongkarUnit = selectedBongkarCard.getAttribute('data-unit') || "kartu";
     }
     refreshBongkarEstimate();
 
@@ -336,8 +341,23 @@
         const rate = parseInt(state.bongkarRate || '65000', 10);
         const estimated = qty * rate;
 
-        if (!state.bongkarType || !sellerWa) {
-          alert('Silakan lengkapi jenis kartu, jumlah, dan nomor WhatsApp konfirmasi terlebih dahulu.');
+        if (!state.bongkarType) {
+          alert('Silakan pilih jenis kartu/koin yang ingin Anda bongkar terlebih dahulu.');
+          const firstBongkarCard = document.querySelector('.bongkar-card');
+          if (firstBongkarCard) firstBongkarCard.scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+
+        if (!sellerWa) {
+          alert('Silakan ketik nomor WhatsApp konfirmasi Anda terlebih dahulu.');
+          if (bongkarWaInput) bongkarWaInput.focus();
+          return;
+        }
+
+        if (!state.bongkarPayout) {
+          alert('Silakan pilih Rekening / E-Wallet tujuan pencairan saldo terlebih dahulu.');
+          const payoutGrid = document.getElementById('payout-method-grid');
+          if (payoutGrid) payoutGrid.scrollIntoView({ behavior: 'smooth' });
           return;
         }
 
@@ -413,9 +433,29 @@
     const btnSubmitPay = document.getElementById('btn-submit-pay');
 
     function openModal() {
+      if (!state.productId) {
+        alert("Silakan pilih nominal produk top up terlebih dahulu!");
+        const prodGrid = document.getElementById('product-grid');
+        if (prodGrid) prodGrid.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
       if (!state.userId) {
         alert("Silakan ketik ID Akun Higgs Games Island Anda terlebih dahulu!");
         inputUserId?.focus();
+        return;
+      }
+
+      if (!state.whatsapp) {
+        alert("Silakan ketik nomor WhatsApp Anda terlebih dahulu!");
+        inputWa?.focus();
+        return;
+      }
+
+      if (!state.payMethod) {
+        alert("Silakan pilih metode pembayaran terlebih dahulu!");
+        const firstPayCard = document.querySelector('.pay-method-card');
+        if (firstPayCard) firstPayCard.scrollIntoView({ behavior: 'smooth' });
         return;
       }
 

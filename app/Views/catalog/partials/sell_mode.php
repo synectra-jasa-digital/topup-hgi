@@ -27,7 +27,7 @@
               <?php
                 $rate = (float) $catalog['base_rate'];
                 $rateLabel = 'Rp' . number_format($rate, 0, ',', '.');
-                $isSelected = $index === 0;
+                $isSelected = false;
               ?>
               <button type="button" class="bongkar-card <?= $isSelected ? 'selected border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20' : 'border border-slate-200 bg-white hover:border-blue-300' ?> p-3 rounded-xl text-left transition-all relative cursor-pointer shadow-2xs" data-bongkar-catalog-id="<?= esc($catalog['id']) ?>" data-label="<?= esc($catalog['name']) ?>" data-rate="<?= esc($rate) ?>" data-unit="<?= esc($catalog['unit_label']) ?>">
                 <?php if ($isSelected): ?>
@@ -42,7 +42,7 @@
           </div>
         <?php else: ?>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <button type="button" class="bongkar-card selected border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20 p-3 rounded-xl text-left transition-all relative cursor-pointer shadow-2xs" data-bongkar-catalog-id="default-1" data-label="Kartu Ungu" data-rate="65000" data-unit="kartu">
+            <button type="button" class="bongkar-card border border-slate-200 bg-white hover:border-blue-300 p-3 rounded-xl text-left transition-all relative cursor-pointer shadow-2xs" data-bongkar-catalog-id="default-1" data-label="Kartu Ungu" data-rate="65000" data-unit="kartu">
               <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Rekomendasi</span>
               <div class="flex items-center justify-between">
                 <span class="font-display font-bold text-neutral-900 text-xs sm:text-sm">Kartu Ungu</span>
@@ -99,7 +99,7 @@
             <label class="block font-bold text-neutral-700" for="input-sell-wa">Nomor WhatsApp <span class="text-rose-500">*</span></label>
             <div class="relative">
               <span class="material-symbols-outlined absolute left-3 top-2 text-[18px] text-emerald-600">chat</span>
-              <input id="input-sell-wa" type="tel" placeholder="08xxxxxxxxxx" value="081234567890" class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400">
+              <input id="input-sell-wa" type="tel" placeholder="08xxxxxxxxxx" value="" class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-blue-600 focus:bg-white outline-none transition-all font-mono font-bold text-neutral-900 placeholder-slate-400">
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@
           <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Bebas Biaya Transfer</span>
         </div>
         <div class="grid grid-cols-3 sm:grid-cols-9 gap-1.5 text-center text-[10px] font-bold" id="payout-method-grid">
-          <button type="button" data-bongkar-payout="BCA" class="bongkar-payout-btn py-2 px-1 rounded-lg border-2 border-blue-600 bg-blue-50/70 text-blue-700 cursor-pointer transition-all">BCA</button>
+          <button type="button" data-bongkar-payout="BCA" class="bongkar-payout-btn py-2 px-1 rounded-lg border border-slate-200 bg-white hover:border-blue-300 text-slate-700 cursor-pointer transition-all">BCA</button>
           <button type="button" data-bongkar-payout="BRI" class="bongkar-payout-btn py-2 px-1 rounded-lg border border-slate-200 bg-white hover:border-blue-300 text-slate-700 cursor-pointer transition-all">BRI</button>
           <button type="button" data-bongkar-payout="Mandiri" class="bongkar-payout-btn py-2 px-1 rounded-lg border border-slate-200 bg-white hover:border-blue-300 text-slate-700 cursor-pointer transition-all">Mandiri</button>
           <button type="button" data-bongkar-payout="BNI" class="bongkar-payout-btn py-2 px-1 rounded-lg border border-slate-200 bg-white hover:border-blue-300 text-slate-700 cursor-pointer transition-all">BNI</button>
@@ -174,8 +174,8 @@
         </div>
         <div class="min-w-0 flex-1">
           <div class="text-[10px] font-black text-indigo-600 uppercase tracking-wide">Jenis Kartu</div>
-          <div class="font-display font-extrabold text-neutral-900 text-sm truncate" id="bongkar-receipt-label">Kartu Ungu</div>
-          <div class="text-[11px] text-slate-500" id="bongkar-receipt-rate">Rp65.000 / kartu</div>
+          <div class="font-display font-extrabold text-neutral-900 text-sm truncate" id="bongkar-receipt-label">Belum memilih item</div>
+          <div class="text-[11px] text-slate-500" id="bongkar-receipt-rate">-</div>
         </div>
       </div>
 
@@ -183,15 +183,15 @@
       <div class="space-y-2 py-3 border-y border-dashed border-slate-200 text-xs">
         <div class="flex justify-between items-center">
           <span class="text-slate-500">Jumlah:</span>
-          <span class="font-mono font-bold text-neutral-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200" id="bongkar-receipt-qty">1 kartu</span>
+          <span class="font-mono font-bold text-neutral-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200" id="bongkar-receipt-qty">-</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-slate-500">Rekening Tujuan:</span>
-          <span class="font-bold text-blue-700" id="bongkar-receipt-payout">BCA</span>
+          <span class="font-bold text-blue-700" id="bongkar-receipt-payout">-</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-slate-500">WhatsApp:</span>
-          <span class="font-mono font-semibold text-neutral-800" id="bongkar-receipt-wa">081234567890</span>
+          <span class="font-mono font-semibold text-neutral-800" id="bongkar-receipt-wa">-</span>
         </div>
       </div>
 
@@ -202,7 +202,7 @@
       <div class="flex items-end justify-between pt-1">
         <div>
           <span class="text-[10px] uppercase font-black tracking-wider text-slate-500 block">Estimasi Netto Cair</span>
-          <div class="text-2xl sm:text-3xl font-black text-blue-700 font-display" id="bongkar-estimated">Rp65.000</div>
+          <div class="text-2xl sm:text-3xl font-black text-blue-700 font-display" id="bongkar-estimated">Rp0</div>
         </div>
         <div class="text-right">
           <span class="text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-300 block">Saldo 100% Bersih</span>
