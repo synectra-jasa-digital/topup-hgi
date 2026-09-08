@@ -26,6 +26,7 @@
             <table class="min-w-full text-left text-sm">
                 <thead class="table-head">
                     <tr>
+                        <th>Ikon</th>
                         <th>Nama</th>
                         <th>Slug</th>
                         <th>Urutan</th>
@@ -36,6 +37,15 @@
                 <tbody>
                     <?php foreach ($categories as $category): ?>
                         <tr class="table-row">
+                            <td>
+                                <?php if (! empty($category['icon'])): ?>
+                                    <img src="<?= base_url($category['icon']) ?>" alt="" class="h-8 w-8 rounded-md border border-neutral-200 bg-white object-contain p-1">
+                                <?php else: ?>
+                                    <span class="flex h-8 w-8 items-center justify-center rounded-md border border-dashed border-neutral-200 text-neutral-300">
+                                        <span class="material-symbols-outlined text-[16px]">category</span>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
                             <td class="font-medium text-neutral-900"><?= esc($category['name']) ?></td>
                             <td class="font-mono text-neutral-500"><?= esc($category['slug']) ?></td>
                             <td class="text-neutral-700"><?= esc($category['sort_order']) ?></td>

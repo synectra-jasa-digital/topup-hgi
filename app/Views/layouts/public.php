@@ -184,76 +184,78 @@
     <!-- MAIN CONTENT SECTION -->
     <?= $this->renderSection('content') ?>
 
-    <!-- Footer (Clean Light) -->
-    <footer class="mt-16 bg-white border-t border-slate-200 text-xs text-slate-500 pb-20 lg:pb-8">
+    <!-- Footer (Professional & Universal Dark Theme) -->
+    <footer class="mt-16 bg-slate-900 text-slate-400 text-xs pb-20 lg:pb-8 border-t border-slate-800">
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
+                <!-- Brand & Info -->
                 <div class="space-y-4">
-                    <div class="flex items-center gap-2.5">
-                        <div class="h-10 px-2.5 py-1 bg-slate-50 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
+                    <a class="flex items-center gap-3" href="<?= base_url('/') ?>">
+                        <div class="h-10 px-3 py-1 bg-white/10 backdrop-blur rounded-xl border border-white/10 flex items-center justify-center">
                             <?php if ($storeLogo): ?>
-                                <img alt="Ayong Store Logo" class="h-7 w-auto object-contain" src="<?= base_url($storeLogo) ?>">
+                                <img alt="Store Logo" class="h-7 w-auto object-contain" src="<?= base_url($storeLogo) ?>">
                             <?php else: ?>
-                                <span class="font-display text-sm font-black text-primary tracking-tight">Ayong Store</span>
+                                <span class="font-display text-sm font-black text-white tracking-tight">Ayong Store</span>
                             <?php endif; ?>
                         </div>
-                        <div>
-                            <span class="font-display font-black text-base text-neutral-900 tracking-tight block">Ayong Store</span>
-                            <span class="text-[10px] text-amber-700 font-bold uppercase tracking-wider">Official Higgs Partner</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-600 leading-relaxed">Portal top up Higgs Games Island express resmi dan terpercaya di Indonesia. Transaksi otomatis masuk dalam 1-3 detik cukup dengan ID pemain tanpa memerlukan kata sandi.</p>
-                    <div class="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 px-3 py-2 rounded-xl border border-emerald-200 w-fit">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span class="font-bold">Operasional 24 Jam Nonstop</span>
+                        <span class="font-display font-bold text-base text-white tracking-tight">Ayong Store</span>
+                    </a>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Platform layanan top-up game &amp; voucher digital otomatis. Transaksi cepat, aman, dan dapat diakses 24 jam setiap hari.
+                    </p>
+                    <div class="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 w-fit font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Layanan Otomatis 24/7</span>
                     </div>
                 </div>
+
+                <!-- Navigasi -->
                 <div class="space-y-3">
-                    <h4 class="font-display font-bold text-sm text-neutral-900 tracking-wide uppercase">Navigasi Cepat</h4>
-                    <ul class="space-y-2 text-xs text-slate-600 font-medium">
-                        <li class=""><a class="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="<?= base_url('/') ?>"><span class="material-symbols-outlined text-[15px] text-blue-600">chevron_right</span> Katalog Koin Emas Resmi</a></li>
-                        <li class=""><a class="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="<?= base_url('/') ?>"><span class="material-symbols-outlined text-[15px] text-blue-600">chevron_right</span> Kartu Member VIP Domino</a></li>
-                        <li class=""><a class="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="<?= base_url('cek-pesanan') ?>"><span class="material-symbols-outlined text-[15px] text-blue-600">chevron_right</span> Cek Status Pemesanan Real-Time</a></li>
-                        <li class=""><a class="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="#"><span class="material-symbols-outlined text-[15px] text-blue-600">chevron_right</span> Syarat &amp; Ketentuan Layanan</a></li>
-                        <li class=""><a class="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="#"><span class="material-symbols-outlined text-[15px] text-blue-600">chevron_right</span> Kebijakan Privasi Pengguna</a></li>
-                        <li class=""><a class="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="#"><span class="material-symbols-outlined text-[15px] text-blue-600">chevron_right</span> Pertanyaan Umum (FAQ)</a></li>
+                    <h4 class="font-display font-bold text-xs text-white tracking-wider uppercase">Navigasi</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a class="hover:text-white transition-colors flex items-center gap-1.5" href="<?= base_url('/') ?>"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Top Up &amp; Katalog</a></li>
+                        <li><a class="hover:text-white transition-colors flex items-center gap-1.5" href="<?= base_url('/#jual') ?>"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Jual / Bongkar Chip</a></li>
+                        <li><a class="hover:text-white transition-colors flex items-center gap-1.5" href="<?= base_url('cek-pesanan') ?>"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Cek Status Pesanan</a></li>
+                        <li><a class="hover:text-white transition-colors flex items-center gap-1.5" href="<?= ! empty($storeLogo) ? 'https://wa.me/' : '#' ?>" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Pusat Bantuan</a></li>
                     </ul>
                 </div>
+
+                <!-- Metode Pembayaran -->
                 <div class="space-y-3">
-                    <h4 class="font-display font-bold text-sm text-neutral-900 tracking-wide uppercase">Metode Pembayaran</h4>
-                    <p class="text-xs text-slate-500">Didukung oleh payment gateway berlisensi Bank Indonesia:</p>
+                    <h4 class="font-display font-bold text-xs text-white tracking-wider uppercase">Pembayaran</h4>
+                    <p class="text-xs text-slate-400">Mendukung berbagai saluran pembayaran instan:</p>
                     <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-extrabold text-neutral-900">QRIS</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-extrabold text-sky-700">GOPAY</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-extrabold text-blue-700">DANA</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-extrabold text-purple-700">OVO</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-extrabold text-orange-600">SHOPEE</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-extrabold text-red-600">LINKAJA</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-bold text-blue-800">BCA VA</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-bold text-amber-700">MANDIRI</div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 text-center text-[10px] font-bold text-sky-800">BRI VA</div>
-                    </div>
-                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500 pt-1">
-                        <span class="material-symbols-outlined text-[15px] text-emerald-600">verified</span>
-                        <span class="">Verifikasi Pembayaran Otomatis</span>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">QRIS</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">GoPay</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">DANA</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">ShopeePay</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">OVO</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">LinkAja</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">BCA VA</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">Mandiri VA</div>
+                        <div class="bg-slate-800/80 border border-slate-700/60 rounded-lg p-2 text-center text-[10px] font-bold text-slate-200">BRI VA</div>
                     </div>
                 </div>
+
+                <!-- Bantuan CS -->
                 <div class="space-y-3">
-                    <h4 class="font-display font-bold text-sm text-neutral-900 tracking-wide uppercase">Bantuan &amp; Kontak Resmi</h4>
-                    <p class="text-xs text-slate-600">Tim layanan pelanggan siap mendampingi transaksi Anda 24 jam nonstop.</p>
-                    <a class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm" href="https://wa.me/" rel="noopener noreferrer" target="_blank">
-                        <span class="material-symbols-outlined text-[18px]">chat</span>
-                        <span class="">WhatsApp CS VIP 24 Jam</span>
+                    <h4 class="font-display font-bold text-xs text-white tracking-wider uppercase">Layanan Pelanggan</h4>
+                    <p class="text-xs text-slate-400">Hubungi tim kami jika mengalami kendala transaksi:</p>
+                    <a class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm" href="https://wa.me/" rel="noopener noreferrer" target="_blank">
+                        <span class="material-symbols-outlined text-[18px]">support_agent</span>
+                        <span>Customer Service</span>
                     </a>
-                    <div class="space-y-1.5 pt-2 text-[11px] text-slate-500">
-                        <div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-blue-600">lock</span><span class="">Enkripsi Transaksi SSL 256-Bit</span></div>
-                        <div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-emerald-600">security</span><span class="">Jaminan 100% Anti Banned &amp; Aman</span></div>
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-400 pt-1">
+                        <span class="material-symbols-outlined text-[15px] text-blue-400">shield</span>
+                        <span>Transaksi Aman &amp; Terenkripsi</span>
                     </div>
                 </div>
             </div>
-            <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                <p class="text-center md:text-left">© <?= date('Y') ?> <strong>Ayong Store</strong>. Seluruh hak cipta dilindungi undang-undang. Transaksi instan &amp; terlisensi.</p>
-                <p class="text-center md:text-right text-[11px] text-slate-400">Disclaimer: Seluruh merek dagang dan aset game adalah hak cipta dari penerbit masing-masing.</p>
+
+            <!-- Copyright Bottom Bar -->
+            <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+                <p class="text-center md:text-left">© <?= date('Y') ?> <strong>Ayong Store</strong>. All rights reserved.</p>
+                <p class="text-center md:text-right text-[11px] text-slate-400">Hak cipta seluruh merek dagang &amp; aset game milik penerbit masing-masing.</p>
             </div>
         </div>
     </footer>

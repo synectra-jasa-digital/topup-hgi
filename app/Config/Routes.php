@@ -60,6 +60,18 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('pesanan/(:num)', 'Admin\OrderController::show/$1');
     $routes->post('pesanan/(:num)/selesai', 'Admin\OrderController::complete/$1');
 
+    // Bongkar / Jual Kartu
+    $routes->get('bongkar-katalog', 'Admin\BongkarCatalogController::index');
+    $routes->get('bongkar-katalog/tambah', 'Admin\BongkarCatalogController::create');
+    $routes->post('bongkar-katalog/tambah', 'Admin\BongkarCatalogController::store');
+    $routes->get('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::edit/$1');
+    $routes->post('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::update/$1');
+    $routes->post('bongkar-katalog/(:num)/hapus', 'Admin\BongkarCatalogController::delete/$1');
+
+    $routes->get('bongkar-pesanan', 'Admin\BongkarRequestController::index');
+    $routes->get('bongkar-pesanan/(:num)', 'Admin\BongkarRequestController::show/$1');
+    $routes->post('bongkar-pesanan/(:num)/status', 'Admin\BongkarRequestController::updateStatus/$1');
+
     // Fase 11a - Voucher
     $routes->get('voucher', 'Admin\VoucherController::index');
     $routes->get('voucher/tambah', 'Admin\VoucherController::create');

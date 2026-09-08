@@ -8,8 +8,24 @@
     <p class="section-subtitle">Atur struktur kategori untuk katalog produk publik.</p>
 </div>
 
-<form method="post" action="<?= $category ? base_url('admin/kategori-produk/' . $category['id'] . '/ubah') : base_url('admin/kategori-produk/tambah') ?>" class="space-y-5 panel-surface">
+<form method="post" action="<?= $category ? base_url('admin/kategori-produk/' . $category['id'] . '/ubah') : base_url('admin/kategori-produk/tambah') ?>" enctype="multipart/form-data" class="space-y-5 panel-surface">
     <?= csrf_field() ?>
+    <div>
+        <label for="icon" class="form-label">Ikon Kategori</label>
+        <div class="mb-3 flex items-center gap-3">
+            <?php if (! empty($category['icon'])): ?>
+                <img src="<?= base_url($category['icon']) ?>" alt="Ikon kategori" class="h-12 w-12 rounded-lg border border-neutral-200 bg-white object-contain p-1.5">
+            <?php else: ?>
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg border border-dashed border-neutral-200 bg-neutral-50 text-neutral-400">
+                    <span class="material-symbols-outlined text-[22px]">category</span>
+                </div>
+            <?php endif; ?>
+            <p class="text-sm text-neutral-500">Tampil di pilihan kategori pada halaman publik.</p>
+        </div>
+        <input type="file" id="icon" name="icon" accept="image/*" class="<?= isset($errors['icon']) ? 'form-input-error' : 'form-input' ?>">
+        <?php if (isset($errors['icon'])): ?><p class="form-error"><?= esc($errors['icon']) ?></p><?php endif; ?>
+        <p class="form-help">PNG/JPG/SVG, maksimum 1MB. Kosongkan jika ikon default sudah cukup.</p>
+    </div>
     <div>
         <label for="name" class="form-label">Nama Kategori</label>
         <input type="text" id="name" name="name" value="<?= esc(old('name', $category['name'] ?? '')) ?>" class="<?= isset($errors['name']) ? 'form-input-error' : 'form-input' ?>" required>

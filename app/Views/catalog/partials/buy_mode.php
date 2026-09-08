@@ -8,17 +8,16 @@
 <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm relative overflow-hidden">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">1</div>
+<div class="w-8 h-8 rounded-xl bg-blue-600 text-white font-display font-bold flex items-center justify-center text-sm shadow-xs shrink-0">1</div>
 <div>
 <h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Pilih Kategori Produk</h2>
-<p class="text-xs text-slate-500">Daftar denominasi koin emas dan durasi kartu member resmi</p>
+<p class="text-xs text-slate-500">Pilih kategori koin atau item game yang ingin Anda beli</p>
 </div>
 </div>
-<span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[14px]">verified</span> Jalur Resmi ID</span>
 </div>
 
 <!-- Segmented Deck Tabs (Light Mode) -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200" id="category-pills">
+<div class="flex flex-wrap gap-2.5" id="category-pills">
 <?php if (! empty($categories)): ?>
     <?php foreach ($categories as $index => $category): ?>
         <?php
@@ -30,15 +29,19 @@
                 default => 'apps',
             };
             $color = match ($category['slug']) {
-                'koin-emas' => 'text-yellow-300',
+                'koin-emas' => 'text-amber-500',
                 'kartu-emas' => 'text-amber-600',
                 'koin-md' => 'text-sky-600',
                 'kartu-ungu' => 'text-purple-600',
                 default => 'text-slate-500',
             };
         ?>
-        <button class="category-pill <?= $index === 0 ? 'active bg-blue-600 text-white shadow-sm border border-blue-700' : 'text-slate-700 hover:text-neutral-900 hover:bg-white' ?> flex items-center justify-center gap-1.5 py-2.5 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold transition-all" data-cat="<?= esc($category['slug']) ?>" type="button">
-            <span class="material-symbols-outlined text-[17px] <?= $index === 0 ? 'text-yellow-300' : $color ?>" <?= $index === 0 && $category['slug'] === 'koin-emas' ? "style=\"font-variation-settings: 'FILL' 1;\"" : '' ?>><?= esc($icon) ?></span>
+        <button class="category-pill <?= $index === 0 ? 'active bg-blue-600 text-white shadow-sm border-blue-700' : 'text-slate-700 bg-slate-100/80 hover:bg-slate-200/80 border-slate-200' ?> border inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer" data-cat="<?= esc($category['slug']) ?>" type="button">
+            <?php if (! empty($category['icon'])): ?>
+                <img src="<?= base_url($category['icon']) ?>" alt="" class="h-[18px] w-[18px] shrink-0 object-contain">
+            <?php else: ?>
+                <span class="material-symbols-outlined text-[18px] <?= $index === 0 ? 'text-amber-300' : $color ?>" <?= $index === 0 && $category['slug'] === 'koin-emas' ? "style=\"font-variation-settings: 'FILL' 1;\"" : '' ?>><?= esc($icon) ?></span>
+            <?php endif; ?>
             <span class="truncate"><?= esc($category['name']) ?></span>
         </button>
     <?php endforeach; ?>
@@ -50,14 +53,14 @@
 <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm relative">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">2</div>
+<div class="w-8 h-8 rounded-xl bg-blue-600 text-white font-display font-bold flex items-center justify-center text-sm shadow-xs shrink-0">2</div>
 <div>
-<h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Pilih Nominal Top Up HGD</h2>
-<p class="text-xs text-slate-500">Pilih pecahan koin chip atau masa durasi VIP Domino</p>
+<h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Pilih Nominal Top Up</h2>
+<p class="text-xs text-slate-500">Pilih pecahan koin chip atau paket durasi yang diinginkan</p>
 </div>
 </div>
 <span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-300 shrink-0">
-<span class="material-symbols-outlined text-[14px] text-amber-600">bolt</span> Flash 1 Detik
+<span class="material-symbols-outlined text-[14px] text-amber-600">bolt</span> Proses Kilat
 </span>
 </div>
 
@@ -79,13 +82,22 @@
                         $defaultProductSelected = $defaultProductSelected ?? $isDefaultActive;
                         $sellPrice = (float) $p['sell_price'];
                         $priceFormatted = 'Rp' . number_format($sellPrice, 0, ',', '.');
+                        $catIconUrl = ! empty($section['category']['icon']) ? base_url($section['category']['icon']) : '';
                     ?>
-                    <button class="product-card <?= $isDefaultActive ? 'active border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20' : 'border border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50/40' ?> group relative p-3.5 rounded-xl text-left shadow-xs transition-all focus:outline-none" data-id="<?= $p['id'] ?>" data-cat="<?= esc($section['category']['slug']) ?>" data-price="<?= $sellPrice ?>" data-title="<?= esc($p['name']) ?>" data-unit="<?= esc($p['nominal'] ?: $priceFormatted) ?>" type="button">
+                    <button class="product-card <?= $isDefaultActive ? 'active border-2 border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20' : 'border border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50/40' ?> group relative p-3.5 rounded-xl text-left shadow-xs transition-all focus:outline-none" data-id="<?= $p['id'] ?>" data-cat="<?= esc($section['category']['slug']) ?>" data-price="<?= $sellPrice ?>" data-title="<?= esc($p['name']) ?>" data-unit="<?= esc($p['nominal'] ?: $priceFormatted) ?>" data-icon="<?= esc($catIconUrl) ?>" type="button">
                         <?php if ($isDefaultActive): ?>
                             <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Terpopuler</span>
                         <?php endif; ?>
                         <div class="flex items-start justify-between">
-                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-black text-[10px] border border-blue-200">HGD</div>
+                            <?php if (! empty($section['category']['icon'])): ?>
+                                <div class="w-8 h-8 rounded-full bg-blue-50/80 flex items-center justify-center border border-blue-200/80 overflow-hidden p-1 shrink-0">
+                                    <img src="<?= base_url($section['category']['icon']) ?>" alt="<?= esc($section['category']['name']) ?>" class="w-full h-full object-contain">
+                                </div>
+                            <?php else: ?>
+                                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-200 shrink-0">
+                                    <span class="material-symbols-outlined text-[18px]">sports_esports</span>
+                                </div>
+                            <?php endif; ?>
                             <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded"><?= esc($section['category']['name']) ?></span>
                         </div>
                         <div class="mt-2 font-display font-bold text-neutral-900 text-base leading-snug"><?= esc($p['name']) ?></div>
@@ -102,14 +114,14 @@
 <?php else: ?>
     <!-- Default Mockup Products if Database is Fresh -->
     <button class="product-card group relative p-3.5 rounded-xl border border-slate-200 text-left bg-white hover:border-blue-400 hover:bg-blue-50/40 transition-all focus:outline-none shadow-xs" data-cat="Koin Emas" data-price="13000" data-title="200M Koin Emas HGD" data-unit="Rp65.000 / 1B" type="button">
-    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-black text-[10px] border border-blue-200">HGD</div><span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">Retail</span></div>
+    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[18px]">sports_esports</span></div><span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">Retail</span></div>
     <div class="mt-2 font-display font-bold text-neutral-900 text-base leading-snug">200M</div>
     <div class="text-[11px] text-slate-500">Koin Emas Resmi</div>
     <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-600 font-display">Rp13.000</span><span class="text-[10px] text-slate-500 font-mono">Rp65k/B</span></div>
     </button>
     
     <button class="product-card group relative p-3.5 rounded-xl border border-slate-200 text-left bg-white hover:border-blue-400 hover:bg-blue-50/40 transition-all focus:outline-none shadow-xs" data-cat="Koin Emas" data-price="25500" data-title="400M Koin Emas HGD" data-unit="Rp63.750 / 1B" type="button">
-    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-black text-[10px] border border-blue-200">HGD</div><span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">Hemat</span></div>
+    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[18px]">sports_esports</span></div><span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">Hemat</span></div>
     <div class="mt-2 font-display font-bold text-neutral-900 text-base leading-snug">400M</div>
     <div class="text-[11px] text-slate-500">Koin Emas Resmi</div>
     <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-600 font-display">Rp25.500</span><span class="text-[10px] text-slate-500 font-mono">Rp63.7k/B</span></div>
@@ -117,7 +129,7 @@
     
     <button class="product-card active group relative p-3.5 rounded-xl border-2 border-blue-600 bg-blue-50/70 text-left shadow-sm ring-2 ring-blue-500/20 transition-all focus:outline-none" data-cat="Koin Emas" data-price="63000" data-title="1B (1 Miliar) Koin Emas" data-unit="Rp63.000 / 1B" type="button">
     <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Terpopuler</span>
-    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-neutral-950 font-black text-[10px] shadow-sm border border-amber-300">HGD</div><span class="text-[10px] font-bold text-blue-700 bg-white border border-blue-200 px-1.5 py-0.5 rounded">Paket Rekomendasi</span></div>
+    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center text-neutral-950 shadow-sm border border-amber-300 shrink-0"><span class="material-symbols-outlined text-[18px]">sports_esports</span></div><span class="text-[10px] font-bold text-blue-700 bg-white border border-blue-200 px-1.5 py-0.5 rounded">Paket Rekomendasi</span></div>
     <div class="mt-2 font-display font-bold text-blue-700 text-base leading-snug">1B (1 Miliar)</div>
     <div class="text-[11px] text-slate-600 font-medium">Koin Emas Resmi</div>
     <div class="mt-2.5 pt-2 border-t border-blue-200/60 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-800 font-display">Rp63.000</span><span class="text-[10px] text-blue-700 font-mono font-bold">Rp63k/B</span></div>
@@ -125,14 +137,14 @@
     
     <button class="product-card group relative p-3.5 rounded-xl border border-slate-200 text-left bg-white hover:border-blue-400 hover:bg-blue-50/40 transition-all focus:outline-none shadow-xs" data-cat="Koin Emas" data-price="125000" data-title="2B (2 Miliar) Koin Emas" data-unit="Rp62.500 / 1B" type="button">
     <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Diskon 4%</span>
-    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-black text-[10px] border border-blue-200">HGD</div><span class="text-[10px] text-slate-400 line-through">Rp130k</span></div>
+    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[18px]">sports_esports</span></div><span class="text-[10px] text-slate-400 line-through">Rp130k</span></div>
     <div class="mt-2 font-display font-bold text-neutral-900 text-base leading-snug">2B (2 Miliar)</div>
     <div class="text-[11px] text-slate-500">Koin Emas Resmi</div>
     <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-600 font-display">Rp125.000</span><span class="text-[10px] text-emerald-700 font-semibold font-mono">Rp62.5k/B</span></div>
     </button>
     
     <button class="product-card group relative p-3.5 rounded-xl border border-slate-200 text-left bg-white hover:border-blue-400 hover:bg-blue-50/40 transition-all focus:outline-none shadow-xs" data-cat="Koin Emas" data-price="310000" data-title="5B Koin Emas Sultan" data-unit="Rp62.000 / 1B" type="button">
-    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-black text-[10px] border border-blue-200">HGD</div><span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">Paket Besar</span></div>
+    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[18px]">sports_esports</span></div><span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">Paket Besar</span></div>
     <div class="mt-2 font-display font-bold text-neutral-900 text-base leading-snug">5B Koin</div>
     <div class="text-[11px] text-slate-500">Koin Emas Resmi</div>
     <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-600 font-display">Rp310.000</span><span class="text-[10px] text-emerald-700 font-semibold font-mono">Rp62k/B</span></div>
@@ -140,7 +152,7 @@
     
     <button class="product-card group relative p-3.5 rounded-xl border border-slate-200 text-left bg-white hover:border-blue-400 hover:bg-blue-50/40 transition-all focus:outline-none shadow-xs" data-cat="Koin Emas" data-price="615000" data-title="10B Koin Emas VIP Max" data-unit="Rp61.500 / 1B" type="button">
     <span class="absolute -top-2.5 right-2 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wide shadow-xs">Paket Maksimal</span>
-    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-black text-[10px] border border-blue-200">HGD</div><span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Ekstra Hemat</span></div>
+    <div class="flex items-start justify-between"><div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-200 shrink-0"><span class="material-symbols-outlined text-[18px]">sports_esports</span></div><span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Ekstra Hemat</span></div>
     <div class="mt-2 font-display font-bold text-neutral-900 text-base leading-snug">10B Koin</div>
     <div class="text-[11px] text-slate-500">Koin Emas Resmi</div>
     <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-baseline justify-between"><span class="text-xs font-bold text-blue-600 font-display">Rp615.000</span><span class="text-[10px] text-emerald-700 font-bold font-mono">Rp61.5k/B</span></div>
@@ -167,8 +179,8 @@
 <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">3</div>
-<div><h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Data Akun &amp; Kontak</h2><p class="text-xs text-slate-500">ID akun untuk tujuan pengiriman koin &amp; konfirmasi pemesanan</p></div>
+<div class="w-8 h-8 rounded-xl bg-blue-600 text-white font-display font-bold flex items-center justify-center text-sm shadow-xs shrink-0">3</div>
+<div><h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Data Akun &amp; Kontak</h2><p class="text-xs text-slate-500">ID akun tujuan pengiriman koin &amp; nomor WhatsApp konfirmasi</p></div>
 </div>
 <span class="hidden sm:flex text-xs text-emerald-700 items-center gap-1 font-semibold shrink-0">
 <span class="material-symbols-outlined text-[16px]">verified_user</span> Tanpa Password
@@ -208,14 +220,14 @@
 <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-3">
-<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-display font-black flex items-center justify-center text-base shadow-sm shrink-0">4</div>
+<div class="w-8 h-8 rounded-xl bg-blue-600 text-white font-display font-bold flex items-center justify-center text-sm shadow-xs shrink-0">4</div>
 <div>
-<h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Metode Pembayaran Resmi</h2>
-<p class="text-xs text-slate-500">Pilihan saluran pembayaran resmi yang disiapkan untuk peluncuran</p>
+<h2 class="font-display font-bold text-base sm:text-lg text-neutral-900 leading-tight">Metode Pembayaran</h2>
+<p class="text-xs text-slate-500">Pilih saluran pembayaran resmi yang praktis &amp; aman</p>
 </div>
 </div>
 <span class="hidden sm:flex text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-300 items-center gap-1 shrink-0">
-<span class="material-symbols-outlined text-[14px] text-amber-600">flash_on</span> Konfirmasi 1 Detik
+<span class="material-symbols-outlined text-[14px] text-amber-600">flash_on</span> Konfirmasi Otomatis
 </span>
 </div>
 <!-- Group A: QRIS & E-Wallet -->
@@ -322,10 +334,9 @@
 <div class="p-5 space-y-4 text-sm bg-white">
 <!-- Selected Product Display Card -->
 <div class="flex items-center gap-3.5 p-3 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
-<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 flex flex-col items-center justify-center text-neutral-950 shrink-0 shadow-sm border border-amber-300">
-<span class="text-[11px] font-black leading-none">HGD</span>
-<span class="text-[9px] font-bold leading-none mt-0.5">GOLD</span>
-</div>
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 shadow-xs border border-blue-200 overflow-hidden p-1" id="receipt-category-icon-container">
+                            <span class="material-symbols-outlined text-[22px]">sports_esports</span>
+                        </div>
 <div class="min-w-0 flex-1">
 <div class="text-[10px] font-black text-amber-600 uppercase tracking-wide">Higgs Games Island ID</div>
 <div class="font-display font-extrabold text-neutral-900 text-sm truncate" id="receipt-item-name">1B (1 Miliar) Koin Emas</div>

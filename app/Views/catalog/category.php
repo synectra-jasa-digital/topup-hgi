@@ -12,9 +12,16 @@
                 <span class="h-2 w-2 rounded-full bg-success"></span>
                 Kategori aktif
             </span>
-            <h1 id="category-hero-title" class="mt-4 text-balance font-sans text-3xl font-bold leading-tight sm:text-4xl">
-                <?= esc($category['name']) ?>
-            </h1>
+            <div class="mt-4 flex items-center gap-3">
+                <?php if (! empty($category['icon'])): ?>
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 p-2">
+                        <img src="<?= base_url($category['icon']) ?>" alt="" class="h-full w-full object-contain">
+                    </span>
+                <?php endif; ?>
+                <h1 id="category-hero-title" class="text-balance font-sans text-3xl font-bold leading-tight sm:text-4xl">
+                    <?= esc($category['name']) ?>
+                </h1>
+            </div>
             <p class="mt-4 max-w-2xl text-pretty text-sm leading-6 text-blue-100 sm:text-base">
                 Pilih nominal top up yang tersedia untuk kategori ini, lalu lanjutkan ke checkout aman tanpa memasukkan kata sandi.
             </p>

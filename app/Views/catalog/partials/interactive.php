@@ -45,6 +45,7 @@
       productId: null,
       itemTitle: "1B (1 Miliar) Koin Emas",
       category: "Koin Emas",
+      categoryIcon: "",
       basePrice: 63000,
       unitRate: "Rp63.000 / 1B",
       userId: "123456789",
@@ -69,6 +70,7 @@
       const receiptItemName = document.getElementById('receipt-item-name');
       const receiptUnitRate = document.getElementById('receipt-unit-rate');
       const receiptItemPrice = document.getElementById('receipt-item-price');
+      const receiptIconContainer = document.getElementById('receipt-category-icon-container');
       const receiptUserId = document.getElementById('receipt-user-id');
       const receiptWa = document.getElementById('receipt-wa');
       const receiptMethod = document.getElementById('receipt-method');
@@ -82,6 +84,13 @@
       if (receiptItemName) receiptItemName.textContent = state.itemTitle;
       if (receiptUnitRate) receiptUnitRate.textContent = state.unitRate;
       if (receiptItemPrice) receiptItemPrice.textContent = formatRupiah(state.basePrice);
+      if (receiptIconContainer) {
+        if (state.categoryIcon) {
+          receiptIconContainer.innerHTML = `<img src="${state.categoryIcon}" alt="" class="w-full h-full object-contain">`;
+        } else {
+          receiptIconContainer.innerHTML = `<span class="material-symbols-outlined text-[22px]">sports_esports</span>`;
+        }
+      }
       if (receiptUserId) receiptUserId.textContent = state.userId || '-';
       if (receiptWa) receiptWa.textContent = state.whatsapp || '-';
       if (receiptMethod) receiptMethod.textContent = state.payMethod;
@@ -142,6 +151,7 @@
         state.itemTitle = firstActive.getAttribute('data-title') || state.itemTitle;
         state.basePrice = parseInt(firstActive.getAttribute('data-price') || "63000", 10);
         state.unitRate = firstActive.getAttribute('data-unit') || state.unitRate;
+        state.categoryIcon = firstActive.getAttribute('data-icon') || "";
       }
     }
 
@@ -158,6 +168,7 @@
         state.itemTitle = card.getAttribute('data-title') || "";
         state.basePrice = parseInt(card.getAttribute('data-price') || "0", 10);
         state.unitRate = card.getAttribute('data-unit') || "";
+        state.categoryIcon = card.getAttribute('data-icon') || "";
         updateReceiptUI();
       });
     });

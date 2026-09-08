@@ -24,4 +24,19 @@ class BongkarRequestModel extends Model
         'status',
     ];
     protected $useTimestamps = true;
+
+    public static function adminStatuses(): array
+    {
+        return ['pending', 'diproses', 'selesai', 'ditolak'];
+    }
+
+    public function adminList(?string $status = null, int $perPage = 15): array
+    {
+        $query = $this->orderBy('created_at', 'DESC');
+        if ($status !== null && in_array($status, self::adminStatuses(), true)) {
+            $query->where('status', $status);
+        }
+
+        return $query->paginate($perPage);
+    }
 }
