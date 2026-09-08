@@ -16,7 +16,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          coverage: none
+          # phpunit.dist.xml declares a <coverage> block and sets
+          # failOnWarning="true" - with no driver, PHPUnit emits a "no code
+          # coverage driver available" warning that fails the whole run even
+          # though every test passes. pcov is the fastest option to satisfy it.
+          coverage: pcov
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress

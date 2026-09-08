@@ -79,6 +79,6 @@ final class BongkarRequestTest extends CIUnitTestCase
         self::assertNotNull($request);
         self::assertSame('Kartu Ungu', $request['catalog_name_snapshot']);
         self::assertSame('2', (string) $request['quantity']);
-        self::assertSame('130000.00', (string) $request['estimated_amount']);
+        self::assertSame(130000.0, (float) $request['estimated_amount']);
     }
 }

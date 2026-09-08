@@ -14,6 +14,9 @@ class VoucherModel extends Model
         'quota', 'used_count', 'start_date', 'end_date', 'is_active',
     ];
     protected $useTimestamps = true;
+    protected $validationRules = [
+        'code' => 'required|max_length[50]|is_unique[vouchers.code,id,{id}]',
+    ];
 
     public function findValid(string $code, float $subtotal): ?array
     {

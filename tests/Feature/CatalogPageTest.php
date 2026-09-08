@@ -49,7 +49,7 @@ final class CatalogPageTest extends CIUnitTestCase
         $body = $result->getBody();
 
         $result->assertOK();
-        self::assertStringContainsString('Top Up Koin & Produk Higgs Games Island', $body);
+        self::assertStringContainsString('Ayong Store - Top Up Higgs Games Island', $body);
         self::assertStringContainsString('Pilih Kategori Produk', $body);
         self::assertStringContainsString('data-cat="koin-emas"', $body);
         self::assertStringContainsString('Koin Emas 1B', $body);
@@ -61,6 +61,6 @@ final class CatalogPageTest extends CIUnitTestCase
         $result = $this->get('/');
 
         $result->assertOK();
-        self::assertStringContainsString('Top Up Koin & Produk Higgs Games Island', $result->getBody());
+        self::assertStringContainsString('Ayong Store - Top Up Higgs Games Island', $result->getBody());
     }
 }
