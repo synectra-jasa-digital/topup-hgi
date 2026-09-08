@@ -10,8 +10,8 @@ class AdminSeeder extends Seeder
     {
         $this->db->table('admins')->insert([
             'name'       => 'Owner Ayong Store',
-            'email'      => 'owner@ayongstore.test',
-            'password'   => password_hash('GantiPassword123!', PASSWORD_DEFAULT),
+            'email'      => 'owner@gmail.com',
+            'password'   => password_hash('password', PASSWORD_DEFAULT),
             'role'       => 'owner',
             'is_active'  => 1,
             'created_at' => date('Y-m-d H:i:s'),
