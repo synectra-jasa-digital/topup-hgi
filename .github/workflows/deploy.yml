@@ -81,6 +81,11 @@ jobs:
           # a "true" here mirrors the local build exactly, deleting anything on
           # the server not present locally - that would wipe writable/ runtime
           # state and any file uploaded directly on the host outside git.
+          # Because of that, public/assets/uploads/** is intentionally NOT
+          # excluded below: with clean-slate off, this action only adds/updates
+          # files present locally, it never deletes server-only ones - so
+          # images already committed to the repo deploy normally, and any
+          # image uploaded straight to production (not in git) is left alone.
           exclude: |
             **/.git*
             **/.git*/**
@@ -95,5 +100,3 @@ jobs:
             .env
             writable/**
             writable/**/*
-            public/assets/uploads/**
-            public/assets/uploads/**/*
