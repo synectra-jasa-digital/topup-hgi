@@ -1,9 +1,19 @@
+<?php
+    $storeSettings = new \App\Models\StoreSettingModel();
+    $storeName = $storeSettings->getVal('store_name', 'Ayong Store');
+    $storeLogo = $storeSettings->getVal('store_logo');
+    $pageTitle = $title ?? 'Panel Admin';
+?>
 <!DOCTYPE html>
 <html lang="id" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'Panel Admin') ?> - Ayong Store</title>
+    <title><?= esc($pageTitle) ?> - <?= esc($storeName) ?></title>
+    <?php if ($storeLogo): ?>
+        <link rel="icon" href="<?= base_url($storeLogo) ?>" type="image/png">
+        <link rel="shortcut icon" href="<?= base_url($storeLogo) ?>" type="image/png">
+    <?php endif; ?>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +29,6 @@
     <?php
     $role = session('admin_role');
     $currentUrl = current_url();
-    $storeLogo = (new \App\Models\StoreSettingModel())->getVal('store_logo');
     $flashSuccess = session()->getFlashdata('success');
     $flashError = session()->getFlashdata('error');
     $flashWarning = session()->getFlashdata('warning');

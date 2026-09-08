@@ -1,9 +1,29 @@
+<?php
+    $storeSettings = new \App\Models\StoreSettingModel();
+    $storeName = $storeSettings->getVal('store_name', 'Ayong Store');
+    $storeLogo = $storeSettings->getVal('store_logo');
+    $metaTitle = isset($title) ? $title : ($storeName . ' - Top Up Higgs Games Island Express');
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'Ayong Store - Top Up Higgs Games Island Express') ?></title>
+    <title><?= esc($metaTitle) ?></title>
+    
+    <!-- Dynamic Metadata -->
+    <meta name="description" content="<?= esc($metaDescription ?? 'Platform top up koin emas & item game otomatis, cepat, aman, dan terpercaya 24 jam nonstop.') ?>">
+    <meta name="keywords" content="<?= esc($metaKeywords ?? 'top up higgs, koin emas higgs, bongkar chip, topup higgs domino') ?>">
+    
+    <!-- OpenGraph Metadata -->
+    <meta property="og:title" content="<?= esc($metaTitle) ?>">
+    <meta property="og:description" content="<?= esc($metaDescription ?? 'Platform top up koin emas & item game otomatis, cepat, aman, dan terpercaya 24 jam nonstop.') ?>">
+    <meta property="og:site_name" content="<?= esc($storeName) ?>">
+    <?php if ($storeLogo): ?>
+        <meta property="og:image" content="<?= base_url($storeLogo) ?>">
+        <link rel="icon" href="<?= base_url($storeLogo) ?>" type="image/png">
+        <link rel="shortcut icon" href="<?= base_url($storeLogo) ?>" type="image/png">
+    <?php endif; ?>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
