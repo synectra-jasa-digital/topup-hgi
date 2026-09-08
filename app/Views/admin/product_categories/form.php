@@ -8,7 +8,7 @@
     <p class="section-subtitle">Atur struktur kategori untuk katalog produk publik.</p>
 </div>
 
-<form method="post" action="<?= $category ? base_url('admin/kategori-produk/' . $category['id'] . '/ubah') : base_url('admin/kategori-produk/tambah') ?>" class="max-w-xl space-y-5 panel-surface">
+<form method="post" action="<?= $category ? base_url('admin/kategori-produk/' . $category['id'] . '/ubah') : base_url('admin/kategori-produk/tambah') ?>" class="space-y-5 panel-surface">
     <?= csrf_field() ?>
     <div>
         <label for="name" class="form-label">Nama Kategori</label>

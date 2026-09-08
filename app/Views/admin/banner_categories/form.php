@@ -8,7 +8,7 @@
     <p class="section-subtitle">Gunakan nama yang singkat dan mudah dipahami.</p>
 </div>
 
-<form method="post" action="<?= $category ? base_url('admin/kategori-banner/' . $category['id'] . '/ubah') : base_url('admin/kategori-banner/tambah') ?>" class="max-w-lg space-y-5 panel-surface">
+<form method="post" action="<?= $category ? base_url('admin/kategori-banner/' . $category['id'] . '/ubah') : base_url('admin/kategori-banner/tambah') ?>" class="space-y-5 panel-surface">
     <?= csrf_field() ?>
     <div>
         <label for="name" class="form-label">Nama Kategori</label>

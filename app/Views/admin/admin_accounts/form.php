@@ -7,7 +7,7 @@
     <p class="section-subtitle">Atur kredensial dan peran akses dengan hati-hati.</p>
 </div>
 
-<form method="post" action="<?= $admin ? base_url('admin/akun-admin/' . $admin['id'] . '/ubah') : base_url('admin/akun-admin/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
+<form method="post" action="<?= $admin ? base_url('admin/akun-admin/' . $admin['id'] . '/ubah') : base_url('admin/akun-admin/tambah') ?>" class="space-y-5 panel-surface">
     <?= csrf_field() ?>
     <div>
         <label for="name" class="form-label">Nama</label>

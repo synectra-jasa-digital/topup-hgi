@@ -8,7 +8,7 @@
     <p class="section-subtitle">Atur potongan harga dengan konfigurasi yang jelas.</p>
 </div>
 
-<form method="post" action="<?= $voucher ? base_url('admin/voucher/' . $voucher['id'] . '/ubah') : base_url('admin/voucher/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
+<form method="post" action="<?= $voucher ? base_url('admin/voucher/' . $voucher['id'] . '/ubah') : base_url('admin/voucher/tambah') ?>" class="space-y-5 panel-surface">
     <?= csrf_field() ?>
     <div>
         <label for="code" class="form-label">Kode Voucher</label>

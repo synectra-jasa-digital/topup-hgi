@@ -16,7 +16,7 @@
         <p class="empty-state-copy">Tambahkan kategori produk terlebih dahulu sebelum membuat produk baru.</p>
     </div>
 <?php else: ?>
-    <form method="post" action="<?= $product ? base_url('admin/produk/' . $product['id'] . '/ubah') : base_url('admin/produk/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
+    <form method="post" action="<?= $product ? base_url('admin/produk/' . $product['id'] . '/ubah') : base_url('admin/produk/tambah') ?>" class="space-y-5 panel-surface">
         <?= csrf_field() ?>
         <div>
             <label for="category_id" class="form-label">Kategori</label>

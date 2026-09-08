@@ -17,7 +17,7 @@
         <p class="empty-state-copy">Buat kategori banner terlebih dahulu sebelum membuat banner baru.</p>
     </div>
 <?php else: ?>
-    <form method="post" enctype="multipart/form-data" action="<?= $banner ? base_url('admin/banner/' . $banner['id'] . '/ubah') : base_url('admin/banner/tambah') ?>" class="max-w-2xl space-y-5 panel-surface">
+    <form method="post" enctype="multipart/form-data" action="<?= $banner ? base_url('admin/banner/' . $banner['id'] . '/ubah') : base_url('admin/banner/tambah') ?>" class="space-y-5 panel-surface">
         <?= csrf_field() ?>
         <div>
             <label for="banner_category_id" class="form-label">Kategori Banner</label>
