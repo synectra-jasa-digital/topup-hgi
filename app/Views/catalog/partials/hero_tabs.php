@@ -97,7 +97,7 @@
           <?php if (! empty($b['link_url'])): ?>
             <a href="<?= esc($b['link_url']) ?>" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
           <?php endif; ?>
-            <img alt="<?= esc($b['title'] ?? 'Banner Promo') ?>" class="w-full h-full object-cover sm:object-contain object-center select-none bg-slate-950" src="<?= $imgUrl ?>">
+            <img alt="<?= esc($b['title'] ?? 'Banner Promo') ?>" class="w-full h-full object-cover sm:object-contain object-center select-none bg-slate-950" src="<?= $imgUrl ?>" width="1376" height="768" <?= $bIndex === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>>
           <?php if (! empty($b['link_url'])): ?>
             </a>
           <?php endif; ?>
