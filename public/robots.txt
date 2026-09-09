@@ -1,2 +1,8 @@
 User-agent: *
-Disallow: 
+Disallow: /admin
+Disallow: /login
+Disallow: /checkout
+Disallow: /pesanan
+Disallow: /webhook
+
+Sitemap: https://ayongstore.com/sitemap.xml

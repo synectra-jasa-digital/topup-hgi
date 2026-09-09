@@ -12,19 +12,44 @@
     <title><?= esc($metaTitle) ?></title>
     
     <!-- Dynamic Metadata -->
-    <meta name="description" content="<?= esc($metaDescription ?? 'Platform top up koin emas & item game otomatis, cepat, aman, dan terpercaya 24 jam nonstop.') ?>">
+    <?php $metaDesc = $metaDescription ?? 'Platform top up koin emas & item game otomatis, cepat, aman, dan terpercaya 24 jam nonstop.'; ?>
+    <meta name="description" content="<?= esc($metaDesc) ?>">
     <meta name="keywords" content="<?= esc($metaKeywords ?? 'top up higgs, koin emas higgs, bongkar chip, topup higgs domino') ?>">
-    
+    <meta name="robots" content="<?= (! empty($noindex)) ? 'noindex, nofollow' : 'index, follow' ?>">
+    <link rel="canonical" href="<?= current_url() ?>">
+
     <!-- OpenGraph Metadata -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?= current_url() ?>">
+    <meta property="og:locale" content="id_ID">
     <meta property="og:title" content="<?= esc($metaTitle) ?>">
-    <meta property="og:description" content="<?= esc($metaDescription ?? 'Platform top up koin emas & item game otomatis, cepat, aman, dan terpercaya 24 jam nonstop.') ?>">
+    <meta property="og:description" content="<?= esc($metaDesc) ?>">
     <meta property="og:site_name" content="<?= esc($storeName) ?>">
     <?php if ($storeLogo): ?>
         <meta property="og:image" content="<?= base_url($storeLogo) ?>">
         <link rel="icon" href="<?= base_url($storeLogo) ?>" type="image/png">
         <link rel="shortcut icon" href="<?= base_url($storeLogo) ?>" type="image/png">
     <?php endif; ?>
-    
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= esc($metaTitle) ?>">
+    <meta name="twitter:description" content="<?= esc($metaDesc) ?>">
+    <?php if ($storeLogo): ?>
+        <meta name="twitter:image" content="<?= base_url($storeLogo) ?>">
+    <?php endif; ?>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    <?= json_encode([
+        '@context' => 'https://schema.org',
+        '@type'    => 'Organization',
+        'name'     => $storeName,
+        'url'      => base_url('/'),
+        'logo'     => $storeLogo ? base_url($storeLogo) : null,
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">

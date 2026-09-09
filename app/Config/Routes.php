@@ -4,6 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
+$routes->get('sitemap.xml', 'Home::sitemap');
 $routes->get('kategori/(:segment)', 'Home::kategori/$1');
 
 $routes->get('checkout/(:num)', 'OrderController::create/$1');

@@ -29,14 +29,39 @@ class Home extends BaseController
 
         $adminWhatsapp = trim($settings->getVal('store_contact', (string) (getenv('wablas.adminPhone') ?: '')));
 
+        $storeName    = $settings->getVal('store_name', 'Ayong Store');
+        $categoryList = implode(', ', array_column($categories, 'name'));
+
         return view('catalog/index', [
-            'title'          => $settings->getVal('store_name', 'Ayong Store') . ' - Top Up & Game Store',
-            'banners'        => (new BannerModel())->listActiveForDisplay(),
-            'categories'     => $categories,
+            'title'           => $storeName . ' - Top Up & Game Store',
+            'metaDescription' => "Top up {$categoryList} otomatis di {$storeName}. Proses instan 24 jam, pembayaran QRIS/e-wallet/VA, harga bersaing.",
+            'banners'         => (new BannerModel())->listActiveForDisplay(),
+            'categories'      => $categories,
             'sections'        => $sections,
             'bongkarCatalogs' => $bongkarCatalogs->listActive(),
             'adminWhatsapp'   => $adminWhatsapp,
         ]);
+    }
+
+    public function sitemap()
+    {
+        $categories = (new ProductCategoryModel())->listActive();
+
+        $urls = [
+            ['loc' => base_url('/'), 'priority' => '1.0'],
+        ];
+        foreach ($categories as $category) {
+            $urls[] = ['loc' => base_url('kategori/' . $category['slug']), 'priority' => '0.8'];
+        }
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        foreach ($urls as $url) {
+            $xml .= '  <url><loc>' . esc($url['loc']) . '</loc><priority>' . $url['priority'] . '</priority></url>' . "\n";
+        }
+        $xml .= '</urlset>';
+
+        return $this->response->setContentType('application/xml')->setBody($xml);
     }
 
     public function kategori(string $slug): string
@@ -48,9 +73,10 @@ class Home extends BaseController
         }
 
         return view('catalog/category', [
-            'title'    => $category['name'] . ' - Ayong Store',
-            'category' => $category,
-            'products' => (new ProductModel())->listActiveByCategory($category['id']),
+            'title'           => 'Top Up ' . $category['name'] . ' - Ayong Store',
+            'metaDescription' => "Top up {$category['name']} murah, cepat, dan aman di Ayong Store. Pilih nominal, bayar instan, item langsung diproses.",
+            'category'        => $category,
+            'products'        => (new ProductModel())->listActiveByCategory($category['id']),
         ]);
     }
 }

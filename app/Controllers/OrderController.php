@@ -26,6 +26,7 @@ class OrderController extends BaseController
 
         return view('checkout/form', [
             'title'   => 'Checkout - Ayong Store',
+            'noindex' => true,
             'product' => $product,
         ]);
     }
@@ -83,7 +84,8 @@ class OrderController extends BaseController
     public function checkStatus()
     {
         return view('checkout/check_status', [
-            'title' => 'Cek Status Pesanan - Ayong Store'
+            'title'   => 'Cek Status Pesanan - Ayong Store',
+            'noindex' => true,
         ]);
     }
 
@@ -116,8 +118,9 @@ class OrderController extends BaseController
         }
 
         return view('checkout/invoice', [
-            'title' => 'Invoice ' . $order['invoice_number'] . ' - Ayong Store',
-            'order' => $order,
+            'title'   => 'Invoice ' . $order['invoice_number'] . ' - Ayong Store',
+            'noindex' => true,
+            'order'   => $order,
         ]);
     }
 
