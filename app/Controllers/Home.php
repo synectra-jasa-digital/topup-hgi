@@ -33,7 +33,7 @@ class Home extends BaseController
         $categoryList = implode(', ', array_column($categories, 'name'));
 
         return view('catalog/index', [
-            'title'           => $storeName . ' - Top Up & Game Store',
+            'title'           => $storeName . ' - Top Up Higgs Games Island',
             'metaDescription' => "Top up {$categoryList} otomatis di {$storeName}. Proses instan 24 jam, pembayaran QRIS/e-wallet/VA, harga bersaing.",
             'banners'         => (new BannerModel())->listActiveForDisplay(),
             'categories'      => $categories,
