@@ -31,11 +31,20 @@ class Home extends BaseController
 
         $storeName    = $settings->getVal('store_name', 'Ayong Store');
         $categoryList = implode(', ', array_column($categories, 'name'));
+        $banners      = (new BannerModel())->listActiveForDisplay();
+
+        $heroPreloadImage = null;
+        if (! empty($banners[0]['image_path']) && ! str_starts_with($banners[0]['image_path'], 'http')) {
+            $path = $banners[0]['image_path'];
+            $webp = str_ends_with($path, '.png') ? substr($path, 0, -4) . '.webp' : null;
+            $heroPreloadImage = base_url(($webp && is_file(FCPATH . $webp)) ? $webp : $path);
+        }
 
         return view('catalog/index', [
-            'title'           => $storeName . ' - Top Up Higgs Games Island',
-            'metaDescription' => "Top up {$categoryList} otomatis di {$storeName}. Proses instan 24 jam, pembayaran QRIS/e-wallet/VA, harga bersaing.",
-            'banners'         => (new BannerModel())->listActiveForDisplay(),
+            'title'            => $storeName . ' - Top Up Higgs Games Island',
+            'metaDescription'  => "Top up {$categoryList} otomatis di {$storeName}. Proses instan 24 jam, pembayaran QRIS/e-wallet/VA, harga bersaing.",
+            'heroPreloadImage' => $heroPreloadImage,
+            'banners'          => $banners,
             'categories'      => $categories,
             'sections'        => $sections,
             'bongkarCatalogs' => $bongkarCatalogs->listActive(),

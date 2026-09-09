@@ -10,6 +10,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($metaTitle) ?></title>
+    <?php if (! empty($heroPreloadImage)): ?>
+        <link rel="preload" as="image" href="<?= $heroPreloadImage ?>" fetchpriority="high">
+    <?php endif; ?>
     
     <!-- Dynamic Metadata -->
     <?php $metaDesc = $metaDescription ?? 'Platform top up koin emas & item game otomatis, cepat, aman, dan terpercaya 24 jam nonstop.'; ?>
