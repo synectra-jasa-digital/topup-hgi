@@ -84,8 +84,13 @@
     <!-- 3D Coverflow Track Container -->
     <div class="relative h-[210px] sm:h-[300px] md:h-[360px] lg:h-[400px] w-full flex items-center justify-center overflow-hidden py-2" id="coverflow-track">
       <?php foreach ($bannerList as $bIndex => $b): ?>
-        <?php 
-          $imgUrl = str_starts_with($b['image_path'], 'http') ? $b['image_path'] : base_url($b['image_path']);
+        <?php
+          $isLocal = ! str_starts_with($b['image_path'], 'http');
+          $imgUrl = $isLocal ? base_url($b['image_path']) : $b['image_path'];
+          $webpPath = ($isLocal && str_ends_with($b['image_path'], '.png'))
+              ? substr($b['image_path'], 0, -4) . '.webp'
+              : null;
+          $webpUrl = ($webpPath && is_file(FCPATH . $webpPath)) ? base_url($webpPath) : null;
           $initialState = match($bIndex) {
               0 => 'state-center',
               1 => 'state-right',
@@ -97,7 +102,12 @@
           <?php if (! empty($b['link_url'])): ?>
             <a href="<?= esc($b['link_url']) ?>" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
           <?php endif; ?>
-            <img alt="<?= esc($b['title'] ?? 'Banner Promo') ?>" class="w-full h-full object-cover sm:object-contain object-center select-none bg-slate-950" src="<?= $imgUrl ?>" width="900" height="502" <?= $bIndex === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>>
+            <picture>
+              <?php if ($webpUrl): ?>
+                <source srcset="<?= $webpUrl ?>" type="image/webp">
+              <?php endif; ?>
+              <img alt="<?= esc($b['title'] ?? 'Banner Promo') ?>" class="w-full h-full object-cover sm:object-contain object-center select-none bg-slate-950" src="<?= $imgUrl ?>" width="900" height="502" <?= $bIndex === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>>
+            </picture>
           <?php if (! empty($b['link_url'])): ?>
             </a>
           <?php endif; ?>
