@@ -33,18 +33,27 @@ class Home extends BaseController
         $categoryList = implode(', ', array_column($categories, 'name'));
         $banners      = (new BannerModel())->listActiveForDisplay();
 
-        $heroPreloadImage = null;
+        $heroPreloadImage  = null;
+        $heroPreloadSrcset = null;
         if (! empty($banners[0]['image_path']) && ! str_starts_with($banners[0]['image_path'], 'http')) {
             $path = $banners[0]['image_path'];
             $webp = str_ends_with($path, '.png') ? substr($path, 0, -4) . '.webp' : null;
             $heroPreloadImage = base_url(($webp && is_file(FCPATH . $webp)) ? $webp : $path);
+
+            if ($webp && is_file(FCPATH . $webp)) {
+                $webp700 = substr($webp, 0, -5) . '-700w.webp';
+                if (is_file(FCPATH . $webp700)) {
+                    $heroPreloadSrcset = base_url($webp700) . ' 700w, ' . base_url($webp) . ' 900w';
+                }
+            }
         }
 
         return view('catalog/index', [
-            'title'            => $storeName . ' - Top Up Higgs Games Island',
-            'metaDescription'  => "Top up {$categoryList} otomatis di {$storeName}. Proses instan 24 jam, pembayaran QRIS/e-wallet/VA, harga bersaing.",
-            'heroPreloadImage' => $heroPreloadImage,
-            'banners'          => $banners,
+            'title'             => $storeName . ' - Top Up Higgs Games Island',
+            'metaDescription'   => "Top up {$categoryList} otomatis di {$storeName}. Proses instan 24 jam, pembayaran QRIS/e-wallet/VA, harga bersaing.",
+            'heroPreloadImage'  => $heroPreloadImage,
+            'heroPreloadSrcset' => $heroPreloadSrcset,
+            'banners'           => $banners,
             'categories'      => $categories,
             'sections'        => $sections,
             'bongkarCatalogs' => $bongkarCatalogs->listActive(),

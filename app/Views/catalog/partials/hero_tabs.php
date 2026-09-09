@@ -91,6 +91,9 @@
               ? substr($b['image_path'], 0, -4) . '.webp'
               : null;
           $webpUrl = ($webpPath && is_file(FCPATH . $webpPath)) ? base_url($webpPath) : null;
+          $webp700Path = $webpPath ? substr($webpPath, 0, -5) . '-700w.webp' : null;
+          $webp700Url = ($webp700Path && is_file(FCPATH . $webp700Path)) ? base_url($webp700Path) : null;
+          $webpSrcset = $webpUrl ? trim(($webp700Url ? "{$webp700Url} 700w, " : '') . "{$webpUrl} 900w") : null;
           $initialState = match($bIndex) {
               0 => 'state-center',
               1 => 'state-right',
@@ -103,8 +106,8 @@
             <a href="<?= esc($b['link_url']) ?>" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
           <?php endif; ?>
             <picture>
-              <?php if ($webpUrl): ?>
-                <source srcset="<?= $webpUrl ?>" type="image/webp">
+              <?php if ($webpSrcset): ?>
+                <source srcset="<?= $webpSrcset ?>" sizes="(min-width: 1024px) 748px, (min-width: 768px) 62vw, (min-width: 640px) 72vw, 82vw" type="image/webp">
               <?php endif; ?>
               <img alt="<?= esc($b['title'] ?? 'Banner Promo') ?>" class="w-full h-full object-cover sm:object-contain object-center select-none bg-slate-950" src="<?= $imgUrl ?>" width="900" height="502" <?= $bIndex === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>>
             </picture>
