@@ -91,9 +91,11 @@
               ? substr($b['image_path'], 0, -4) . '.webp'
               : null;
           $webpUrl = ($webpPath && is_file(FCPATH . $webpPath)) ? base_url($webpPath) : null;
+          $webp400Path = $webpPath ? substr($webpPath, 0, -5) . '-400w.webp' : null;
+          $webp400Url = ($webp400Path && is_file(FCPATH . $webp400Path)) ? base_url($webp400Path) : null;
           $webp700Path = $webpPath ? substr($webpPath, 0, -5) . '-700w.webp' : null;
           $webp700Url = ($webp700Path && is_file(FCPATH . $webp700Path)) ? base_url($webp700Path) : null;
-          $webpSrcset = $webpUrl ? trim(($webp700Url ? "{$webp700Url} 700w, " : '') . "{$webpUrl} 900w") : null;
+          $webpSrcset = $webpUrl ? trim(($webp400Url ? "{$webp400Url} 400w, " : '') . ($webp700Url ? "{$webp700Url} 700w, " : '') . "{$webpUrl} 900w") : null;
           $initialState = match($bIndex) {
               0 => 'state-center',
               1 => 'state-right',

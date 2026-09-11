@@ -41,9 +41,18 @@ class Home extends BaseController
             $heroPreloadImage = base_url(($webp && is_file(FCPATH . $webp)) ? $webp : $path);
 
             if ($webp && is_file(FCPATH . $webp)) {
+                $webp400 = substr($webp, 0, -5) . '-400w.webp';
                 $webp700 = substr($webp, 0, -5) . '-700w.webp';
+                $tiers   = [];
+                if (is_file(FCPATH . $webp400)) {
+                    $tiers[] = base_url($webp400) . ' 400w';
+                }
                 if (is_file(FCPATH . $webp700)) {
-                    $heroPreloadSrcset = base_url($webp700) . ' 700w, ' . base_url($webp) . ' 900w';
+                    $tiers[] = base_url($webp700) . ' 700w';
+                }
+                if ($tiers !== []) {
+                    $tiers[]           = base_url($webp) . ' 900w';
+                    $heroPreloadSrcset = implode(', ', $tiers);
                 }
             }
         }
