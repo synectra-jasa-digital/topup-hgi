@@ -46,7 +46,7 @@
             <?php if (! empty($category['icon'])): ?>
                 <img src="<?= base_url($category['icon']) ?>" alt="" class="h-[18px] w-[18px] shrink-0 object-contain">
             <?php else: ?>
-                <span class="material-symbols-outlined text-[18px] <?= $index === 0 ? 'text-amber-300' : $color ?>" <?= $index === 0 && $category['slug'] === 'koin-emas' ? "style=\"font-variation-settings: 'FILL' 1;\"" : '' ?>><?= esc($icon) ?></span>
+                <span class="material-symbols-outlined text-[18px] <?= $index === 0 ? 'text-amber-300' : $color ?>"><?= esc($icon) ?></span>
             <?php endif; ?>
             <span class="truncate"><?= esc($category['name']) ?></span>
         </button>
