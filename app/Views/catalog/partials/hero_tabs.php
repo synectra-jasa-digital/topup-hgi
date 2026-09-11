@@ -13,7 +13,7 @@
     top: 50%;
     left: 50%;
     will-change: transform, opacity;
-    transition: transform 600ms cubic-bezier(0.25, 1, 0.5, 1), opacity 600ms ease, filter 600ms ease, box-shadow 600ms ease;
+    transition: transform 600ms cubic-bezier(0.25, 1, 0.5, 1), opacity 600ms ease;
   }
   .coverflow-slide.state-center {
     transform: translate(-50%, -50%) scale(1) translateX(0);
