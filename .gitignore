@@ -66,3 +66,11 @@ graphify-out/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+#Another Files
+.DS_Store
+.agent/
+TODO.md
+/docs/
+
+

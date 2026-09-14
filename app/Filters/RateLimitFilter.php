@@ -34,8 +34,14 @@ final class RateLimitFilter implements FilterInterface
             $bucket
         );
 
-        $count = (int) ($cache->get($key) ?? 0);
-        if ($count >= $limit) {
+        $count = $cache->increment($key);
+        if ($count === false) {
+            return null;
+        }
+        if ($count === 1) {
+            $cache->save($key, 1, $window + 1);
+        }
+        if ($count > $limit) {
             $retryAfter = max(1, ($bucket + 1) * $window - time());
 
             return service('response')

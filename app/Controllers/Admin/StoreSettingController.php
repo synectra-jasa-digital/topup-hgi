@@ -13,6 +13,7 @@ class StoreSettingController extends BaseController
 
     public function __construct()
     {
+        helper('upload');
         $this->settings = new StoreSettingModel();
     }
 
@@ -29,6 +30,9 @@ class StoreSettingController extends BaseController
 
         $logo = $this->request->getFile('logo');
         if ($logo && $logo->isValid()) {
+            if (! validate_uploaded_image_dimensions($logo, 2048, 2048)) {
+                return redirect()->back()->withInput()->with('errors', ['logo' => 'Dimensi logo tidak valid atau melebihi batas.']);
+            }
             $rules['logo'] = 'max_size[logo,2048]|is_image[logo]|mime_in[logo,image/jpeg,image/png,image/webp]|ext_in[logo,jpg,jpeg,png,webp]';
         }
 
@@ -49,7 +53,12 @@ class StoreSettingController extends BaseController
             $data['store_logo'] = $this->storeLogo($logo);
         }
 
+        $oldLogo = $this->settings->getVal('store_logo');
         $this->settings->batchSave($data);
+
+        if (isset($data['store_logo']) && $oldLogo !== $data['store_logo']) {
+            delete_public_asset($oldLogo);
+        }
 
         return redirect()->to('/admin/pengaturan-toko')->with('success', 'Pengaturan toko berhasil disimpan.');
     }

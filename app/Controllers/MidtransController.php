@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\OrderModel;
 use App\Models\OrderPaymentModel;
+use App\Models\VoucherModel;
+use App\Libraries\Money;
 use CodeIgniter\API\ResponseTrait;
 
 class MidtransController extends BaseController
@@ -32,9 +34,11 @@ class MidtransController extends BaseController
         }
 
         $orderModel = new OrderModel();
+        $orderModel->db->transStart();
         $order = $orderModel->findByInvoice($orderId);
 
         if (! $order) {
+            $orderModel->db->transRollback();
             return $this->failNotFound('Order not found');
         }
 
@@ -42,11 +46,13 @@ class MidtransController extends BaseController
         $fraudStatus = $notif['fraud_status'] ?? '';
 
         if ($transactionStatus === '') {
+            $orderModel->db->transRollback();
             return $this->fail('Missing transaction status', 400);
         }
 
         if (! self::amountsMatch($grossAmount, (string) $order['total_amount'])) {
             log_message('error', 'Midtrans Webhook Amount Mismatch for Order: ' . $orderId);
+            $orderModel->db->transRollback();
             return $this->fail('Invalid amount', 422);
         }
 
@@ -73,8 +79,9 @@ class MidtransController extends BaseController
         $orderPaymentModel = new OrderPaymentModel();
         $transactionId = (string) ($notif['transaction_id'] ?? '');
         $existingPayment = $orderPaymentModel->where('order_id', $order['id'])->first();
-        if ($existingPayment && $transactionId !== '' && $existingPayment['midtrans_transaction_id'] === $transactionId
-            && $order['status'] === $newStatus) {
+        $notificationKey = self::notificationKey($notif);
+        if ($existingPayment && $existingPayment['notification_key'] === $notificationKey) {
+            $orderModel->db->transComplete();
             return $this->respond(['status' => 'success']);
         }
 
@@ -82,6 +89,7 @@ class MidtransController extends BaseController
             'order_id'               => $order['id'],
             'midtrans_order_id'      => $orderId,
             'midtrans_transaction_id'=> $transactionId !== '' ? $transactionId : null,
+            'notification_key'       => $notificationKey,
             'payment_method'         => $notif['payment_type'] ?? 'unknown',
             'raw_notification'       => json_encode($notif),
         ];
@@ -90,7 +98,20 @@ class MidtransController extends BaseController
             $paymentData['paid_at'] = date('Y-m-d H:i:s');
         }
         
-        $orderModel->db->transStart();
+        $voucherModel = new VoucherModel();
+        if ($newStatus === 'diproses' && ! (int) ($order['voucher_committed'] ?? 0) && ! empty($order['voucher_id'])) {
+            if (! $voucherModel->commitReservation((int) $order['voucher_id'])) {
+                $orderModel->db->transRollback();
+                return $this->failServerError('Voucher reservation commit failed');
+            }
+            $orderModel->update($order['id'], ['voucher_reserved' => 0, 'voucher_committed' => 1, 'voucher_reserved_until' => null]);
+        } elseif ($newStatus === 'dibatalkan' && (int) ($order['voucher_reserved'] ?? 0) && ! empty($order['voucher_id'])) {
+            if (! $voucherModel->releaseReservation((int) $order['voucher_id'])) {
+                $orderModel->db->transRollback();
+                return $this->failServerError('Voucher reservation release failed');
+            }
+            $orderModel->update($order['id'], ['voucher_reserved' => 0, 'voucher_reserved_until' => null]);
+        }
         if ($order['status'] !== $newStatus) {
             $orderModel->update($order['id'], ['status' => $newStatus]);
         }
@@ -106,9 +127,12 @@ class MidtransController extends BaseController
         }
 
         if ($order['status'] !== 'diproses' && $newStatus === 'diproses') {
-            $wablas = new \App\Libraries\WablasGateway();
-            $freshOrder = $orderModel->find($order['id']);
-            $wablas->sendToAdminNewOrder($freshOrder);
+            $claimed = $orderModel->builder()->where('id', $order['id'])->where('wablas_notification_claimed', 0)->update(['wablas_notification_claimed' => 1]);
+            if ($claimed && $orderModel->db->affectedRows() === 1) {
+                $wablas = new \App\Libraries\WablasGateway();
+                $freshOrder = $orderModel->find($order['id']);
+                $wablas->sendToAdminNewOrder($freshOrder);
+            }
         }
 
         return $this->respond(['status' => 'success']);
@@ -116,7 +140,20 @@ class MidtransController extends BaseController
 
     private static function amountsMatch(string $received, string $expected): bool
     {
-        return number_format((float) $received, 2, '.', '') === number_format((float) $expected, 2, '.', '');
+        return Money::rupiah($received) === Money::rupiah($expected);
+    }
+
+    private static function notificationKey(array $notification): string
+    {
+        $identity = [];
+        foreach ([
+            'order_id', 'transaction_id', 'transaction_status', 'status_code',
+            'gross_amount', 'fraud_status', 'payment_type', 'settlement_time',
+        ] as $field) {
+            $identity[$field] = (string) ($notification[$field] ?? '');
+        }
+
+        return hash('sha256', json_encode($identity, JSON_UNESCAPED_SLASHES));
     }
 
     private static function canTransition(string $current, string $next): bool

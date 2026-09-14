@@ -19,6 +19,10 @@ class MidtransService
 
     public function getSnapToken(array $orderData): ?string
     {
+        if (! Config::$isProduction && str_contains((string) Config::$serverKey, 'DUMMY_KEY')) {
+            return 'snap-test-' . hash('sha256', (string) $orderData['invoice_number']);
+        }
+
         $params = [
             'transaction_details' => [
                 'order_id'     => $orderData['invoice_number'],

@@ -84,4 +84,28 @@ class WablasGateway
             return false;
         }
     }
+
+    public function sendToCustomerBongkarStatus(array $request): bool
+    {
+        if (empty($request['customer_whatsapp']) || empty($this->token)) {
+            return false;
+        }
+
+        $label = bongkar_status_label($request['status'] ?? 'pending');
+
+        $message = "Halo!\n\n";
+        $message .= "Pengajuan bongkar Anda dengan No. " . $request['request_number'] . " telah diperbarui menjadi status: " . $label . ".\n\n";
+        $message .= "Item: " . $request['catalog_name_snapshot'] . " (" . $request['unit_label_snapshot'] . ")\n";
+        $message .= "Jumlah: " . $request['quantity'] . "\n";
+        $message .= "Perkiraan Dana: Rp" . number_format($request['estimated_amount'], 0, ',', '.') . "\n";
+        $message .= "Metode Pencairan: " . $request['payout_method'] . "\n\n";
+
+        if ($label == 'Ditolak') {
+            $message .= "Mohon maaf, pengajuan bongkar Anda ditolak. Silakan hubungi admin untuk informasi lebih lanjut.";
+        } else {
+            $message .= "Terima kasih. Tim kami akan segera memproses pengajuana Anda.";
+        }
+
+        return $this->sendMessage($request['customer_whatsapp'], $message);
+    }
 }

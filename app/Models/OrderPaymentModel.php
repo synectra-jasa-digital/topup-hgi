@@ -11,7 +11,7 @@ class OrderPaymentModel extends Model
     protected $returnType    = 'array';
     protected $allowedFields = [
         'order_id', 'midtrans_order_id', 'midtrans_transaction_id', 'payment_method',
-        'payment_channel', 'paid_at', 'raw_notification'
+        'payment_channel', 'paid_at', 'raw_notification', 'notification_key'
     ];
     protected $useTimestamps = true;
 }

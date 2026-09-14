@@ -14,6 +14,7 @@ class ProductCategoryController extends BaseController
 
     public function __construct()
     {
+        helper('upload');
         $this->categories = new ProductCategoryModel();
         helper('text');
     }
@@ -35,6 +36,9 @@ class ProductCategoryController extends BaseController
         $icon = $this->request->getFile('icon');
         if ($icon && $icon->isValid() && ! $this->validate(['icon' => 'max_size[icon,1024]|is_image[icon]|mime_in[icon,image/jpeg,image/png,image/webp]|ext_in[icon,jpg,jpeg,png,webp]'])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+        if ($icon && $icon->isValid() && ! validate_uploaded_image_dimensions($icon, 1024, 1024)) {
+            return redirect()->back()->withInput()->with('errors', ['icon' => 'Dimensi ikon tidak valid atau melebihi batas.']);
         }
 
         $data = [
@@ -78,6 +82,9 @@ class ProductCategoryController extends BaseController
         if ($icon && $icon->isValid() && ! $this->validate(['icon' => 'max_size[icon,1024]|is_image[icon]|mime_in[icon,image/jpeg,image/png,image/webp]|ext_in[icon,jpg,jpeg,png,webp]'])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
+        if ($icon && $icon->isValid() && ! validate_uploaded_image_dimensions($icon, 1024, 1024)) {
+            return redirect()->back()->withInput()->with('errors', ['icon' => 'Dimensi ikon tidak valid atau melebihi batas.']);
+        }
 
         $data = [
             'id'         => $id,
@@ -93,6 +100,10 @@ class ProductCategoryController extends BaseController
 
         if (! $this->categories->save($data)) {
             return redirect()->back()->withInput()->with('errors', $this->categories->errors());
+        }
+
+        if (isset($data['icon']) && ! empty($category['icon']) && $category['icon'] !== $data['icon']) {
+            delete_public_asset($category['icon']);
         }
 
         return redirect()->to('/admin/kategori-produk')->with('success', 'Kategori berhasil diperbarui.');

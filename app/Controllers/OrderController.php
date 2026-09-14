@@ -3,10 +3,12 @@
 namespace App\Controllers;
 
 use App\Models\OrderModel;
-use App\Models\ProductModel;
 use App\Models\VoucherModel;
+use App\Models\ProductModel;
 use App\Libraries\MidtransService;
+use App\Libraries\Money;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\ResponseInterface;
 
 class OrderController extends BaseController
 {
@@ -26,6 +28,8 @@ class OrderController extends BaseController
     public function create(int $productId): string
     {
         $product = $this->findActiveProduct($productId);
+        session()->set('checkout_idempotency_token', bin2hex(random_bytes(32)));
+        $this->response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
 
         return view('checkout/form', [
             'title'   => 'Checkout - Ayong Store',
@@ -37,15 +41,24 @@ class OrderController extends BaseController
     public function store(int $productId)
     {
         $product = $this->findActiveProduct($productId);
+        $idempotencyToken = trim((string) $this->request->getPost('idempotency_token'));
+
+        if ($idempotencyToken !== '') {
+            $existingOrder = $this->orders->findByToken($idempotencyToken);
+            if ($existingOrder) {
+                return redirect()->to('/pesanan/' . $existingOrder['invoice_number'] . '/' . $existingOrder['public_access_token']);
+            }
+        }
 
         if (! $this->validate($this->orders->getValidationRules())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $subtotal    = (float) $product['sell_price'];
+        $subtotal    = Money::rupiah($product['sell_price']);
+        $this->orders->releaseExpiredVoucherReservations();
         $voucherCode = trim((string) $this->request->getPost('voucher_code'));
         $voucher     = null;
-        $discount    = 0.0;
+        $discount    = 0;
 
         if ($voucherCode !== '') {
             $voucher = $this->vouchers->findValid($voucherCode, $subtotal);
@@ -64,9 +77,14 @@ class OrderController extends BaseController
             'game_id'               => $this->request->getPost('game_id'),
             'whatsapp_number'       => $this->request->getPost('whatsapp_number'),
             'voucher_id'            => $voucher['id'] ?? null,
+            'voucher_reserved'      => $voucher ? 1 : 0,
+            'voucher_committed'     => 0,
+            'voucher_reserved_until' => $voucher ? date('Y-m-d H:i:s', time() + 900) : null,
             'discount_amount'       => $discount,
             'total_amount'          => $subtotal - $discount,
             'status'                => 'menunggu_pembayaran',
+            'idempotency_token'     => $idempotencyToken !== '' ? $idempotencyToken : null,
+            'public_access_token'   => bin2hex(random_bytes(32)),
         ];
 
         $snapToken = $this->midtrans->getSnapToken($data);
@@ -81,7 +99,7 @@ class OrderController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->orders->errors());
         }
 
-        if ($voucher && ! $this->vouchers->consume((int) $voucher['id'])) {
+        if ($voucher && ! $this->vouchers->reserve((int) $voucher['id'])) {
             $this->orders->db->transRollback();
             return redirect()->back()->withInput()->with('errors', ['voucher_code' => 'Voucher baru saja habis digunakan.']);
         }
@@ -91,11 +109,12 @@ class OrderController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Pesanan gagal disimpan. Silakan coba lagi.');
         }
 
-        return redirect()->to('/pesanan/' . $data['invoice_number']);
+        return redirect()->to('/pesanan/' . $data['invoice_number'] . '/' . $data['public_access_token']);
     }
 
     public function checkStatus()
     {
+        $this->response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
         return view('checkout/check_status', [
             'title'   => 'Cek Status Pesanan - Ayong Store',
             'noindex' => true,
@@ -105,7 +124,8 @@ class OrderController extends BaseController
     public function processCheckStatus()
     {
         $rules = [
-            'invoice_number' => ['label' => 'Nomor Invoice', 'rules' => 'required|max_length[30]']
+            'invoice_number' => ['label' => 'Nomor Invoice', 'rules' => 'required|max_length[30]'],
+            'access_token' => ['label' => 'Token Akses', 'rules' => 'required|exact_length[64]|alpha_numeric']
         ];
 
         if (! $this->validate($rules)) {
@@ -113,28 +133,41 @@ class OrderController extends BaseController
         }
 
         $invoiceNumber = trim((string) $this->request->getPost('invoice_number'));
-        $order = $this->orders->findByInvoice($invoiceNumber);
+        $accessToken = trim((string) $this->request->getPost('access_token'));
+        $order = $this->orders->findByPublicAccess($invoiceNumber, $accessToken);
 
         if (! $order) {
             return redirect()->back()->withInput()->with('error', 'Pesanan dengan Nomor Invoice tersebut tidak ditemukan.');
         }
 
-        return redirect()->to('/pesanan/' . $order['invoice_number']);
+        return redirect()->to('/pesanan/' . $order['invoice_number'] . '/' . $order['public_access_token']);
     }
 
-    public function invoice(string $invoiceNumber): string
+    public function invoice(string $invoiceNumber, string $accessToken): ResponseInterface
     {
-        $order = $this->orders->findByInvoice($invoiceNumber);
+        $order = $this->orders->findByPublicAccess($invoiceNumber, $accessToken);
 
         if (! $order) {
             throw PageNotFoundException::forPageNotFound();
         }
 
-        return view('checkout/invoice', [
+        $this->response->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        return $this->response->setBody(view('checkout/invoice', [
             'title'   => 'Invoice ' . $order['invoice_number'] . ' - Ayong Store',
             'noindex' => true,
             'order'   => $order,
-        ]);
+            'masked_game_id' => self::mask((string) $order['game_id']),
+            'masked_whatsapp' => self::mask((string) $order['whatsapp_number']),
+        ]));
+    }
+
+    private static function mask(string $value): string
+    {
+        $length = strlen($value);
+        if ($length <= 4) {
+            return str_repeat('*', $length);
+        }
+        return substr($value, 0, 2) . str_repeat('*', $length - 4) . substr($value, -2);
     }
 
     private function findActiveProduct(int $productId): array

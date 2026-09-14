@@ -13,6 +13,7 @@ class ProfileController extends BaseController
 
     public function __construct()
     {
+        helper('upload');
         $this->admins = new AdminModel();
         helper('activity');
     }
@@ -42,6 +43,9 @@ class ProfileController extends BaseController
 
         $photo = $this->request->getFile('photo');
         if ($photo && $photo->isValid()) {
+            if (! validate_uploaded_image_dimensions($photo, 2048, 2048)) {
+                return redirect()->back()->withInput()->with('errors', ['photo' => 'Dimensi foto tidak valid atau melebihi batas.']);
+            }
             $rules['photo'] = 'max_size[photo,2048]|is_image[photo]|mime_in[photo,image/jpeg,image/png,image/webp]|ext_in[photo,jpg,jpeg,png,webp]';
         }
 
@@ -69,6 +73,10 @@ class ProfileController extends BaseController
         }
 
         $this->admins->save($data);
+
+        if (isset($data['photo']) && ! empty($admin['photo']) && $admin['photo'] !== $data['photo']) {
+            delete_public_asset($admin['photo']);
+        }
 
         session()->set('admin_name', $data['name']);
         if (isset($data['photo'])) {

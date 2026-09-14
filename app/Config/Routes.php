@@ -7,13 +7,13 @@ $routes->get('/', 'Home::index');
 $routes->get('sitemap.xml', 'Home::sitemap');
 $routes->get('kategori/(:segment)', 'Home::kategori/$1');
 
-$routes->get('checkout/(:num)', 'OrderController::create/$1');
-$routes->post('checkout/(:num)', 'OrderController::store/$1');
-$routes->get('pesanan/(:segment)', 'OrderController::invoice/$1');
+$routes->get('checkout/(:num)', 'OrderController::create/$1', ['filter' => 'ratelimit:30:60']);
+$routes->post('checkout/(:num)', 'OrderController::store/$1', ['filter' => 'ratelimit:10:60']);
+$routes->get('pesanan/(:segment)/(:segment)', 'OrderController::invoice/$1/$2', ['filter' => 'ratelimit:30:60']);
 $routes->post('webhook/midtrans', 'MidtransController::webhook');
 $routes->post('bongkar/submit', 'BongkarController::submit', ['filter' => 'ratelimit:10:60']);
 
-$routes->get('cek-pesanan', 'OrderController::checkStatus');
+$routes->get('cek-pesanan', 'OrderController::checkStatus', ['filter' => 'ratelimit:30:60']);
 $routes->post('cek-pesanan', 'OrderController::processCheckStatus', ['filter' => 'ratelimit:10:60']);
 
 $routes->get('login', 'Admin\AuthController::loginForm');

@@ -34,11 +34,11 @@
             </div>
             <div class="flex justify-between items-center py-1 border-t border-slate-100">
                 <span class="text-slate-500">ID Akun Game</span>
-                <span class="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100"><?= esc($order['game_id']) ?></span>
+                <span class="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100"><?= esc($masked_game_id ?? $order['game_id']) ?></span>
             </div>
             <div class="flex justify-between items-center py-1 border-t border-slate-100">
                 <span class="text-slate-500">Nomor WhatsApp</span>
-                <span class="font-mono font-medium text-neutral-800"><?= esc($order['whatsapp_number']) ?></span>
+                <span class="font-mono font-medium text-neutral-800"><?= esc($masked_whatsapp ?? $order['whatsapp_number']) ?></span>
             </div>
 
             <?php if ((float) $order['discount_amount'] > 0): ?>

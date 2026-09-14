@@ -15,6 +15,7 @@ class BannerController extends BaseController
 
     public function __construct()
     {
+        helper('upload');
         $this->banners    = new BannerModel();
         $this->categories = new BannerCategoryModel();
     }
@@ -76,8 +77,14 @@ class BannerController extends BaseController
         }
 
         $image = $this->request->getFile('image');
+        if ($image && $image->isValid() && ! validate_uploaded_image_dimensions($image)) {
+            return redirect()->back()->withInput()->with('errors', ['image' => 'Dimensi gambar tidak valid atau melebihi batas.']);
+        }
         $rules = $this->banners->getValidationRules();
         if ($image && $image->isValid()) {
+            if (! validate_uploaded_image_dimensions($image)) {
+                return redirect()->back()->withInput()->with('errors', ['image' => 'Dimensi gambar tidak valid atau melebihi batas.']);
+            }
             $rules['image'] = 'max_size[image,2048]|is_image[image]|mime_in[image,image/jpeg,image/png,image/webp]|ext_in[image,jpg,jpeg,png,webp]';
         }
 
@@ -94,6 +101,10 @@ class BannerController extends BaseController
 
         if (! $this->banners->save($data)) {
             return redirect()->back()->withInput()->with('errors', $this->banners->errors());
+        }
+
+        if (isset($data['image_path']) && isset($banner['image_path']) && $banner['image_path'] !== $data['image_path']) {
+            delete_public_asset($banner['image_path']);
         }
 
         return redirect()->to('/admin/banner')->with('success', 'Banner berhasil diperbarui.');
