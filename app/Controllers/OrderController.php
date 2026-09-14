@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\OrderModel;
 use App\Models\ProductModel;
 use App\Models\VoucherModel;
+use App\Libraries\MidtransService;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class OrderController extends BaseController
@@ -12,12 +13,14 @@ class OrderController extends BaseController
     protected ProductModel $products;
     protected OrderModel $orders;
     protected VoucherModel $vouchers;
+    protected MidtransService $midtrans;
 
-    public function __construct()
+    public function __construct(?MidtransService $midtrans = null)
     {
         $this->products = new ProductModel();
         $this->orders   = new OrderModel();
         $this->vouchers = new VoucherModel();
+        $this->midtrans = $midtrans ?? new MidtransService();
     }
 
     public function create(int $productId): string
@@ -66,16 +69,26 @@ class OrderController extends BaseController
             'status'                => 'menunggu_pembayaran',
         ];
 
-        $midtransService = new \App\Libraries\MidtransService();
-        $snapToken = $midtransService->getSnapToken($data);
+        $snapToken = $this->midtrans->getSnapToken($data);
+        if ($snapToken === null || $snapToken === '') {
+            return redirect()->back()->withInput()->with('error', 'Pembayaran sedang tidak tersedia. Silakan coba lagi.');
+        }
         $data['snap_token'] = $snapToken;
 
+        $this->orders->db->transStart();
         if (! $this->orders->save($data)) {
+            $this->orders->db->transRollback();
             return redirect()->back()->withInput()->with('errors', $this->orders->errors());
         }
 
-        if ($voucher) {
-            $this->vouchers->incrementUsage($voucher['id']);
+        if ($voucher && ! $this->vouchers->consume((int) $voucher['id'])) {
+            $this->orders->db->transRollback();
+            return redirect()->back()->withInput()->with('errors', ['voucher_code' => 'Voucher baru saja habis digunakan.']);
+        }
+        $this->orders->db->transComplete();
+
+        if (! $this->orders->db->transStatus()) {
+            return redirect()->back()->withInput()->with('error', 'Pesanan gagal disimpan. Silakan coba lagi.');
         }
 
         return redirect()->to('/pesanan/' . $data['invoice_number']);

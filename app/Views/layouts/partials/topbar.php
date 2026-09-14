@@ -37,10 +37,13 @@ $topbarTitle = $title ?? 'Dashboard';
                     Profil Saya
                 </a>
                 <div class="my-1 border-t border-neutral-100"></div>
-                <a href="<?= base_url('admin/logout') ?>" data-confirm="Yakin ingin keluar dari panel admin?" data-confirm-title="Logout" data-confirm-button="Ya, keluar" class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-danger transition hover:bg-danger/5">
-                    <span class="material-symbols-outlined text-[18px]">logout</span>
-                    Keluar
-                </a>
+                <form method="post" action="<?= base_url('admin/logout') ?>" data-confirm="Yakin ingin keluar dari panel admin?" data-confirm-title="Logout" data-confirm-button="Ya, keluar">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm text-danger transition hover:bg-danger/5">
+                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                        Keluar
+                    </button>
+                </form>
             </div>
         </div>
     </div>

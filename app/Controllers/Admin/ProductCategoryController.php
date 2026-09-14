@@ -33,7 +33,7 @@ class ProductCategoryController extends BaseController
     public function store()
     {
         $icon = $this->request->getFile('icon');
-        if ($icon && $icon->isValid() && ! $this->validate(['icon' => 'max_size[icon,1024]|is_image[icon]'])) {
+        if ($icon && $icon->isValid() && ! $this->validate(['icon' => 'max_size[icon,1024]|is_image[icon]|mime_in[icon,image/jpeg,image/png,image/webp]|ext_in[icon,jpg,jpeg,png,webp]'])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -75,7 +75,7 @@ class ProductCategoryController extends BaseController
         }
 
         $icon = $this->request->getFile('icon');
-        if ($icon && $icon->isValid() && ! $this->validate(['icon' => 'max_size[icon,1024]|is_image[icon]'])) {
+        if ($icon && $icon->isValid() && ! $this->validate(['icon' => 'max_size[icon,1024]|is_image[icon]|mime_in[icon,image/jpeg,image/png,image/webp]|ext_in[icon,jpg,jpeg,png,webp]'])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 

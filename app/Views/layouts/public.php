@@ -9,6 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?= csrf_meta() ?>
     <title><?= esc($metaTitle) ?></title>
     <?php if (! empty($heroPreloadImage)): ?>
         <link rel="preload" as="image" href="<?= $heroPreloadImage ?>" fetchpriority="high" <?= ! empty($heroPreloadSrcset) ? 'imagesrcset="' . $heroPreloadSrcset . '" imagesizes="(min-width: 1024px) 748px, (min-width: 768px) 62vw, (min-width: 640px) 72vw, 82vw"' : '' ?>>
@@ -193,6 +194,5 @@
     </footer>
 </body>
 </html>
-
 
 

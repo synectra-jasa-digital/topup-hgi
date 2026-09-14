@@ -33,6 +33,7 @@ class AuthController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Email atau kata sandi salah.');
         }
 
+        session()->regenerate(true);
         session()->set([
             'admin_id'    => $admin['id'],
             'admin_name'  => $admin['name'],
@@ -45,7 +46,7 @@ class AuthController extends BaseController
 
     public function logout()
     {
-        session()->remove(['admin_id', 'admin_name', 'admin_role', 'admin_photo']);
+        session()->destroy();
 
         return redirect()->to('/admin/login')->with('success', 'Berhasil keluar.');
     }

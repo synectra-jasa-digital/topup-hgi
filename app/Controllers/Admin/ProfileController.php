@@ -42,7 +42,7 @@ class ProfileController extends BaseController
 
         $photo = $this->request->getFile('photo');
         if ($photo && $photo->isValid()) {
-            $rules['photo'] = 'max_size[photo,2048]|is_image[photo]';
+            $rules['photo'] = 'max_size[photo,2048]|is_image[photo]|mime_in[photo,image/jpeg,image/png,image/webp]|ext_in[photo,jpg,jpeg,png,webp]';
         }
 
         if (! $this->validate($rules)) {

@@ -55,8 +55,22 @@ class VoucherModel extends Model
         return min($discount, $subtotal);
     }
 
+    public function consume(int $id): bool
+    {
+        $this->set('used_count', 'used_count + 1', false)
+            ->where('id', $id)
+            ->where('is_active', 1)
+            ->groupStart()
+                ->where('quota', 0)
+                ->orWhere('used_count < quota', null, false)
+            ->groupEnd()
+            ->update();
+
+        return $this->db->affectedRows() === 1;
+    }
+
     public function incrementUsage(int $id): void
     {
-        $this->set('used_count', 'used_count + 1', false)->update($id);
+        $this->consume($id);
     }
 }

@@ -70,7 +70,7 @@ class Session extends BaseConfig
      * WARNING: If you're using the database driver, don't forget to update
      *          your session table's PRIMARY KEY when changing this setting.
      */
-    public bool $matchIP = false;
+    public bool $matchIP = true;
 
     /**
      * --------------------------------------------------------------------------
@@ -90,7 +90,7 @@ class Session extends BaseConfig
      * when auto-regenerating the session ID. When set to FALSE, the data
      * will be later deleted by the garbage collector.
      */
-    public bool $regenerateDestroy = false;
+    public bool $regenerateDestroy = true;
 
     /**
      * --------------------------------------------------------------------------
@@ -125,4 +125,23 @@ class Session extends BaseConfig
      * seconds.
      */
     public int $lockMaxRetries = 300;
+
+    /**
+     * --------------------------------------------------------------------------
+     * Session Cookie Parameters
+     * --------------------------------------------------------------------------
+     *
+     * Secures the session cookie in production:
+     * - Secure: only send over HTTPS
+     * - HttpOnly: not accessible to JavaScript (XSS mitigation)
+     * - SameSite: mitigates CSRF
+     */
+    public array $cookie = [
+        'name'     => 'ci_session',
+        'path'     => '/',
+        'domain'   => null,
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ];
 }

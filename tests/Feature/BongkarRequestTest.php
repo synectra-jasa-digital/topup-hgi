@@ -59,7 +59,10 @@ final class BongkarRequestTest extends CIUnitTestCase
         putenv('wablas.adminPhone=081234567890');
         $_ENV['wablas.adminPhone'] = '081234567890';
 
-        $result = $this->withBodyFormat('json')
+        $result = $this->withHeaders([
+                csrf_header() => csrf_hash(),
+            ])
+            ->withBodyFormat('json')
             ->withBody(json_encode([
                 'bongkar_catalog_id' => 1,
                 'quantity' => 2,
@@ -80,5 +83,38 @@ final class BongkarRequestTest extends CIUnitTestCase
         self::assertSame('Kartu Ungu', $request['catalog_name_snapshot']);
         self::assertSame('2', (string) $request['quantity']);
         self::assertSame(130000.0, (float) $request['estimated_amount']);
+    }
+
+    public function testBongkarSubmitRequiresCsrfToken(): void
+    {
+        $this->expectException(\CodeIgniter\Security\Exceptions\SecurityException::class);
+
+        $result = $this->withBodyFormat('json')
+            ->withBody(json_encode([
+                'bongkar_catalog_id' => 1,
+                'quantity' => 1,
+                'customer_whatsapp' => '081299988877',
+                'payout_method' => 'BCA',
+            ]))
+            ->post('bongkar/submit');
+
+    }
+
+    public function testBongkarSubmitRejectsInvalidInput(): void
+    {
+        $result = $this->withHeaders([
+                csrf_header() => csrf_hash(),
+            ])->withBodyFormat('json')->withBody(json_encode([
+                'bongkar_catalog_id' => 1,
+                'quantity' => 1001,
+                'customer_whatsapp' => 'not-a-phone',
+                'payout_method' => 'UNKNOWN',
+                'customer_note' => str_repeat('x', 501),
+            ]))->post('bongkar/submit');
+
+        $result->assertStatus(400);
+        self::assertStringContainsString('quantity', $result->getBody());
+        self::assertStringContainsString('customer_whatsapp', $result->getBody());
+        self::assertStringContainsString('payout_method', $result->getBody());
     }
 }

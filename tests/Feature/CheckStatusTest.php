@@ -50,8 +50,9 @@ class CheckStatusTest extends CIUnitTestCase
         $categoryModel->db->query('PRAGMA foreign_keys = ON');
 
         $result = $this->call('post', 'cek-pesanan', [
-            'invoice_number' => 'INV99999'
-        ]);
+                csrf_token() => csrf_hash(),
+                'invoice_number' => 'INV99999',
+            ]);
 
         $result->assertRedirectTo('/pesanan/INV99999');
     }
@@ -59,8 +60,9 @@ class CheckStatusTest extends CIUnitTestCase
     public function testCheckStatusNotFound()
     {
         $result = $this->withSession()->call('post', 'cek-pesanan', [
-            'invoice_number' => 'INVKOSONG'
-        ]);
+                csrf_token() => csrf_hash(),
+                'invoice_number' => 'INVKOSONG',
+            ]);
 
         $result->assertRedirect();
         $this->assertTrue(session()->has('error'));

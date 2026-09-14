@@ -9,6 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?= csrf_meta() ?>
     <title><?= esc($pageTitle) ?> - <?= esc($storeName) ?></title>
     <?php if ($storeLogo): ?>
         <link rel="icon" href="<?= base_url($storeLogo) ?>" type="image/png">

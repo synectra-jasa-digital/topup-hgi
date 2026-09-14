@@ -14,19 +14,19 @@ class MidtransController extends BaseController
     {
         $serverKey = getenv('midtrans.serverKey') ?: $_ENV['midtrans.serverKey'] ?? '';
         $json = $this->request->getBody();
-        
         $notif = json_decode($json, true);
-        if (! $notif) {
+        if (! is_array($notif)) {
             return $this->fail('Invalid JSON format', 400);
         }
 
-        $orderId = $notif['order_id'] ?? null;
-        $statusCode = $notif['status_code'] ?? null;
-        $grossAmount = $notif['gross_amount'] ?? null;
-        $signatureKey = $notif['signature_key'] ?? null;
+        $orderId      = (string) ($notif['order_id'] ?? '');
+        $statusCode   = (string) ($notif['status_code'] ?? '');
+        $grossAmount  = (string) ($notif['gross_amount'] ?? '');
+        $signatureKey = (string) ($notif['signature_key'] ?? '');
 
         $calculatedSignatureKey = hash("sha512", $orderId . $statusCode . $grossAmount . $serverKey);
-        if ($calculatedSignatureKey !== $signatureKey) {
+        if ($orderId === '' || $statusCode === '' || $grossAmount === '' || $signatureKey === ''
+            || ! hash_equals($calculatedSignatureKey, $signatureKey)) {
             log_message('error', 'Midtrans Webhook Invalid Signature for Order: ' . $orderId);
             return $this->fail('Invalid signature', 403);
         }
@@ -38,41 +38,50 @@ class MidtransController extends BaseController
             return $this->failNotFound('Order not found');
         }
 
-        $transactionStatus = $notif['transaction_status'];
+        $transactionStatus = (string) ($notif['transaction_status'] ?? '');
         $fraudStatus = $notif['fraud_status'] ?? '';
-        
+
+        if ($transactionStatus === '') {
+            return $this->fail('Missing transaction status', 400);
+        }
+
+        if (! self::amountsMatch($grossAmount, (string) $order['total_amount'])) {
+            log_message('error', 'Midtrans Webhook Amount Mismatch for Order: ' . $orderId);
+            return $this->fail('Invalid amount', 422);
+        }
+
         $newStatus = $order['status'];
-        
-        if ($transactionStatus == 'capture') {
+
+        if ($transactionStatus === 'capture') {
             if ($fraudStatus == 'challenge') {
                 $newStatus = 'menunggu_pembayaran';
             } else if ($fraudStatus == 'accept') {
                 $newStatus = 'diproses';
             }
-        } else if ($transactionStatus == 'settlement') {
+        } else if ($transactionStatus === 'settlement') {
             $newStatus = 'diproses';
-        } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
+        } else if (in_array($transactionStatus, ['cancel', 'deny', 'expire'], true)) {
             $newStatus = 'dibatalkan';
-        } else if ($transactionStatus == 'pending') {
+        } else if ($transactionStatus === 'pending') {
             $newStatus = 'menunggu_pembayaran';
         }
 
-        if ($order['status'] !== $newStatus) {
-            $orderModel->update($order['id'], ['status' => $newStatus]);
-
-            if (in_array($newStatus, ['diproses']) && !in_array($order['status'], ['diproses'])) {
-                $wablas = new \App\Libraries\WablasGateway();
-                $freshOrder = $orderModel->find($order['id']);
-                $wablas->sendToAdminNewOrder($freshOrder);
-            }
+        if (! self::canTransition($order['status'], $newStatus)) {
+            $newStatus = $order['status'];
         }
 
         $orderPaymentModel = new OrderPaymentModel();
-        
+        $transactionId = (string) ($notif['transaction_id'] ?? '');
+        $existingPayment = $orderPaymentModel->where('order_id', $order['id'])->first();
+        if ($existingPayment && $transactionId !== '' && $existingPayment['midtrans_transaction_id'] === $transactionId
+            && $order['status'] === $newStatus) {
+            return $this->respond(['status' => 'success']);
+        }
+
         $paymentData = [
             'order_id'               => $order['id'],
-            'midtrans_order_id'      => $notif['order_id'] ?? null,
-            'midtrans_transaction_id'=> $notif['transaction_id'] ?? null,
+            'midtrans_order_id'      => $orderId,
+            'midtrans_transaction_id'=> $transactionId !== '' ? $transactionId : null,
             'payment_method'         => $notif['payment_type'] ?? 'unknown',
             'raw_notification'       => json_encode($notif),
         ];
@@ -81,13 +90,48 @@ class MidtransController extends BaseController
             $paymentData['paid_at'] = date('Y-m-d H:i:s');
         }
         
-        $existingPayment = $orderPaymentModel->where('order_id', $order['id'])->first();
+        $orderModel->db->transStart();
+        if ($order['status'] !== $newStatus) {
+            $orderModel->update($order['id'], ['status' => $newStatus]);
+        }
         if ($existingPayment) {
             $orderPaymentModel->update($existingPayment['id'], $paymentData);
         } else {
             $orderPaymentModel->insert($paymentData);
         }
+        $orderModel->db->transComplete();
+
+        if (! $orderModel->db->transStatus()) {
+            return $this->failServerError('Payment update failed');
+        }
+
+        if ($order['status'] !== 'diproses' && $newStatus === 'diproses') {
+            $wablas = new \App\Libraries\WablasGateway();
+            $freshOrder = $orderModel->find($order['id']);
+            $wablas->sendToAdminNewOrder($freshOrder);
+        }
 
         return $this->respond(['status' => 'success']);
+    }
+
+    private static function amountsMatch(string $received, string $expected): bool
+    {
+        return number_format((float) $received, 2, '.', '') === number_format((float) $expected, 2, '.', '');
+    }
+
+    private static function canTransition(string $current, string $next): bool
+    {
+        if ($current === $next) {
+            return true;
+        }
+        if (in_array($current, ['selesai', 'dibatalkan'], true)) {
+            return false;
+        }
+        return match ($next) {
+            'diproses'   => $current === 'menunggu_pembayaran',
+            'dibatalkan' => $current === 'menunggu_pembayaran',
+            'menunggu_pembayaran' => $current === 'menunggu_pembayaran',
+            default      => false,
+        };
     }
 }

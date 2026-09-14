@@ -29,7 +29,7 @@ class StoreSettingController extends BaseController
 
         $logo = $this->request->getFile('logo');
         if ($logo && $logo->isValid()) {
-            $rules['logo'] = 'max_size[logo,2048]|is_image[logo]';
+            $rules['logo'] = 'max_size[logo,2048]|is_image[logo]|mime_in[logo,image/jpeg,image/png,image/webp]|ext_in[logo,jpg,jpeg,png,webp]';
         }
 
         if (! $this->validate($rules)) {

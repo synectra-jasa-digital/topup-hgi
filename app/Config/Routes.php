@@ -11,10 +11,10 @@ $routes->get('checkout/(:num)', 'OrderController::create/$1');
 $routes->post('checkout/(:num)', 'OrderController::store/$1');
 $routes->get('pesanan/(:segment)', 'OrderController::invoice/$1');
 $routes->post('webhook/midtrans', 'MidtransController::webhook');
-$routes->post('bongkar/submit', 'BongkarController::submit');
+$routes->post('bongkar/submit', 'BongkarController::submit', ['filter' => 'ratelimit:10:60']);
 
 $routes->get('cek-pesanan', 'OrderController::checkStatus');
-$routes->post('cek-pesanan', 'OrderController::processCheckStatus');
+$routes->post('cek-pesanan', 'OrderController::processCheckStatus', ['filter' => 'ratelimit:10:60']);
 
 $routes->get('login', 'Admin\AuthController::loginForm');
 $routes->post('login', 'Admin\AuthController::login');
@@ -22,7 +22,7 @@ $routes->get('admin/login', 'Admin\AuthController::loginForm');
 $routes->post('admin/login', 'Admin\AuthController::login');
 
 $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
-    $routes->get('logout', 'Admin\AuthController::logout');
+    $routes->post('logout', 'Admin\AuthController::logout');
     $routes->get('dashboard', 'Admin\DashboardController::index');
 
     $routes->get('profile', 'Admin\ProfileController::index');
@@ -123,3 +123,4 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('pengaturan-toko', 'Admin\StoreSettingController::index', ['filter' => 'role:owner']);
     $routes->post('pengaturan-toko', 'Admin\StoreSettingController::update', ['filter' => 'role:owner']);
 });
+

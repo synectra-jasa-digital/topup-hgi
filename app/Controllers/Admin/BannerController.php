@@ -37,7 +37,7 @@ class BannerController extends BaseController
     public function store()
     {
         $rules = $this->banners->getValidationRules();
-        $rules['image'] = 'uploaded[image]|max_size[image,2048]|is_image[image]';
+        $rules['image'] = 'uploaded[image]|max_size[image,2048]|is_image[image]|mime_in[image,image/jpeg,image/png,image/webp]|ext_in[image,jpg,jpeg,png,webp]';
 
         if (! $this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
@@ -78,7 +78,7 @@ class BannerController extends BaseController
         $image = $this->request->getFile('image');
         $rules = $this->banners->getValidationRules();
         if ($image && $image->isValid()) {
-            $rules['image'] = 'max_size[image,2048]|is_image[image]';
+            $rules['image'] = 'max_size[image,2048]|is_image[image]|mime_in[image,image/jpeg,image/png,image/webp]|ext_in[image,jpg,jpeg,png,webp]';
         }
 
         if (! $this->validate($rules)) {
