@@ -17,7 +17,7 @@ class DashboardController extends BaseController
 
         $data = [
             'role'         => $role,
-            'pendingCount' => $orders->whereIn('status', ['dibayar', 'diproses'])->countAllResults(),
+            'pendingCount' => $orders->whereIn('status', ['menunggu_verifikasi', 'diproses'])->countAllResults(),
             'recentLogs'   => $logs->listWithAdmin(null, 5),
             'statusCounts' => $orders->countByStatus(),
         ];

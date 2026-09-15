@@ -8,7 +8,9 @@ class DropSnapTokenFromOrders extends Migration
 {
     public function up()
     {
-        $this->forge->dropColumn('orders', 'snap_token');
+        if ($this->db->fieldExists('snap_token', 'orders')) {
+            $this->forge->dropColumn('orders', 'snap_token');
+        }
     }
 
     public function down()

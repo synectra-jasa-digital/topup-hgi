@@ -55,7 +55,7 @@ $shortcutCards = $isOwner ? array_merge($adminCards, $ownerCards) : $adminCards;
             </div>
         <?php endif; ?>
 
-        <a href="<?= base_url('admin/pesanan?status=dibayar') ?>" class="stat-tile block transition hover:border-primary/30 hover:bg-neutral-50">
+        <a href="<?= base_url('admin/pesanan?status=menunggu_verifikasi') ?>" class="stat-tile block transition hover:border-primary/30 hover:bg-neutral-50">
             <p class="stat-label">Perlu Ditindaklanjuti</p>
             <p class="stat-value"><?= $pendingCount ?></p>
             <p class="mt-1 text-sm text-neutral-500">Pesanan menunggu diproses</p>
@@ -77,7 +77,7 @@ $shortcutCards = $isOwner ? array_merge($adminCards, $ownerCards) : $adminCards;
             <?php
             $statusMeta = [
                 'menunggu_pembayaran' => ['dot' => 'bg-amber-500', 'active_border' => 'hover:border-amber-400/60'],
-                'dibayar'             => ['dot' => 'bg-blue-500', 'active_border' => 'hover:border-blue-400/60'],
+                'menunggu_verifikasi' => ['dot' => 'bg-blue-500', 'active_border' => 'hover:border-blue-400/60'],
                 'diproses'            => ['dot' => 'bg-indigo-500', 'active_border' => 'hover:border-indigo-400/60'],
                 'selesai'             => ['dot' => 'bg-emerald-500', 'active_border' => 'hover:border-emerald-400/60'],
                 'gagal'               => ['dot' => 'bg-rose-500', 'active_border' => 'hover:border-rose-400/60'],
