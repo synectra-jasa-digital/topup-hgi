@@ -209,6 +209,13 @@
       });
     });
 
+    const defaultPayMethodCard = document.querySelector('.pay-method-card.selected');
+    if (defaultPayMethodCard) {
+      state.payMethodChannelId = defaultPayMethodCard.getAttribute('data-channel-id');
+      state.payMethod = defaultPayMethodCard.getAttribute('data-method') || '';
+      updateReceiptUI();
+    }
+
     // Promo Coupon Logic
     const btnSampleCoupon = document.getElementById('btn-sample-coupon');
     const receiptPromoInput = document.getElementById('receipt-promo-input');
