@@ -27,6 +27,12 @@ class DropOrderPayments extends Migration
             'updated_at'             => ['type' => 'DATETIME', 'null' => true],
         ]);
         $this->forge->addKey('id', true);
+        $this->forge->addUniqueKey('order_id');
+        $this->forge->addForeignKey('order_id', 'orders', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('order_payments');
+
+        // Restore the unique index on midtrans_transaction_id
+        $table = $this->db->DBPrefix . 'order_payments';
+        $this->db->query("CREATE UNIQUE INDEX uq_order_payments_midtrans_transaction_id ON {$table} (midtrans_transaction_id)");
     }
 }
