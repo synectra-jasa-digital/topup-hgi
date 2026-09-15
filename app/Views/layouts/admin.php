@@ -43,6 +43,7 @@
         ['label' => 'Daftar Pesanan', 'icon' => 'shopping_cart', 'href' => base_url('admin/pesanan'), 'match' => 'admin/pesanan'],
         ['label' => 'Voucher Diskon', 'icon' => 'confirmation_number', 'href' => base_url('admin/voucher'), 'match' => 'admin/voucher'],
         ['label' => 'Katalog Bongkar', 'icon' => 'inventory', 'href' => base_url('admin/bongkar-katalog'), 'match' => 'bongkar-katalog'],
+        ['label' => 'Metode Pencairan', 'icon' => 'account_balance', 'href' => base_url('admin/bongkar-metode-pencairan'), 'match' => 'bongkar-metode-pencairan'],
         ['label' => 'Pesanan Bongkar', 'icon' => 'currency_exchange', 'href' => base_url('admin/bongkar-pesanan'), 'match' => 'bongkar-pesanan'],
     ];
     ?>

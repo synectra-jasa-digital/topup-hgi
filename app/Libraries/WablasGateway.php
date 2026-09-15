@@ -13,7 +13,7 @@ class WablasGateway
     public function __construct()
     {
         $this->domain = getenv('wablas.domain') ?: $_ENV['wablas.domain'] ?? '';
-        $this->token = getenv('wablas.token') ?: $_ENV['wablas.token'] ?? '';
+        $this->token = (new IntegrationSettings())->get('wablas_key', 'wablas.token');
         $this->adminPhone = getenv('wablas.adminPhone') ?: $_ENV['wablas.adminPhone'] ?? '';
     }
 
@@ -98,7 +98,14 @@ class WablasGateway
         $message .= "Item: " . $request['catalog_name_snapshot'] . " (" . $request['unit_label_snapshot'] . ")\n";
         $message .= "Jumlah: " . $request['quantity'] . "\n";
         $message .= "Perkiraan Dana: Rp" . number_format($request['estimated_amount'], 0, ',', '.') . "\n";
-        $message .= "Metode Pencairan: " . $request['payout_method'] . "\n\n";
+        $message .= "Metode Pencairan: " . $request['payout_method'];
+        if (! empty($request['payout_account_number'])) {
+            $message .= " - " . $request['payout_account_number'];
+        }
+        if (! empty($request['payout_account_name'])) {
+            $message .= " a/n " . $request['payout_account_name'];
+        }
+        $message .= "\n\n";
 
         if ($label == 'Ditolak') {
             $message .= "Mohon maaf, pengajuan bongkar Anda ditolak. Silakan hubungi admin untuk informasi lebih lanjut.";

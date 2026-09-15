@@ -20,6 +20,8 @@ class BongkarRequestModel extends Model
         'estimated_amount',
         'customer_whatsapp',
         'payout_method',
+        'payout_account_number',
+        'payout_account_name',
         'customer_note',
         'status',
         'actor_admin_id',

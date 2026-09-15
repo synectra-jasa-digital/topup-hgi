@@ -3,13 +3,13 @@
 use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'Home::index', ['filter' => 'maintenance']);
 $routes->get('sitemap.xml', 'Home::sitemap');
 $routes->get('kategori/(:segment)', 'Home::kategori/$1');
 
 $routes->get('checkout/(:num)', 'OrderController::create/$1', ['filter' => 'ratelimit:30:60']);
 $routes->post('checkout/(:num)', 'OrderController::store/$1', ['filter' => 'ratelimit:10:60']);
-$routes->get('pesanan/(:segment)/(:segment)', 'OrderController::invoice/$1/$2', ['filter' => 'ratelimit:30:60']);
+$routes->get('pesanan/(:segment)', 'OrderController::invoice/$1', ['filter' => 'ratelimit:30:60']);
 $routes->post('webhook/midtrans', 'MidtransController::webhook');
 $routes->post('bongkar/submit', 'BongkarController::submit', ['filter' => 'ratelimit:10:60']);
 
@@ -76,6 +76,13 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::edit/$1');
     $routes->post('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::update/$1');
     $routes->post('bongkar-katalog/(:num)/hapus', 'Admin\BongkarCatalogController::delete/$1');
+
+    $routes->get('bongkar-metode-pencairan', 'Admin\BongkarPayoutMethodController::index');
+    $routes->get('bongkar-metode-pencairan/tambah', 'Admin\BongkarPayoutMethodController::create');
+    $routes->post('bongkar-metode-pencairan/tambah', 'Admin\BongkarPayoutMethodController::store');
+    $routes->get('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::edit/$1');
+    $routes->post('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::update/$1');
+    $routes->post('bongkar-metode-pencairan/(:num)/hapus', 'Admin\BongkarPayoutMethodController::delete/$1');
 
     $routes->get('bongkar-pesanan', 'Admin\BongkarRequestController::index');
     $routes->get('bongkar-pesanan/(:num)', 'Admin\BongkarRequestController::show/$1');

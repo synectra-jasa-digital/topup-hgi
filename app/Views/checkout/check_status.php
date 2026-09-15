@@ -44,9 +44,7 @@
                 <span class="material-symbols-outlined text-[18px]">search</span>
                 <span>Cek Status Pesanan</span>
             </button>
-                <label for="access_token" class="block text-xs font-bold text-neutral-800">Token Akses <span class="text-rose-500">*</span></label>
-                <input type="text" name="access_token" id="access_token" value="<?= old('access_token') ?>" class="w-full rounded-xl border border-slate-300 bg-slate-50/50 py-2.5 px-3.5 text-sm font-mono text-neutral-900" required autocomplete="off">
-            </form>
+        </form>
         <div class="pt-4 border-t border-slate-100 text-center text-xs text-slate-500 leading-relaxed">
             Lupa nomor invoice? Kode transaksi telah dikirim ke WhatsApp Anda. <a href="<?= esc($waUrl) ?>" target="_blank" rel="noopener noreferrer" class="font-bold text-blue-600 hover:underline inline-flex items-center gap-0.5">Bantuan CS <span class="material-symbols-outlined text-[13px]">open_in_new</span></a>
         </div>

@@ -29,6 +29,12 @@
         <dl class="mt-5 space-y-4 text-sm">
             <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">No. WhatsApp</dt><dd class="font-mono font-medium text-primary"><?= esc($req['customer_whatsapp']) ?></dd></div>
             <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Metode Pencairan</dt><dd class="text-neutral-700"><?= esc($req['payout_method']) ?></dd></div>
+            <?php if (! empty($req['payout_account_number'])): ?>
+                <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">No. Rekening/E-Wallet</dt><dd class="font-mono text-neutral-700"><?= esc($req['payout_account_number']) ?></dd></div>
+            <?php endif; ?>
+            <?php if (! empty($req['payout_account_name'])): ?>
+                <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Nama Pemilik Rekening</dt><dd class="text-neutral-700"><?= esc($req['payout_account_name']) ?></dd></div>
+            <?php endif; ?>
             <?php if (! empty($req['customer_note'])): ?>
                 <div class="border-b border-neutral-100 pb-3"><dt class="text-neutral-500">Catatan Customer</dt><dd class="mt-1.5 text-neutral-700"><?= nl2br(esc($req['customer_note'])) ?></dd></div>
             <?php endif; ?>

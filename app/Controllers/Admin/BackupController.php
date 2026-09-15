@@ -8,6 +8,8 @@ class BackupController extends BaseController
 {
     private const BACKUP_PATH = WRITEPATH . 'backups/';
     private const FILENAME_PATTERN = '/^backup_[\w\-]+\.sql$/';
+    private const MAX_BACKUPS = 10;
+    private const MAX_DOWNLOAD_BYTES = 104857600;
 
     public function __construct()
     {
@@ -42,6 +44,7 @@ class BackupController extends BaseController
 
         try {
             $this->dumpDatabase(self::BACKUP_PATH . $filename);
+            $this->pruneBackups();
         } catch (\Throwable $e) {
             log_message('error', 'Database backup failed: ' . $e->getMessage());
 
@@ -61,6 +64,12 @@ class BackupController extends BaseController
         if (! preg_match(self::FILENAME_PATTERN, $filename) || ! is_file($path)) {
             return redirect()->to('/admin/backup-database')->with('error', 'File backup tidak ditemukan.');
         }
+
+        if (filesize($path) > self::MAX_DOWNLOAD_BYTES) {
+            return redirect()->to('/admin/backup-database')->with('error', 'Ukuran backup melebihi batas unduhan.');
+        }
+
+        log_activity('unduh_backup', 'Mengunduh backup database: ' . $filename);
 
         return $this->response->download($path, null);
     }
@@ -98,19 +107,14 @@ class BackupController extends BaseController
             fwrite($handle, "-- --------------------------------------------------------\n-- Table: {$table}\n-- --------------------------------------------------------\n");
             fwrite($handle, "DROP TABLE IF EXISTS `{$table}`;\n{$createSql};\n\n");
 
-            $rows = $db->table($table)->get()->getResultArray();
-            if ($rows !== []) {
-                $columns    = array_keys($rows[0]);
+            $query = $db->table($table)->get();
+            $columns = $db->getFieldNames($table);
+            if ($columns !== []) {
                 $columnList = '`' . implode('`, `', $columns) . '`';
 
-                foreach (array_chunk($rows, 200) as $chunk) {
-                    $valuesList = array_map(static function (array $row) use ($db) {
-                        $escaped = array_map(static fn ($value) => $value === null ? 'NULL' : $db->escape($value), $row);
-
-                        return '(' . implode(', ', $escaped) . ')';
-                    }, $chunk);
-
-                    fwrite($handle, "INSERT INTO `{$table}` ({$columnList}) VALUES\n" . implode(",\n", $valuesList) . ";\n");
+                while ($row = $query->getUnbufferedRow('array')) {
+                    $escaped = array_map(static fn ($value) => $value === null ? 'NULL' : $db->escape($value), $row);
+                    fwrite($handle, "INSERT INTO `{$table}` ({$columnList}) VALUES\n(" . implode(', ', $escaped) . ");\n");
                 }
                 fwrite($handle, "\n");
             }
@@ -118,5 +122,14 @@ class BackupController extends BaseController
 
         fwrite($handle, "SET FOREIGN_KEY_CHECKS=1;\n");
         fclose($handle);
+    }
+
+    private function pruneBackups(): void
+    {
+        $paths = glob(self::BACKUP_PATH . 'backup_*.sql') ?: [];
+        usort($paths, static fn ($a, $b) => filemtime($b) <=> filemtime($a));
+        foreach (array_slice($paths, self::MAX_BACKUPS) as $path) {
+            @unlink($path);
+        }
     }
 }

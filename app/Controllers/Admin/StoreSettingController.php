@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\StoreSettingModel;
+use App\Libraries\IntegrationSettings;
 
 class StoreSettingController extends BaseController
 {
@@ -44,10 +45,16 @@ class StoreSettingController extends BaseController
             'store_name'    => $this->request->getPost('store_name'),
             'store_contact' => $this->request->getPost('store_contact'),
             'store_address' => $this->request->getPost('store_address'),
-            'midtrans_key'  => $this->request->getPost('midtrans_key'),
-            'wablas_key'    => $this->request->getPost('wablas_key'),
             'maintenance'   => $this->request->getPost('maintenance') ? '1' : '0',
         ];
+
+        $integrationSettings = new IntegrationSettings($this->settings);
+        foreach (['midtrans_key' => 'midtrans.serverKey', 'wablas_key' => 'wablas.token'] as $key => $environmentKey) {
+            $value = trim((string) $this->request->getPost($key));
+            if ($value !== '') {
+                $data[$key] = $integrationSettings->encrypt($value);
+            }
+        }
 
         if ($logo && $logo->isValid()) {
             $data['store_logo'] = $this->storeLogo($logo);

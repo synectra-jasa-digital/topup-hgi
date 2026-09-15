@@ -12,7 +12,10 @@ class VoucherModel extends Model
     protected $returnType = 'array';
     protected $allowedFields = ['code', 'type', 'value', 'min_purchase', 'max_discount', 'quota', 'used_count', 'reserved_count', 'start_date', 'end_date', 'is_active'];
     protected $useTimestamps = true;
-    protected $validationRules = ['code' => 'required|max_length[50]|is_unique[vouchers.code,id,{id}]'];
+    protected $validationRules = [
+        'id'   => 'permit_empty|is_natural',
+        'code' => 'required|max_length[50]|is_unique[vouchers.code,id,{id}]',
+    ];
 
     public function findValid(string $code, int $subtotal): ?array
     {

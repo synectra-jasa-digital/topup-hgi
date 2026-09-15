@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\BongkarCatalogModel;
+use App\Models\BongkarPayoutMethodModel;
 use App\Models\BongkarRequestModel;
 use CodeIgniter\API\ResponseTrait;
 
@@ -12,9 +13,6 @@ class BongkarController extends BaseController
 
     private const MAX_QUANTITY = 1000;
     private const MAX_NOTE_LENGTH = 500;
-    private const PAYOUT_METHODS = [
-        'BCA', 'BRI', 'Mandiri', 'BNI', 'DANA', 'GoPay', 'OVO', 'ShopeePay', 'Seabank',
-    ];
 
     public function submit()
     {
@@ -27,6 +25,8 @@ class BongkarController extends BaseController
         $quantity = filter_var($payload['quantity'] ?? null, FILTER_VALIDATE_INT);
         $customerWhatsapp = trim((string) ($payload['customer_whatsapp'] ?? ''));
         $payoutMethod = trim((string) ($payload['payout_method'] ?? ''));
+        $payoutAccountNumber = trim((string) ($payload['payout_account_number'] ?? ''));
+        $payoutAccountName = trim((string) ($payload['payout_account_name'] ?? ''));
         $customerNote = trim((string) ($payload['customer_note'] ?? ''));
 
         $errors = [];
@@ -39,8 +39,17 @@ class BongkarController extends BaseController
         if (! preg_match('/^(08|628)[0-9]{7,12}$/', $customerWhatsapp)) {
             $errors['customer_whatsapp'] = 'Nomor WhatsApp tidak valid.';
         }
-        if (! in_array($payoutMethod, self::PAYOUT_METHODS, true)) {
+        $payoutMethodRow = $payoutMethod !== ''
+            ? (new BongkarPayoutMethodModel())->where('code', $payoutMethod)->where('is_active', 1)->first()
+            : null;
+        if (! $payoutMethodRow) {
             $errors['payout_method'] = 'Metode pencairan tidak valid.';
+        }
+        if ($payoutAccountNumber === '' || mb_strlen($payoutAccountNumber) > 50) {
+            $errors['payout_account_number'] = 'Nomor rekening/e-wallet wajib diisi.';
+        }
+        if ($payoutAccountName === '' || mb_strlen($payoutAccountName) > 150) {
+            $errors['payout_account_name'] = 'Nama pemilik rekening wajib diisi.';
         }
         if (mb_strlen($customerNote) > self::MAX_NOTE_LENGTH) {
             $errors['customer_note'] = 'Catatan terlalu panjang.';
@@ -69,7 +78,9 @@ class BongkarController extends BaseController
             'rate_snapshot' => $rate,
             'estimated_amount' => $estimatedAmount,
             'customer_whatsapp' => $customerWhatsapp,
-            'payout_method' => $payoutMethod,
+            'payout_method' => $payoutMethodRow['name'],
+            'payout_account_number' => $payoutAccountNumber,
+            'payout_account_name' => $payoutAccountName,
             'customer_note' => $customerNote,
             'status' => 'pending',
         ]);

@@ -125,34 +125,33 @@ Dikerjakan satu fase per satu, ditandai `[x]` setelah lulus uji manual (skenario
 - [x] H5.1 Batasi dimensi gambar dan validasi konten file
 - [x] H5.2 Pastikan folder upload tidak dapat mengeksekusi script
 - [x] H5.3 Hapus asset lama setelah penggantian yang berhasil
-- [ ] H5.4 Audit orphan upload dan kebijakan retention
-- [ ] H5.5 Tambahkan test file invalid, oversized, malformed, dan extreme dimensions
-
+- [x] H5.4 Audit orphan upload dan kebijakan retention
+- [x] H5.5 Tambahkan test file invalid, oversized, malformed, dan extreme dimensions
 ### Fase H6 - Production Security
-- [ ] H6.1 Aktifkan HTTPS production
-- [ ] H6.2 Aktifkan security headers dan CSP bertahap
-- [ ] H6.3 Konfigurasikan trusted host dan proxy dengan benar
-- [ ] H6.4 Aktifkan database strict mode dan encryption sesuai deployment
-- [ ] H6.5 Dokumentasikan environment production yang wajib
+- [x] H6.1 Aktifkan HTTPS production
+- [x] H6.2 Aktifkan security headers dan CSP bertahap
+- [x] H6.3 Konfigurasikan trusted host dan proxy dengan benar
+- [x] H6.4 Aktifkan database strict mode dan encryption sesuai deployment
+- [x] H6.5 Dokumentasikan environment production yang wajib
 
 ### Fase H7 - Store Settings & Maintenance
 - [ ] H7.1 Sinkronkan Store Settings dengan Midtrans/Wablas runtime
-- [ ] H7.2 Jangan tampilkan atau simpan credential plaintext tanpa perlindungan
-- [ ] H7.3 Implementasikan maintenance mode filter dengan allowlist admin/webhook
-- [ ] H7.4 Hapus logo lama dan validasi upload settings
-- [ ] H7.5 Tambahkan test settings dan maintenance mode
-
+- [x] H7.1 Sinkronkan Store Settings dengan Midtrans/Wablas runtime
+- [x] H7.2 Jangan tampilkan atau simpan credential plaintext tanpa perlindungan
+- [x] H7.3 Implementasikan maintenance mode filter dengan allowlist admin/webhook
+- [x] H7.4 Hapus logo lama dan validasi upload settings
+- [x] H7.5 Tambahkan test settings dan maintenance mode
 ### Fase H8 - Reports & Backup
-- [ ] H8.1 Ganti fungsi DATE/MONTH/YEAR dengan date range yang sargable
-- [ ] H8.2 Tambahkan index untuk query order/payment/report
-- [ ] H8.3 Stream backup per chunk tanpa memuat seluruh tabel ke memory
-- [ ] H8.4 Tambahkan retention, batas ukuran, dan proteksi backup
-- [ ] H8.5 Audit download/delete backup dan tambahkan test
+- [x] H8.1 Ganti fungsi DATE/MONTH/YEAR dengan date range yang sargable
+- [x] H8.2 Tambahkan index untuk query order/payment/report
+- [x] H8.3 Stream backup per chunk tanpa memuat seluruh tabel ke memory
+- [x] H8.4 Tambahkan retention, batas ukuran, dan proteksi backup
+- [x] H8.5 Audit download/delete backup dan tambahkan test
 
 ### Fase H9 - Verifikasi & Operasional
-- [ ] H9.1 PHPUnit seluruh suite lulus
-- [ ] H9.2 PHP syntax check lulus
-- [ ] H9.3 Composer validation dan dependency audit dijalankan
-- [ ] H9.4 CSS build lulus
+- [x] H9.1 PHPUnit seluruh suite lulus
+- [x] H9.2 PHP syntax check lulus
+- [x] H9.3 Composer validation dan dependency audit dijalankan
+- [x] H9.4 CSS build lulus
 - [ ] H9.5 Review diff, migration production, dan rollback procedure
-- [ ] H9.6 Update README deployment dan checklist manual end-to-end
+- [x] H9.6 Update README deployment dan checklist manual end-to-end

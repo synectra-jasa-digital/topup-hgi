@@ -1,39 +1,64 @@
-<!-- CSS HELPER FOR TABS & PILLS -->
+<!-- CSS HELPER FOR TABS & CAROUSEL -->
 <style>
   .tab-mode-hidden {
     display: none !important;
   }
-  .category-pill.active .pill-icon {
+  .category-pill.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
     color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+    border-color: #2563eb !important;
   }
-  
+  .category-pill.active .pill-icon {
+    color: #fde047 !important;
+  }
+
   /* 3D Coverflow Slider Animation Styles */
   .coverflow-slide {
     position: absolute;
     top: 50%;
     left: 50%;
+    width: 85%;
+    height: 90%;
+    max-height: 320px;
+    aspect-ratio: 16 / 9;
     will-change: transform, opacity;
-    transition: transform 600ms cubic-bezier(0.25, 1, 0.5, 1), opacity 600ms ease;
+    transition: transform 500ms cubic-bezier(0.25, 1, 0.5, 1), opacity 500ms ease;
+  }
+  @media (min-width: 640px) {
+    .coverflow-slide {
+      width: 75%;
+    }
+  }
+  @media (min-width: 768px) {
+    .coverflow-slide {
+      width: 65%;
+    }
+  }
+  @media (min-width: 1024px) {
+    .coverflow-slide {
+      width: 58%;
+    }
   }
   .coverflow-slide.state-center {
     transform: translate(-50%, -50%) scale(1) translateX(0);
     z-index: 30;
     opacity: 1;
     filter: brightness(1);
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(37, 99, 235, 0.2);
-    border-color: rgba(148, 163, 184, 0.3);
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.4), 0 0 20px rgba(37, 99, 235, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
   }
   .coverflow-slide.state-left {
-    transform: translate(-50%, -50%) scale(0.82) translateX(-64%);
+    transform: translate(-50%, -50%) scale(0.85) translateX(-58%);
     z-index: 20;
-    opacity: 0.55;
+    opacity: 0.5;
     filter: brightness(0.65) blur(0.3px);
     cursor: pointer;
   }
   .coverflow-slide.state-right {
-    transform: translate(-50%, -50%) scale(0.82) translateX(64%);
+    transform: translate(-50%, -50%) scale(0.85) translateX(58%);
     z-index: 20;
-    opacity: 0.55;
+    opacity: 0.5;
     filter: brightness(0.65) blur(0.3px);
     cursor: pointer;
   }
@@ -46,43 +71,41 @@
 
   @media (max-width: 640px) {
     .coverflow-slide.state-left {
-      transform: translate(-50%, -50%) scale(0.85) translateX(-42%);
+      transform: translate(-50%, -50%) scale(0.88) translateX(-38%);
       opacity: 0.35;
     }
     .coverflow-slide.state-right {
-      transform: translate(-50%, -50%) scale(0.85) translateX(42%);
+      transform: translate(-50%, -50%) scale(0.88) translateX(38%);
       opacity: 0.35;
     }
   }
 </style>
 
-<!-- 3D COVERFLOW HERO BANNER CAROUSEL -->
+<!-- HERO PROMO CAROUSEL & GAME HEADER -->
 <?php
   $defaultFallbackImage = 'https://lh3.googleusercontent.com/aida/AEtjO1Xkmeor5HdJYUSrixZ-AzI0Nncuf7tYmyNxC1SwZdCDjOMU2BjepgpLXbad3fySmsQm7rP5nP-ptDLEIo2MMimWSzGcIHVkQSlrxiOr-zLVdB_OvX-VtyWrOJh0BvOZilFEiQ8h4Ck8egDDGp3p68c22YensCJWpq6l6pDVIJCn9oeXJMtojO-IKJOU47c-kgqr7XlYTNou8LADwr6yjDGsxmgUgT3SlDg5R8tjmBh1dHMjUbENtang-g';
 
   $rawBanners = ! empty($banners) ? $banners : [];
 
-  // Build a minimum of 3 banners for 3D Coverflow display (Left, Center, Right)
   $bannerList = $rawBanners;
   if (count($bannerList) === 0) {
       $bannerList = [
-          ['image_path' => $defaultFallbackImage, 'link_url' => '', 'title' => 'Banner 1'],
-          ['image_path' => $defaultFallbackImage, 'link_url' => '', 'title' => 'Banner 2'],
-          ['image_path' => $defaultFallbackImage, 'link_url' => '', 'title' => 'Banner 3'],
+          ['image_path' => $defaultFallbackImage, 'link_url' => '', 'title' => 'Banner Promo 1'],
+          ['image_path' => $defaultFallbackImage, 'link_url' => '', 'title' => 'Banner Promo 2'],
+          ['image_path' => $defaultFallbackImage, 'link_url' => '', 'title' => 'Banner Promo 3'],
       ];
   } elseif (count($bannerList) === 1) {
-      $bannerList[] = ['image_path' => $bannerList[0]['image_path'], 'link_url' => $bannerList[0]['link_url'] ?? '', 'title' => 'Banner 2'];
-      $bannerList[] = ['image_path' => $bannerList[0]['image_path'], 'link_url' => $bannerList[0]['link_url'] ?? '', 'title' => 'Banner 3'];
+      $bannerList[] = ['image_path' => $bannerList[0]['image_path'], 'link_url' => $bannerList[0]['link_url'] ?? '', 'title' => 'Banner Promo 2'];
+      $bannerList[] = ['image_path' => $bannerList[0]['image_path'], 'link_url' => $bannerList[0]['link_url'] ?? '', 'title' => 'Banner Promo 3'];
   } elseif (count($bannerList) === 2) {
-      $bannerList[] = ['image_path' => $bannerList[0]['image_path'], 'link_url' => $bannerList[0]['link_url'] ?? '', 'title' => 'Banner 3'];
+      $bannerList[] = ['image_path' => $bannerList[0]['image_path'], 'link_url' => $bannerList[0]['link_url'] ?? '', 'title' => 'Banner Promo 3'];
   }
 ?>
 
-<div class="max-w-[1360px] mx-auto px-2 sm:px-6 pt-4 pb-2 select-none">
+<div class="max-w-[1360px] mx-auto px-4 sm:px-6 pt-4 pb-2 select-none">
+  <!-- Top Banner Carousel -->
   <div class="relative w-full group" id="hero-banner-carousel">
-    
-    <!-- 3D Coverflow Track Container -->
-    <div class="relative h-[210px] sm:h-[300px] md:h-[360px] lg:h-[400px] w-full flex items-center justify-center overflow-hidden py-2" id="coverflow-track">
+    <div class="relative h-[180px] sm:h-[260px] md:h-[320px] lg:h-[360px] w-full flex items-center justify-center overflow-hidden py-1" id="coverflow-track">
       <?php foreach ($bannerList as $bIndex => $b): ?>
         <?php
           $isLocal = ! str_starts_with($b['image_path'], 'http');
@@ -103,15 +126,15 @@
               default => 'state-hidden'
           };
         ?>
-        <div class="coverflow-slide <?= $initialState ?> rounded-2xl border border-slate-700/80 bg-slate-950 overflow-hidden aspect-[16/9] w-[82%] sm:w-[72%] md:w-[62%] lg:w-[55%]" data-index="<?= $bIndex ?>">
+        <div class="coverflow-slide <?= $initialState ?> rounded-2xl border border-slate-700/80 bg-slate-950 overflow-hidden shadow-lg" data-index="<?= $bIndex ?>">
           <?php if (! empty($b['link_url'])): ?>
             <a href="<?= esc($b['link_url']) ?>" target="_blank" rel="noopener noreferrer" class="block w-full h-full">
           <?php endif; ?>
-            <picture>
+            <picture class="block w-full h-full">
               <?php if ($webpSrcset): ?>
                 <source srcset="<?= $webpSrcset ?>" sizes="(min-width: 1024px) 748px, (min-width: 768px) 62vw, (min-width: 640px) 72vw, 82vw" type="image/webp">
               <?php endif; ?>
-              <img alt="<?= esc($b['title'] ?? 'Banner Promo') ?>" class="w-full h-full object-cover sm:object-contain object-center select-none bg-slate-950" src="<?= $imgUrl ?>" width="900" height="502" <?= $bIndex === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>>
+              <img alt="<?= esc($b['title'] ?? 'Banner Promo') ?>" class="w-full h-full object-cover object-center select-none bg-slate-950 block" src="<?= $imgUrl ?>" width="900" height="502" <?= $bIndex === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>>
             </picture>
           <?php if (! empty($b['link_url'])): ?>
             </a>
@@ -120,68 +143,103 @@
       <?php endforeach; ?>
     </div>
 
-    <!-- Controls: Prev (<) & Next (>) Side Buttons -->
-    <button type="button" id="banner-prev" class="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/85 hover:bg-slate-900 text-white flex items-center justify-center transition-all shadow-xl border border-slate-700/80 backdrop-blur-md cursor-pointer hover:scale-105 active:scale-95" aria-label="Previous Slide">
+    <!-- Navigation Arrows -->
+    <button type="button" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-md border border-slate-700/80 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg cursor-pointer" id="btn-coverflow-prev" aria-label="Slide sebelumnya">
       <span class="material-symbols-outlined text-[20px] sm:text-[24px]">chevron_left</span>
     </button>
-    
-    <button type="button" id="banner-next" class="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-slate-900/85 hover:bg-slate-900 text-white flex items-center justify-center transition-all shadow-xl border border-slate-700/80 backdrop-blur-md cursor-pointer hover:scale-105 active:scale-95" aria-label="Next Slide">
+    <button type="button" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white backdrop-blur-md border border-slate-700/80 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg cursor-pointer" id="btn-coverflow-next" aria-label="Slide berikutnya">
       <span class="material-symbols-outlined text-[20px] sm:text-[24px]">chevron_right</span>
     </button>
 
-    <!-- Pagination Indicators / Dots -->
-    <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md border border-slate-700/60 shadow-lg" id="banner-dots">
+    <!-- Indicators -->
+    <div class="flex items-center justify-center gap-1.5 mt-2" id="coverflow-dots">
       <?php foreach ($bannerList as $bIndex => $b): ?>
-        <button type="button" class="banner-dot w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer <?= $bIndex === 0 ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70' ?>" data-slide="<?= $bIndex ?>" aria-label="Slide <?= $bIndex + 1 ?>"></button>
+        <button type="button" class="h-1.5 rounded-full transition-all duration-300 <?= $bIndex === 0 ? 'w-6 bg-blue-600' : 'w-2 bg-slate-300' ?>" data-dot-index="<?= $bIndex ?>" aria-label="Go to slide <?= $bIndex + 1 ?>"></button>
       <?php endforeach; ?>
     </div>
+  </div>
 
+  <!-- Game Identity Header Banner Card -->
+  <div class="mt-5 rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-md text-white relative overflow-hidden" style="background-color: #000000 !important; background-image: none !important;">
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+      <div class="flex items-center" style="gap: 6px;">
+        <!-- Game Logo Avatar (Fixed 56x56px Box) -->
+        <div class="relative rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 p-0.5 shadow-sm shrink-0" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px;">
+          <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center overflow-hidden p-2">
+            <svg viewBox="0 0 48 48" class="w-full h-full" aria-hidden="true">
+              <rect x="4" y="4" width="40" height="18" rx="4" fill="#fde68a" stroke="#b45309" stroke-width="1.5" transform="rotate(-8 24 13)"></rect>
+              <circle cx="14" cy="10" r="2" fill="#78350f" transform="rotate(-8 24 13)"></circle>
+              <circle cx="24" cy="10" r="2" fill="#78350f" transform="rotate(-8 24 13)"></circle>
+              <circle cx="34" cy="10" r="2" fill="#78350f" transform="rotate(-8 24 13)"></circle>
+              <rect x="6" y="24" width="38" height="18" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="1.5" transform="rotate(6 24 33)"></rect>
+              <circle cx="16" cy="33" r="2" fill="#92400e" transform="rotate(6 24 33)"></circle>
+              <circle cx="32" cy="29" r="2" fill="#92400e" transform="rotate(6 24 33)"></circle>
+              <circle cx="32" cy="37" r="2" fill="#92400e" transform="rotate(6 24 33)"></circle>
+              <circle cx="16" cy="29" r="2" fill="#92400e" transform="rotate(6 24 33)"></circle>
+              <circle cx="16" cy="37" r="2" fill="#92400e" transform="rotate(6 24 33)"></circle>
+            </svg>
+          </div>
+        </div>
+
+        <div class="space-y-1" style="margin-left: 16px;">
+          <h1 class="font-display font-black text-lg sm:text-xl md:text-2xl text-white tracking-tight leading-tight">Higgs Domino Island / Global</h1>
+          <p class="text-xs text-slate-300 max-w-xl">Top up koin emas &amp; kartu resmi proses instan 24 jam nonstop tanpa login password.</p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Cockpit Tabs (Beli vs Jual) -->
+      <div class="bg-slate-900 p-1.5 rounded-xl border border-slate-800 flex items-center gap-1.5 self-start md:self-center shrink-0 shadow-inner">
+        <button id="tab-mode-buy" type="button" class="active px-4 py-2 rounded-lg bg-blue-600 text-white font-display font-extrabold text-xs sm:text-sm shadow-sm transition-all flex items-center gap-2 border border-blue-500 cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+          <span>Beli / Top Up</span>
+        </button>
+        <button id="tab-mode-sell" type="button" class="px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/80 font-display font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer">
+          <span class="material-symbols-outlined text-[18px] text-amber-400">currency_exchange</span>
+          <span>Bongkar / Jual</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- 3D Coverflow Carousel Logic -->
+<!-- COVERFLOW CAROUSEL & AUTO-SLIDE INTERACTIVE SCRIPT -->
 <script>
-  (function() {
-    const track = document.getElementById('coverflow-track');
+  document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('hero-banner-carousel');
     if (!track) return;
 
     const slides = Array.from(track.querySelectorAll('.coverflow-slide'));
-    const dots = Array.from(document.querySelectorAll('.banner-dot'));
-    const prevBtn = document.getElementById('banner-prev');
-    const nextBtn = document.getElementById('banner-next');
+    const dots = Array.from(track.querySelectorAll('[data-dot-index]'));
+    const btnPrev = document.getElementById('btn-coverflow-prev');
+    const btnNext = document.getElementById('btn-coverflow-next');
     const total = slides.length;
 
-    if (total === 0) return;
+    if (total <= 1) return;
 
     let currentIndex = 0;
-    let timer = null;
+    let autoPlayTimer = null;
 
-    function updateCoverflow(activeIdx) {
-      currentIndex = (activeIdx + total) % total;
-      const leftIdx = (currentIndex - 1 + total) % total;
-      const rightIdx = (currentIndex + 1) % total;
+    function updateCoverflow(index) {
+      currentIndex = (index + total) % total;
 
-      slides.forEach((slide, idx) => {
+      slides.forEach((slide, i) => {
         slide.classList.remove('state-center', 'state-left', 'state-right', 'state-hidden');
-
-        if (idx === currentIndex) {
+        if (i === currentIndex) {
           slide.classList.add('state-center');
-        } else if (idx === leftIdx) {
-          slide.classList.add('state-left');
-        } else if (idx === rightIdx) {
+        } else if (i === (currentIndex + 1) % total) {
           slide.classList.add('state-right');
+        } else if (i === (currentIndex - 1 + total) % total) {
+          slide.classList.add('state-left');
         } else {
           slide.classList.add('state-hidden');
         }
       });
 
-      dots.forEach((dot, idx) => {
-        if (idx === currentIndex) {
-          dot.classList.remove('bg-white/40');
-          dot.classList.add('bg-white', 'w-6');
+      dots.forEach((dot, i) => {
+        if (i === currentIndex) {
+          dot.className = 'h-1.5 rounded-full transition-all duration-300 w-6 bg-blue-600';
         } else {
-          dot.classList.remove('bg-white', 'w-6');
-          dot.classList.add('bg-white/40');
+          dot.className = 'h-1.5 rounded-full transition-all duration-300 w-2 bg-slate-300';
         }
       });
     }
@@ -194,62 +252,83 @@
       updateCoverflow(currentIndex - 1);
     }
 
-    function startTimer() {
-      stopTimer();
-      timer = setInterval(nextSlide, 3500);
+    function startAutoPlay() {
+      stopAutoPlay();
+      autoPlayTimer = setInterval(nextSlide, 4000);
     }
 
-    function stopTimer() {
-      if (timer) clearInterval(timer);
+    function stopAutoPlay() {
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+      }
     }
 
-    // Event Listeners
-    prevBtn?.addEventListener('click', () => {
-      prevSlide();
-      startTimer();
-    });
-
-    nextBtn?.addEventListener('click', () => {
+    // Button event listeners
+    btnNext?.addEventListener('click', function(e) {
+      e.preventDefault();
       nextSlide();
-      startTimer();
+      startAutoPlay();
     });
 
-    slides.forEach((slide, idx) => {
-      slide.addEventListener('click', () => {
-        if (idx !== currentIndex) {
-          updateCoverflow(idx);
-          startTimer();
+    btnPrev?.addEventListener('click', function(e) {
+      e.preventDefault();
+      prevSlide();
+      startAutoPlay();
+    });
+
+    // Dot click listeners
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', function(e) {
+        e.preventDefault();
+        updateCoverflow(i);
+        startAutoPlay();
+      });
+    });
+
+    // Slide direct click listeners (clicking left/right slide)
+    slides.forEach((slide, i) => {
+      slide.addEventListener('click', function(e) {
+        if (i !== currentIndex) {
+          e.preventDefault();
+          updateCoverflow(i);
+          startAutoPlay();
         }
       });
     });
 
-    dots.forEach((dot, idx) => {
-      dot.addEventListener('click', () => {
-        updateCoverflow(idx);
-        startTimer();
-      });
-    });
+    // Touch Swipe Support
+    let touchStartX = 0;
+    let touchEndX = 0;
 
-    const carousel = document.getElementById('hero-banner-carousel');
-    carousel?.addEventListener('mouseenter', stopTimer);
-    carousel?.addEventListener('mouseleave', startTimer);
+    track.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      stopAutoPlay();
+    }, { passive: true });
 
-    // Initial render
+    track.addEventListener('touchend', function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+      startAutoPlay();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const diff = touchEndX - touchStartX;
+      if (Math.abs(diff) > 40) {
+        if (diff < 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    }
+
+    // Pause auto-play on mouse enter, resume on mouse leave
+    track.addEventListener('mouseenter', stopAutoPlay);
+    track.addEventListener('mouseleave', startAutoPlay);
+
+    // Initial activation
     updateCoverflow(0);
-    startTimer();
-  })();
+    startAutoPlay();
+  });
 </script>
-
-<!-- MAIN MODE SWITCHER TABS (BELI VS JUAL) -->
-<div class="max-w-[1360px] mx-auto px-4 sm:px-6 pt-3 pb-1">
-  <div class="bg-slate-200/80 p-1.5 rounded-2xl border border-slate-300/80 grid grid-cols-2 w-full shadow-xs" id="mode-tabs">
-    <button type="button" id="tab-mode-buy" class="mode-tab active flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-display font-extrabold text-xs sm:text-sm transition-all bg-blue-600 text-white shadow-sm border border-blue-700 cursor-pointer">
-      <span class="material-symbols-outlined text-[19px]">shopping_bag</span>
-      <span>Top Up / Beli</span>
-    </button>
-    <button type="button" id="tab-mode-sell" class="mode-tab flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-display font-extrabold text-xs sm:text-sm transition-all text-slate-700 hover:text-neutral-900 hover:bg-white cursor-pointer">
-      <span class="material-symbols-outlined text-[19px]">currency_exchange</span>
-      <span>Jual / Bongkar</span>
-    </button>
-  </div>
-</div>

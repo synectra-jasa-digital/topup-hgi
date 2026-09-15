@@ -39,7 +39,7 @@ class Database extends Config
         'swapPre'      => '',
         'encrypt'      => false,
         'compress'     => false,
-        'strictOn'     => false,
+        'strictOn'     => ENVIRONMENT === 'production',
         'failover'     => [],
         'port'         => 3306,
         'numberNative' => false,

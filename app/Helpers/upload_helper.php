@@ -19,6 +19,14 @@ if (! function_exists('validate_uploaded_image_dimensions')) {
     }
 }
 
+if (! function_exists('validate_uploaded_image_size')) {
+    function validate_uploaded_image_size($file, int $maxBytes): bool
+    {
+        if (! $file || ! $file->isValid() || $maxBytes < 1) return false;
+        $size = @filesize($file->getTempName());
+        return $size !== false && $size <= $maxBytes;
+    }
+}
 if (! function_exists('delete_public_asset')) {
     function delete_public_asset(?string $relativePath): void
     {
@@ -35,5 +43,19 @@ if (! function_exists('delete_public_asset')) {
         if (is_file($assetPath)) {
             @unlink($assetPath);
         }
+    }
+}
+
+if (! function_exists('is_upload_path_allowed')) {
+    function is_upload_path_allowed(?string $relativePath): bool
+    {
+        if (! $relativePath || str_starts_with($relativePath, 'http')) {
+            return false;
+        }
+
+        $root = realpath(FCPATH . 'assets/uploads');
+        $path = realpath(FCPATH . ltrim($relativePath, '/\\'));
+
+        return $root && $path && str_starts_with($path, $root . DIRECTORY_SEPARATOR) && is_file($path);
     }
 }

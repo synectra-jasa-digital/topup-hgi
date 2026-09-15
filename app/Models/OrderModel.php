@@ -13,7 +13,7 @@ class OrderModel extends Model
     protected $allowedFields = [
         'invoice_number', 'product_id', 'product_name_snapshot', 'nominal_snapshot',
         'price_snapshot', 'game_id', 'whatsapp_number', 'voucher_id', 'discount_amount',
-        'voucher_reserved', 'voucher_committed', 'voucher_reserved_until', 'idempotency_token', 'public_access_token', 'wablas_notification_claimed',
+        'voucher_reserved', 'voucher_committed', 'voucher_reserved_until', 'idempotency_token', 'wablas_notification_claimed',
         'total_amount', 'status', 'processed_by', 'completed_at', 'snap_token',
     ];
     protected $useTimestamps = true;
@@ -39,11 +39,6 @@ class OrderModel extends Model
     public function findByToken(string $token): ?array
     {
         return $this->where('idempotency_token', $token)->first();
-    }
-
-    public function findByPublicAccess(string $invoiceNumber, string $token): ?array
-    {
-        return $this->where('invoice_number', $invoiceNumber)->where('public_access_token', $token)->first();
     }
 
     public function adminList(?string $status = null, int $perPage = 15): array

@@ -1,4 +1,4 @@
-<!-- State & Interactive Script -->
+<!-- Interactive & Logic State Handler -->
 <script>
   (function() {
     const adminWhatsapp = <?= json_encode($adminWhatsapp ?? '') ?>;
@@ -12,19 +12,19 @@
     function switchMode(mode) {
       const mobileFooter = document.querySelector('.lg\\:hidden.fixed.bottom-0');
       if (mode === 'sell') {
-        tabModeSell?.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'border-blue-700');
-        tabModeSell?.classList.remove('text-slate-700');
-        tabModeBuy?.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'border-blue-700');
-        tabModeBuy?.classList.add('text-slate-700');
+        tabModeSell?.classList.add('active', 'bg-amber-500', 'text-neutral-950', 'shadow-xs', 'border-amber-400');
+        tabModeSell?.classList.remove('text-slate-300');
+        tabModeBuy?.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-xs', 'border-blue-500');
+        tabModeBuy?.classList.add('text-slate-300');
 
         viewModeBuy?.classList.add('tab-mode-hidden');
         viewModeSell?.classList.remove('tab-mode-hidden');
         if (mobileFooter) mobileFooter?.classList.add('tab-mode-hidden');
       } else {
-        tabModeBuy?.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'border-blue-700');
-        tabModeBuy?.classList.remove('text-slate-700');
-        tabModeSell?.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'border-blue-700');
-        tabModeSell?.classList.add('text-slate-700');
+        tabModeBuy?.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-xs', 'border-blue-500');
+        tabModeBuy?.classList.remove('text-slate-300');
+        tabModeSell?.classList.remove('active', 'bg-amber-500', 'text-neutral-950', 'shadow-xs', 'border-amber-400');
+        tabModeSell?.classList.add('text-slate-300');
 
         viewModeSell?.classList.add('tab-mode-hidden');
         viewModeBuy?.classList.remove('tab-mode-hidden');
@@ -49,17 +49,18 @@
       basePrice: 0,
       unitRate: "Silakan pilih nominal produk di samping",
       userId: "",
-      nickname: "",
       whatsapp: "",
-      payMethod: "",
+      payMethod: "QRIS Resmi",
       adminFee: 0,
       discount: 0,
       couponApplied: false,
+      couponCode: "",
+      bongkarCatalogId: null,
       bongkarType: "",
       bongkarRate: 0,
       bongkarUnit: "kartu",
       bongkarQty: 1,
-      bongkarPayout: ""
+      bongkarPayout: "BCA"
     };
 
     function formatRupiah(num) {
@@ -95,11 +96,11 @@
       }
       if (receiptUserId) receiptUserId.textContent = state.userId || '-';
       if (receiptWa) receiptWa.textContent = state.whatsapp || '-';
-      if (receiptMethod) receiptMethod.textContent = state.payMethod || '-';
+      if (receiptMethod) receiptMethod.textContent = state.payMethod || 'QRIS Resmi';
       if (calcSubtotal) calcSubtotal.textContent = formatRupiah(state.basePrice);
       if (calcAdminFee) {
         calcAdminFee.textContent = state.adminFee > 0 ? formatRupiah(state.adminFee) : 'Rp0 (Gratis)';
-        calcAdminFee.className = state.adminFee > 0 ? 'font-bold text-neutral-900 font-mono' : 'font-bold text-emerald-700 font-mono';
+        calcAdminFee.className = state.adminFee > 0 ? 'font-bold text-slate-900 font-mono' : 'font-bold text-emerald-700 font-mono';
       }
 
       if (calcDiscountRow && calcDiscountVal) {
@@ -115,9 +116,10 @@
       if (mobileBottomTotal) mobileBottomTotal.textContent = formatRupiah(grandTotal);
     }
 
-    // Step 1: Category Pill Tabs
+    // Step 1: Category Pill Tabs & Quick Search
     const catPills = document.querySelectorAll('.category-pill');
     const categoryGroups = document.querySelectorAll('[data-category-group]');
+    const catalogSearchInput = document.getElementById('catalog-search-input');
 
     function showCategoryGroup(slug) {
       categoryGroups.forEach(group => {
@@ -130,14 +132,28 @@
       pill.addEventListener('click', () => {
         const slug = pill.getAttribute('data-cat');
         catPills.forEach(p => {
-          p.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'border-blue-700');
-          p.classList.add('text-slate-700');
+          p.classList.remove('active');
+          p.classList.add('text-slate-700', 'bg-slate-100/90');
         });
-        pill.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'border-blue-700');
-        pill.classList.remove('text-slate-700');
+        pill.classList.add('active');
+        pill.classList.remove('text-slate-700', 'bg-slate-100/90');
         showCategoryGroup(slug);
+        if (catalogSearchInput) catalogSearchInput.value = '';
       });
     });
+
+    if (catalogSearchInput) {
+      catalogSearchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+          const title = (card.getAttribute('data-title') || '').toLowerCase();
+          const unit = (card.getAttribute('data-unit') || '').toLowerCase();
+          const match = title.includes(query) || unit.includes(query);
+          card.classList.toggle('hidden', !match && query !== '');
+        });
+      });
+    }
 
     const firstCategory = document.querySelector('.category-pill.active');
     if (firstCategory) {
@@ -146,28 +162,13 @@
 
     // Step 2: Product Nominal Selection
     const productCards = document.querySelectorAll('.product-card');
-    const activeProductCard = document.querySelector('.product-card.active');
-    if (activeProductCard) {
-      state.productId = activeProductCard.getAttribute('data-id') || null;
-      state.itemTitle = activeProductCard.getAttribute('data-title') || state.itemTitle;
-      state.basePrice = parseInt(activeProductCard.getAttribute('data-price') || "0", 10);
-      state.unitRate = activeProductCard.getAttribute('data-unit') || state.unitRate;
-      state.categoryIcon = activeProductCard.getAttribute('data-icon') || "";
-    } else {
-      state.productId = null;
-      state.itemTitle = "Belum memilih produk";
-      state.basePrice = 0;
-      state.unitRate = "Silakan pilih nominal produk di samping";
-      state.categoryIcon = "";
-    }
-
     productCards.forEach(card => {
       card.addEventListener('click', () => {
         productCards.forEach(c => {
-          c.classList.remove('active', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
+          c.classList.remove('active', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20', 'product-card-selected');
           c.classList.add('border-slate-200', 'bg-white');
         });
-        card.classList.add('active', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
+        card.classList.add('active', 'product-card-selected');
         card.classList.remove('border-slate-200', 'bg-white');
 
         state.productId = card.getAttribute('data-id') || null;
@@ -214,39 +215,125 @@
       });
     });
 
-    function normalizePhone(phone) {
-      return String(phone || '').replace(/\D+/g, '').replace(/^0/, '62');
+    // Promo Coupon Logic
+    const btnSampleCoupon = document.getElementById('btn-sample-coupon');
+    const receiptPromoInput = document.getElementById('receipt-promo-input');
+    const btnApplyCoupon = document.getElementById('btn-apply-coupon');
+    const promoStatus = document.getElementById('promo-status');
+
+    if (btnSampleCoupon && receiptPromoInput) {
+      btnSampleCoupon.addEventListener('click', () => {
+        receiptPromoInput.value = 'AYONGHEMAT';
+      });
     }
 
-    function refreshBongkarEstimate() {
-      const hasType = !!state.bongkarType;
-      const rate = parseInt(state.bongkarRate || '0', 10);
-      const qty = state.bongkarQty || 1;
-      const unit = state.bongkarUnit || 'kartu';
-      const estimated = hasType ? qty * rate : 0;
-
-      // Main estimated total
-      const estimatedEl = document.getElementById('bongkar-estimated');
-      if (estimatedEl) estimatedEl.textContent = hasType ? formatRupiah(estimated) : 'Rp0';
-
-      // Unit label in qty input
-      const unitLabelEl = document.getElementById('bongkar-unit-label');
-      if (unitLabelEl) unitLabelEl.textContent = unit;
-
-      // Right column summary card
-      const receiptLabel = document.getElementById('bongkar-receipt-label');
-      const receiptRate  = document.getElementById('bongkar-receipt-rate');
-      const receiptQty   = document.getElementById('bongkar-receipt-qty');
-      const receiptPayout = document.getElementById('bongkar-receipt-payout');
-      const receiptWa    = document.getElementById('bongkar-receipt-wa');
-
-      if (receiptLabel)  receiptLabel.textContent  = hasType ? state.bongkarType : 'Belum memilih item';
-      if (receiptRate)   receiptRate.textContent   = hasType ? `${formatRupiah(rate)} / ${unit}` : '-';
-      if (receiptQty)    receiptQty.textContent    = hasType ? `${qty} ${unit}` : '-';
-      if (receiptPayout) receiptPayout.textContent = state.bongkarPayout || '-';
-      if (receiptWa)     receiptWa.textContent     = (bongkarWaInput ? bongkarWaInput.value.trim() : '') || '-';
+    if (btnApplyCoupon && receiptPromoInput) {
+      btnApplyCoupon.addEventListener('click', () => {
+        const code = receiptPromoInput.value.trim().toUpperCase();
+        if (code === 'AYONGHEMAT') {
+          state.discount = 1000;
+          state.couponApplied = true;
+          state.couponCode = code;
+          if (promoStatus) {
+            promoStatus.classList.remove('hidden', 'text-rose-600');
+            promoStatus.classList.add('text-emerald-600');
+            promoStatus.textContent = '✓ Potongan Rp1.000 berhasil diterapkan!';
+          }
+        } else if (code !== '') {
+          state.discount = 0;
+          state.couponApplied = false;
+          state.couponCode = '';
+          if (promoStatus) {
+            promoStatus.classList.remove('hidden', 'text-emerald-600');
+            promoStatus.classList.add('text-rose-600');
+            promoStatus.textContent = '✗ Kode voucher tidak valid / kadaluarsa';
+          }
+        }
+        updateReceiptUI();
+      });
     }
 
+    // Modal Guide ID
+    const btnGuideId = document.getElementById('btn-guide-id');
+    const guideModal = document.getElementById('guide-modal');
+    const btnCloseGuideModal = document.getElementById('btn-close-guide-modal');
+    const btnUnderstandGuide = document.getElementById('btn-understand-guide');
+
+    function toggleGuideModal(show) {
+      if (guideModal) {
+        guideModal.classList.toggle('hidden', !show);
+      }
+    }
+
+    btnGuideId?.addEventListener('click', () => toggleGuideModal(true));
+    btnCloseGuideModal?.addEventListener('click', () => toggleGuideModal(false));
+    btnUnderstandGuide?.addEventListener('click', () => toggleGuideModal(false));
+
+    // Checkout Confirmation Modal
+    const btnPayNow = document.getElementById('btn-pay-now');
+    const btnMobileCheckout = document.getElementById('btn-mobile-checkout');
+    const checkoutModal = document.getElementById('checkout-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const btnCancelCheckout = document.getElementById('btn-cancel-checkout');
+    const btnSubmitPay = document.getElementById('btn-submit-pay');
+
+    const modalItem = document.getElementById('modal-item');
+    const modalId = document.getElementById('modal-id');
+    const modalMethod = document.getElementById('modal-method');
+    const modalTotal = document.getElementById('modal-total');
+
+    function openCheckoutModal() {
+      if (!state.productId) {
+        alert('Silakan pilih nominal produk koin/item yang ingin Anda beli terlebih dahulu.');
+        return;
+      }
+      if (!state.userId) {
+        alert('Silakan masukkan User ID Game Anda.');
+        inputUserId?.focus();
+        return;
+      }
+      if (!state.whatsapp) {
+        alert('Silakan masukkan nomor WhatsApp Anda untuk mengirimkan bukti transaksi.');
+        inputWa?.focus();
+        return;
+      }
+
+      const grandTotal = Math.max(0, state.basePrice + state.adminFee - state.discount);
+      if (modalItem) modalItem.textContent = state.itemTitle;
+      if (modalId) modalId.textContent = state.userId;
+      if (modalMethod) modalMethod.textContent = state.payMethod || 'QRIS Resmi';
+      if (modalTotal) modalTotal.textContent = formatRupiah(grandTotal);
+
+      checkoutModal?.classList.remove('hidden');
+    }
+
+    function closeCheckoutModal() {
+      checkoutModal?.classList.add('hidden');
+    }
+
+    btnPayNow?.addEventListener('click', openCheckoutModal);
+    btnMobileCheckout?.addEventListener('click', openCheckoutModal);
+    btnCloseModal?.addEventListener('click', closeCheckoutModal);
+    btnCancelCheckout?.addEventListener('click', closeCheckoutModal);
+
+    // Form Submission Trigger
+    btnSubmitPay?.addEventListener('click', () => {
+      if (!state.productId) return;
+      const form = document.getElementById('backend-checkout-form');
+      const hiddenGameId = document.getElementById('hidden-game-id');
+      const hiddenWa = document.getElementById('hidden-whatsapp');
+      const hiddenVoucher = document.getElementById('hidden-voucher');
+
+      if (form) {
+        form.action = '<?= base_url("checkout/") ?>' + state.productId;
+        if (hiddenGameId) hiddenGameId.value = state.userId;
+        if (hiddenWa) hiddenWa.value = state.whatsapp;
+        if (hiddenVoucher) hiddenVoucher.value = state.couponCode || '';
+        form.submit();
+      }
+    });
+
+    // --- Bongkar / Jual Mode Interactive Script ---
     const bongkarCards = document.querySelectorAll('.bongkar-card');
     const bongkarQtyInput = document.getElementById('input-card-qty');
     const bongkarWaInput = document.getElementById('input-sell-wa');
@@ -258,13 +345,60 @@
     const btnQtyMinus = document.getElementById('btn-qty-minus');
     const btnQtyPlus = document.getElementById('btn-qty-plus');
 
+    const firstBongkarCard = document.querySelector('.bongkar-card');
+    if (firstBongkarCard) {
+      state.bongkarCatalogId = firstBongkarCard.getAttribute('data-bongkar-catalog-id');
+      state.bongkarType = firstBongkarCard.getAttribute('data-label') || '';
+      state.bongkarRate = parseInt(firstBongkarCard.getAttribute('data-rate') || '0', 10);
+      state.bongkarUnit = firstBongkarCard.getAttribute('data-unit') || 'kartu';
+    }
+
+    function refreshBongkarUI() {
+      const rate = state.bongkarRate || 0;
+      const qty = state.bongkarQty || 1;
+      const total = qty * rate;
+
+      const bongkarEstimated = document.getElementById('bongkar-estimated');
+      const bongkarReceiptLabel = document.getElementById('bongkar-receipt-label');
+      const bongkarReceiptRate = document.getElementById('bongkar-receipt-rate');
+      const bongkarReceiptQty = document.getElementById('bongkar-receipt-qty');
+      const bongkarReceiptPayout = document.getElementById('bongkar-receipt-payout');
+      const bongkarReceiptWa = document.getElementById('bongkar-receipt-wa');
+      const bongkarUnitLabel = document.getElementById('bongkar-unit-label');
+
+      if (bongkarEstimated) bongkarEstimated.textContent = formatRupiah(total);
+      if (bongkarReceiptLabel) bongkarReceiptLabel.textContent = state.bongkarType || 'Belum memilih item';
+      if (bongkarReceiptRate) bongkarReceiptRate.textContent = rate > 0 ? `${formatRupiah(rate)} / ${state.bongkarUnit}` : '-';
+      if (bongkarReceiptQty) bongkarReceiptQty.textContent = `${qty} ${state.bongkarUnit}`;
+      if (bongkarReceiptPayout) bongkarReceiptPayout.textContent = state.bongkarPayout || 'BCA';
+      if (bongkarReceiptWa) bongkarReceiptWa.textContent = (bongkarWaInput ? bongkarWaInput.value.trim() : '') || '-';
+      if (bongkarUnitLabel) bongkarUnitLabel.textContent = state.bongkarUnit || 'kartu';
+    }
+
+    bongkarCards.forEach(card => {
+      card.addEventListener('click', () => {
+        bongkarCards.forEach(c => {
+          c.classList.remove('selected', 'border-2', 'border-amber-500', 'bg-amber-50/70', 'ring-2', 'ring-amber-400/20');
+          c.classList.add('border-slate-200', 'bg-white');
+        });
+        card.classList.add('selected', 'border-2', 'border-amber-500', 'bg-amber-50/70', 'ring-2', 'ring-amber-400/20');
+        card.classList.remove('border-slate-200', 'bg-white');
+
+        state.bongkarCatalogId = card.getAttribute('data-bongkar-catalog-id');
+        state.bongkarType = card.getAttribute('data-label') || '';
+        state.bongkarRate = parseInt(card.getAttribute('data-rate') || '0', 10);
+        state.bongkarUnit = card.getAttribute('data-unit') || 'kartu';
+        refreshBongkarUI();
+      });
+    });
+
     if (btnQtyMinus && bongkarQtyInput) {
       btnQtyMinus.addEventListener('click', () => {
         let val = parseInt(bongkarQtyInput.value || '1', 10);
         if (val > 1) {
           bongkarQtyInput.value = val - 1;
           state.bongkarQty = val - 1;
-          refreshBongkarEstimate();
+          refreshBongkarUI();
         }
       });
     }
@@ -272,233 +406,103 @@
     if (btnQtyPlus && bongkarQtyInput) {
       btnQtyPlus.addEventListener('click', () => {
         let val = parseInt(bongkarQtyInput.value || '1', 10);
-        bongkarQtyInput.value = val + 1;
-        state.bongkarQty = val + 1;
-        refreshBongkarEstimate();
+        if (val < 1000) {
+          bongkarQtyInput.value = val + 1;
+          state.bongkarQty = val + 1;
+          refreshBongkarUI();
+        }
       });
     }
-
-    const selectedBongkarCard = document.querySelector('.bongkar-card.selected');
-    if (selectedBongkarCard) {
-      state.bongkarType = selectedBongkarCard.getAttribute('data-label') || "";
-      state.bongkarRate = selectedBongkarCard.getAttribute('data-rate') || "0";
-      state.bongkarUnit = selectedBongkarCard.getAttribute('data-unit') || "kartu";
-    }
-    refreshBongkarEstimate();
-
-    bongkarCards.forEach(card => {
-      card.addEventListener('click', () => {
-        bongkarCards.forEach(item => {
-          item.classList.remove('selected', 'border-2', 'border-blue-600', 'bg-blue-50/80', 'ring-2', 'ring-blue-500/20');
-          item.classList.add('border-slate-200', 'bg-white');
-        });
-        card.classList.add('selected', 'border-2', 'border-blue-600', 'bg-blue-50/80', 'ring-2', 'ring-blue-500/20');
-        card.classList.remove('border-slate-200', 'bg-white');
-        state.bongkarType = card.getAttribute('data-label') || state.bongkarType;
-        state.bongkarRate = card.getAttribute('data-rate') || state.bongkarRate;
-        state.bongkarUnit = card.getAttribute('data-unit') || state.bongkarUnit;
-        refreshBongkarEstimate();
-      });
-    });
 
     if (bongkarQtyInput) {
       bongkarQtyInput.addEventListener('input', (e) => {
-        const qty = Math.max(1, parseInt(e.target.value || '1', 10) || 1);
-        state.bongkarQty = qty;
-        refreshBongkarEstimate();
+        let val = parseInt(e.target.value || '1', 10);
+        if (val < 1) val = 1;
+        if (val > 1000) val = 1000;
+        state.bongkarQty = val;
+        refreshBongkarUI();
       });
     }
 
     if (bongkarWaInput) {
-      bongkarWaInput.addEventListener('input', (e) => {
-        state.bongkarWa = e.target.value.trim();
-        refreshBongkarEstimate();
+      bongkarWaInput.addEventListener('input', () => {
+        refreshBongkarUI();
       });
     }
 
-    bongkarPayoutButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        bongkarPayoutButtons.forEach(item => {
-          item.classList.remove('border-2', 'border-blue-600', 'bg-blue-50/80', 'text-blue-700', 'shadow-2xs');
-          item.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+    bongkarPayoutButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        bongkarPayoutButtons.forEach(b => {
+          b.classList.remove('selected', 'border-2', 'border-amber-500', 'bg-amber-50', 'font-bold', 'text-amber-900');
+          b.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
         });
-        button.classList.add('border-2', 'border-blue-600', 'bg-blue-50/80', 'text-blue-700', 'shadow-2xs');
-        button.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
-        state.bongkarPayout = button.getAttribute('data-bongkar-payout') || button.textContent.trim();
-        refreshBongkarEstimate();
+        btn.classList.add('selected', 'border-2', 'border-amber-500', 'bg-amber-50', 'font-bold', 'text-amber-900');
+        btn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+
+        state.bongkarPayout = btn.getAttribute('data-method') || 'BCA';
+        refreshBongkarUI();
       });
     });
 
-    if (btnSubmitBongkar) {
-      btnSubmitBongkar.addEventListener('click', () => {
-        const phone = normalizePhone(adminWhatsapp);
-        const qty = Math.max(1, parseInt(bongkarQtyInput?.value || '1', 10) || 1);
-        const sellerWa = bongkarWaInput ? bongkarWaInput.value.trim() : '';
-        const sellerGameId = bongkarGameIdInput ? bongkarGameIdInput.value.trim() : '-';
-        const accountNo = bongkarPayoutAccountInput ? bongkarPayoutAccountInput.value.trim() : '';
-        const accountName = bongkarPayoutNameInput ? bongkarPayoutNameInput.value.trim() : '';
-        const payoutBank = state.bongkarPayout || 'BCA';
-        const rate = parseInt(state.bongkarRate || '65000', 10);
-        const estimated = qty * rate;
+    btnSubmitBongkar?.addEventListener('click', async () => {
+      if (!state.bongkarCatalogId) {
+        alert('Silakan pilih jenis kartu/koin yang ingin dijual terlebih dahulu.');
+        return;
+      }
 
-        if (!state.bongkarType) {
-          alert('Silakan pilih jenis kartu/koin yang ingin Anda bongkar terlebih dahulu.');
-          const firstBongkarCard = document.querySelector('.bongkar-card');
-          if (firstBongkarCard) firstBongkarCard.scrollIntoView({ behavior: 'smooth' });
-          return;
-        }
+      const wa = bongkarWaInput ? bongkarWaInput.value.trim() : '';
+      const account = bongkarPayoutAccountInput ? bongkarPayoutAccountInput.value.trim() : '';
+      const name = bongkarPayoutNameInput ? bongkarPayoutNameInput.value.trim() : '';
+      const gameId = bongkarGameIdInput ? bongkarGameIdInput.value.trim() : '';
 
-        if (!sellerWa) {
-          alert('Silakan ketik nomor WhatsApp konfirmasi Anda terlebih dahulu.');
-          if (bongkarWaInput) bongkarWaInput.focus();
-          return;
-        }
+      if (!wa) {
+        alert('Silakan masukkan nomor WhatsApp Anda.');
+        bongkarWaInput?.focus();
+        return;
+      }
 
-        if (!state.bongkarPayout) {
-          alert('Silakan pilih Rekening / E-Wallet tujuan pencairan saldo terlebih dahulu.');
-          const payoutGrid = document.getElementById('payout-method-grid');
-          if (payoutGrid) payoutGrid.scrollIntoView({ behavior: 'smooth' });
-          return;
-        }
+      if (!account || !name) {
+        alert('Silakan lengkapi nomor rekening/e-wallet dan nama pemilik rekening tujuan pencairan.');
+        bongkarPayoutAccountInput?.focus();
+        return;
+      }
 
-        if (!accountNo || !accountName) {
-          alert('Silakan isi Nomor Rekening / E-Wallet dan Nama Pemilik Rekening untuk tujuan pencairan saldo.');
-          if (!accountNo && bongkarPayoutAccountInput) bongkarPayoutAccountInput.focus();
-          else if (!accountName && bongkarPayoutNameInput) bongkarPayoutNameInput.focus();
-          return;
-        }
+      try {
+        const response = await fetch('<?= base_url("bongkar/submit") ?>', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            '<?= csrf_header() ?>': '<?= csrf_hash() ?>'
+          },
+          body: JSON.stringify({
+            bongkar_catalog_id: state.bongkarCatalogId,
+            quantity: state.bongkarQty,
+            customer_whatsapp: wa,
+            payout_method: state.bongkarPayout,
+            payout_account_number: account,
+            payout_account_name: name,
+            customer_note: gameId ? `User ID Game: ${gameId}` : ''
+          })
+        });
 
-        if (!phone) {
-          alert('Nomor WhatsApp admin belum diset di pengaturan toko.');
-          return;
-        }
-
-        const message = [
-          '⚡ *PENGAJUAN BONGKAR / JUAL KARTU* ⚡',
-          '=============================',
-          `• *Jenis Item*: ${state.bongkarType}`,
-          `• *Jumlah*: ${qty} ${state.bongkarUnit || 'kartu'}`,
-          `• *Rate*: Rp${rate.toLocaleString('id-ID')} / ${state.bongkarUnit || 'kartu'}`,
-          `• *Total Estimasi Cair*: *Rp${estimated.toLocaleString('id-ID')}*`,
-          '---------------------------------------------',
-          `• *User ID Game Pengirim*: ${sellerGameId || '-'}`,
-          `• *WA Seller*: ${sellerWa}`,
-          '---------------------------------------------',
-          '🏦 *REKENING PENCAIRAN SALDO*:',
-          `• *Bank / E-Wallet*: ${payoutBank}`,
-          `• *No. Rekening/HP*: ${accountNo}`,
-          `• *Atas Nama*: ${accountName}`,
-          '=============================',
-          'Mohon info ID Admin & instruksi transfer kartu/koin.',
-          'Terima kasih!'
-        ].join('\n');
-
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
-      });
-    }
-
-    // Coupon Voucher
-    const btnApplyCoupon = document.getElementById('btn-apply-coupon');
-    const promoInput = document.getElementById('receipt-promo-input');
-    const promoStatus = document.getElementById('promo-status');
-
-    if (btnApplyCoupon && promoInput && promoStatus) {
-      btnApplyCoupon.addEventListener('click', () => {
-        const code = promoInput.value.trim().toUpperCase();
-        promoStatus.classList.remove('hidden');
-        if (code === "AYONGHEMAT") {
-          state.discount = 5000;
-          state.couponApplied = true;
-          promoStatus.className = "text-[11px] font-bold text-emerald-700 block";
-          promoStatus.textContent = "Kupon AYONGHEMAT berhasil dipakai! Potongan Rp5.000 aktif.";
-        } else if (!code) {
-          state.discount = 0;
-          promoStatus.className = "text-[11px] text-rose-600 block";
-          promoStatus.textContent = "Silakan ketikkan kode voucher.";
+        const resData = await response.json();
+        if (resData.success) {
+          if (resData.wa_url) {
+            window.location.href = resData.wa_url;
+          } else {
+            alert('Pengajuan bongkar berhasil dikirim! Tim CS kami akan segera menghubungi Anda via WhatsApp.');
+          }
         } else {
-          state.discount = 0;
-          promoStatus.className = "text-[11px] text-rose-600 block";
-          promoStatus.textContent = "Kode tidak valid atau kuota klaim habis.";
+          alert(resData.messages?.error || resData.error || 'Pengajuan bongkar gagal disimpan. Silakan periksa kembali data Anda.');
         }
-        updateReceiptUI();
-      });
-    }
-
-    // Modal Simulation & Backend Checkout
-    const checkoutModal = document.getElementById('checkout-modal');
-    const btnPayNow = document.getElementById('btn-pay-now');
-    const btnMobileCheckout = document.getElementById('btn-mobile-checkout');
-    const btnCloseModal = document.getElementById('btn-close-modal');
-    const btnCancelCheckout = document.getElementById('btn-cancel-checkout');
-    const btnSubmitPay = document.getElementById('btn-submit-pay');
-
-    function openModal() {
-      if (!state.productId) {
-        alert("Silakan pilih nominal produk top up terlebih dahulu!");
-        const prodGrid = document.getElementById('product-grid');
-        if (prodGrid) prodGrid.scrollIntoView({ behavior: 'smooth' });
-        return;
+      } catch (err) {
+        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
       }
-
-      if (!state.userId) {
-        alert("Silakan ketik User ID Game Anda terlebih dahulu!");
-        inputUserId?.focus();
-        return;
-      }
-
-      if (!state.whatsapp) {
-        alert("Silakan ketik nomor WhatsApp Anda terlebih dahulu!");
-        inputWa?.focus();
-        return;
-      }
-
-      if (!state.payMethod) {
-        alert("Silakan pilih metode pembayaran terlebih dahulu!");
-        const firstPayCard = document.querySelector('.pay-method-card');
-        if (firstPayCard) firstPayCard.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-
-      const grandTotal = Math.max(0, state.basePrice + state.adminFee - state.discount);
-      document.getElementById('modal-item').textContent = state.itemTitle;
-      document.getElementById('modal-id').textContent = state.userId;
-      document.getElementById('modal-method').textContent = state.payMethod;
-      document.getElementById('modal-total').textContent = formatRupiah(grandTotal);
-
-      if (checkoutModal) checkoutModal.classList.remove('hidden');
-    }
-
-    function closeModal() {
-      if (checkoutModal) checkoutModal.classList.add('hidden');
-    }
-
-    btnPayNow?.addEventListener('click', openModal);
-    btnMobileCheckout?.addEventListener('click', openModal);
-    btnCloseModal?.addEventListener('click', closeModal);
-    btnCancelCheckout?.addEventListener('click', closeModal);
-
-    btnSubmitPay?.addEventListener('click', () => {
-      btnSubmitPay.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> <span>Membuka Pembayaran...</span>';
-      
-      if (state.productId) {
-        const form = document.getElementById('backend-checkout-form');
-        document.getElementById('hidden-game-id').value = state.userId;
-        document.getElementById('hidden-whatsapp').value = state.whatsapp;
-        document.getElementById('hidden-voucher').value = promoInput ? promoInput.value.trim() : '';
-        form.action = '<?= base_url("checkout/") ?>' + state.productId;
-        form.submit();
-        return;
-      }
-
-      setTimeout(() => {
-        closeModal();
-        btnSubmitPay.innerHTML = '<span>Lanjut ke Pembayaran</span> <span class="material-symbols-outlined text-[16px]">arrow_forward</span>';
-        alert(`Simulasi Pembayaran Berhasil!\n\nID Pemain: ${state.userId}\nItem: ${state.itemTitle}\nMetode: ${state.payMethod}\nTotal: ${formatRupiah(state.basePrice + state.adminFee - state.discount)}\n\nKoin HGD otomatis diproses & masuk ke akun game Anda dalam 1-3 detik via API Server Resmi.`);
-      }, 750);
     });
 
+    // Initial state refresh
     updateReceiptUI();
+    refreshBongkarUI();
   })();
 </script>
-
-

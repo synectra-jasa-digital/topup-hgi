@@ -14,6 +14,7 @@ use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\AuthFilter;
 use App\Filters\RoleFilter;
+use App\Filters\MaintenanceFilter;
 
 class Filters extends BaseFilters
 {
@@ -39,6 +40,7 @@ class Filters extends BaseFilters
         'auth'          => AuthFilter::class,
         'role'          => RoleFilter::class,
         'ratelimit'     => \App\Filters\RateLimitFilter::class,
+        'maintenance'   => MaintenanceFilter::class,
     ];
 
     /**
@@ -76,11 +78,12 @@ class Filters extends BaseFilters
         'before' => [
             // 'honeypot',
             'csrf' => ['except' => ['webhook/midtrans']],
+            'maintenance' => ['except' => ['admin/*', 'login', 'admin/login', 'webhook/midtrans']],
             // 'invalidchars',
         ],
         'after' => [
             // 'honeypot',
-            // 'secureheaders',
+            'secureheaders',
         ],
     ];
 

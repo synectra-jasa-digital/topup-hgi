@@ -59,3 +59,33 @@ Additionally, make sure that the following extensions are enabled in your PHP:
 - json (enabled by default - don't turn it off)
 - [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
 - [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+
+## Production security configuration
+
+Set these values in the production `.env` (do not commit secrets):
+
+```dotenv
+CI_ENVIRONMENT = production
+app.baseURL = 'https://your-domain.example/'
+app.allowedHostnames = 'your-domain.example,www.your-domain.example'
+app.proxyIPs = '10.0.0.10'
+security.CSPEnabled = true
+database.default.encrypt = true
+cache.handler = redis
+cache.backupHandler = file
+redis.host = 127.0.0.1
+redis.port = 6379
+redis.password = 'replace-with-secret'
+```
+
+Use `app.proxyIPs` only for trusted reverse-proxy addresses. Do not put API credentials in views or source code. Production requires HTTPS, a valid `encryption.key`, strict database mode, and a shared Redis cache when multiple application instances are running.
+
+### Deployment checklist
+
+- [ ] Set `CI_ENVIRONMENT=production`, HTTPS `app.baseURL`, hostname allowlist, dan proxy allowlist.
+- [ ] Pastikan `encryption.key`, Midtrans, Wablas, database, dan Redis berasal dari secret manager/environment.
+- [ ] Jalankan `php spark migrate --all` pada database target setelah memverifikasi backup dan migration history.
+- [ ] Pastikan `php spark uploads:audit` berjalan dan folder upload menolak eksekusi PHP/script.
+- [ ] Uji checkout, webhook Midtrans, invoice dengan token salah, cek status, pengajuan bongkar, perubahan status, dan retry notifikasi.
+- [ ] Uji backup create/download/delete dengan akun owner dan verifikasi retention.
+- [ ] Jalankan `php vendor/bin/phpunit --no-coverage`, `composer validate --strict`, `composer audit --locked`, dan `npm run build:css`.

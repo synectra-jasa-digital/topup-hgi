@@ -48,18 +48,16 @@
         <?php else: ?>
             <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 <?php foreach ($products as $product): ?>
-                    <a href="<?= base_url('checkout/' . $product['id']) ?>" class="group flex min-h-[190px] flex-col rounded-lg border border-neutral-200 bg-surface-white p-4 transition-all hover:border-primary hover:bg-primary-light/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.99]">
-                        <div class="flex items-start justify-between gap-2">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-warning/15 text-warning"><span class="material-symbols-outlined text-[20px]">monetization_on</span></span>
-                            <span class="rounded-full bg-success/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-success">Aktif</span>
+                    <a href="<?= base_url('checkout/' . $product['id']) ?>" class="group flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 transition-all hover:border-blue-600 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 min-h-[120px]">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black leading-snug text-slate-900 group-hover:text-blue-600 transition-colors"><?= esc($product['name']) ?></h3>
+                            <?php if (! empty($product['nominal'])): ?>
+                                <p class="mt-0.5 text-xs text-slate-500 font-medium"><?= esc($product['nominal']) ?></p>
+                            <?php endif; ?>
                         </div>
-                        <div class="mt-4">
-                            <h3 class="text-sm font-bold leading-snug text-on-surface group-hover:text-primary"><?= esc($product['name']) ?></h3>
-                            <p class="mt-1 text-xs text-neutral-500"><?= esc($product['nominal']) ?></p>
-                        </div>
-                        <div class="mt-auto flex items-center justify-between border-t border-neutral-200 pt-3">
-                            <span class="font-inter text-base font-bold text-primary">Rp<?= number_format((float) $product['sell_price'], 0, ',', '.') ?></span>
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-container-low text-primary group-hover:bg-primary group-hover:text-white"><span class="material-symbols-outlined text-[18px]">arrow_forward</span></span>
+                        <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+                            <span class="font-display text-sm sm:text-base font-black text-blue-600">Rp<?= number_format((float) $product['sell_price'], 0, ',', '.') ?></span>
+                            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors"><span class="material-symbols-outlined text-[16px]">arrow_forward</span></span>
                         </div>
                     </a>
                 <?php endforeach; ?>

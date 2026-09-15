@@ -25,7 +25,8 @@ class ReportModel extends Model
             ->join('order_payments op', 'op.order_id = o.id', 'left')
             ->where('o.status', 'selesai')
             ->groupStart()
-                ->where('DATE(o.created_at)', $date)
+                ->where('o.created_at >=', "$date 00:00:00")
+                ->where('o.created_at <', date('Y-m-d 00:00:00', strtotime($date . ' +1 day')))
                 ->orGroupStart()
                     ->where('op.created_at >=', "$date 00:00:00")
                     ->where('op.created_at <', "$date 23:59:59")
@@ -50,7 +51,7 @@ class ReportModel extends Model
         $rows = $this->db->table('orders o')
             ->select("DATE(o.created_at) as date, SUM(o.total_amount) as revenue, COUNT(o.id) as order_count")
             ->where('o.status', 'selesai')
-            ->where('DATE(o.created_at) >=', $from)
+            ->where('o.created_at >=', "$from 00:00:00")
             ->groupBy('DATE(o.created_at)')
             ->get()
             ->getResultArray();
@@ -75,8 +76,8 @@ class ReportModel extends Model
                 . "o.total_amount as revenue"
             )
             ->where('o.status', 'selesai')
-            ->where('MONTH(o.created_at)', $month)
-            ->where('YEAR(o.created_at)', $year)
+            ->where('o.created_at >=', sprintf('%04d-%02d-01 00:00:00', $year, $month))
+            ->where('o.created_at <', date('Y-m-d 00:00:00', strtotime(sprintf('%04d-%02d-01 +1 month', $year, $month))))
             ->get();
 
         return $query->getResultArray();

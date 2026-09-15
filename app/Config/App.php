@@ -157,7 +157,7 @@ class App extends BaseConfig
      * secure, the user will be redirected to a secure version of the page
      * and the HTTP Strict Transport Security (HSTS) header will be set.
      */
-    public bool $forceGlobalSecureRequests = false;
+    public bool $forceGlobalSecureRequests = ENVIRONMENT === 'production';
 
     /**
      * --------------------------------------------------------------------------
@@ -199,4 +199,18 @@ class App extends BaseConfig
      * @see http://www.w3.org/TR/CSP/
      */
     public bool $CSPEnabled = false;
+    public function __construct()
+    {
+        parent::__construct();
+        $this->baseURL = env('app.baseURL') ?: (ENVIRONMENT === 'production' ? 'https://example.com/' : $this->baseURL);
+        $this->allowedHostnames = self::environmentList('app.allowedHostnames');
+        $this->proxyIPs = self::environmentList('app.proxyIPs');
+        $this->CSPEnabled = filter_var(env('security.CSPEnabled', false), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private static function environmentList(string $key): array
+    {
+        $value = trim((string) env($key, ''));
+        return $value === '' ? [] : array_values(array_filter(array_map('trim', explode(',', $value))));
+    }
 }

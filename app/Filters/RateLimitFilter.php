@@ -27,8 +27,10 @@ final class RateLimitFilter implements FilterInterface
 
         $cache = service('cache');
         $bucket = intdiv(time(), $window);
+        // NOTE: cache keys must avoid CodeIgniter's reserved characters ({}()/\@:),
+        // so the parts below are joined with "_" rather than ":".
         $key = sprintf(
-            'rate_limit:%s:%s:%d',
+            'rate_limit_%s_%s_%d',
             hash('sha256', $ip),
             sha1(strtolower($request->getMethod()) . ':' . trim($request->getUri()->getPath(), '/')),
             $bucket

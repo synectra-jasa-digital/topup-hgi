@@ -46,7 +46,7 @@ class OrderController extends BaseController
         if ($idempotencyToken !== '') {
             $existingOrder = $this->orders->findByToken($idempotencyToken);
             if ($existingOrder) {
-                return redirect()->to('/pesanan/' . $existingOrder['invoice_number'] . '/' . $existingOrder['public_access_token']);
+                return redirect()->to('/pesanan/' . $existingOrder['invoice_number']);
             }
         }
 
@@ -84,7 +84,6 @@ class OrderController extends BaseController
             'total_amount'          => $subtotal - $discount,
             'status'                => 'menunggu_pembayaran',
             'idempotency_token'     => $idempotencyToken !== '' ? $idempotencyToken : null,
-            'public_access_token'   => bin2hex(random_bytes(32)),
         ];
 
         $snapToken = $this->midtrans->getSnapToken($data);
@@ -109,7 +108,7 @@ class OrderController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Pesanan gagal disimpan. Silakan coba lagi.');
         }
 
-        return redirect()->to('/pesanan/' . $data['invoice_number'] . '/' . $data['public_access_token']);
+        return redirect()->to('/pesanan/' . $data['invoice_number']);
     }
 
     public function checkStatus()
@@ -125,7 +124,6 @@ class OrderController extends BaseController
     {
         $rules = [
             'invoice_number' => ['label' => 'Nomor Invoice', 'rules' => 'required|max_length[30]'],
-            'access_token' => ['label' => 'Token Akses', 'rules' => 'required|exact_length[64]|alpha_numeric']
         ];
 
         if (! $this->validate($rules)) {
@@ -133,19 +131,18 @@ class OrderController extends BaseController
         }
 
         $invoiceNumber = trim((string) $this->request->getPost('invoice_number'));
-        $accessToken = trim((string) $this->request->getPost('access_token'));
-        $order = $this->orders->findByPublicAccess($invoiceNumber, $accessToken);
+        $order = $this->orders->findByInvoice($invoiceNumber);
 
         if (! $order) {
             return redirect()->back()->withInput()->with('error', 'Pesanan dengan Nomor Invoice tersebut tidak ditemukan.');
         }
 
-        return redirect()->to('/pesanan/' . $order['invoice_number'] . '/' . $order['public_access_token']);
+        return redirect()->to('/pesanan/' . $order['invoice_number']);
     }
 
-    public function invoice(string $invoiceNumber, string $accessToken): ResponseInterface
+    public function invoice(string $invoiceNumber): ResponseInterface
     {
-        $order = $this->orders->findByPublicAccess($invoiceNumber, $accessToken);
+        $order = $this->orders->findByInvoice($invoiceNumber);
 
         if (! $order) {
             throw PageNotFoundException::forPageNotFound();

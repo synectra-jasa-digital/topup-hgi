@@ -68,6 +68,8 @@ final class BongkarRequestTest extends CIUnitTestCase
                 'quantity' => 2,
                 'customer_whatsapp' => '081299988877',
                 'payout_method' => 'BCA',
+                'payout_account_number' => '1234567890',
+                'payout_account_name' => 'Budi Santoso',
                 'customer_note' => 'tolong cepat',
             ]))
             ->post('bongkar/submit');
@@ -83,6 +85,39 @@ final class BongkarRequestTest extends CIUnitTestCase
         self::assertSame('Kartu Ungu', $request['catalog_name_snapshot']);
         self::assertSame('2', (string) $request['quantity']);
         self::assertSame(130000.0, (float) $request['estimated_amount']);
+        self::assertSame('BCA', $request['payout_method']);
+        self::assertSame('1234567890', $request['payout_account_number']);
+        self::assertSame('Budi Santoso', $request['payout_account_name']);
+    }
+
+    public function testBongkarSubmitRejectsUnknownPayoutMethod(): void
+    {
+        $catalog = new BongkarCatalogModel();
+        $catalog->insert([
+            'code'       => 'kartu-ungu',
+            'name'       => 'Kartu Ungu',
+            'unit_label' => 'kartu',
+            'base_rate'  => 65000,
+            'sort_order' => 1,
+            'is_active'  => 1,
+        ]);
+
+        $result = $this->withHeaders([
+                csrf_header() => csrf_hash(),
+            ])
+            ->withBodyFormat('json')
+            ->withBody(json_encode([
+                'bongkar_catalog_id' => 1,
+                'quantity' => 1,
+                'customer_whatsapp' => '081299988877',
+                'payout_method' => 'Paypal',
+                'payout_account_number' => '1234567890',
+                'payout_account_name' => 'Budi Santoso',
+            ]))
+            ->post('bongkar/submit');
+
+        $result->assertStatus(400);
+        self::assertStringContainsString('payout_method', $result->getBody());
     }
 
     public function testBongkarSubmitRequiresCsrfToken(): void

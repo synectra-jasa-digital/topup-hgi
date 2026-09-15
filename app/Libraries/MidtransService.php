@@ -5,12 +5,13 @@ namespace App\Libraries;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Exception;
+use App\Libraries\IntegrationSettings;
 
 class MidtransService
 {
     public function __construct()
     {
-        Config::$serverKey = getenv('midtrans.serverKey') ?: $_ENV['midtrans.serverKey'] ?? '';
+        Config::$serverKey = (new IntegrationSettings())->get('midtrans_key', 'midtrans.serverKey');
         Config::$clientKey = getenv('midtrans.clientKey') ?: $_ENV['midtrans.clientKey'] ?? '';
         Config::$isProduction = filter_var(getenv('midtrans.isProduction') ?: $_ENV['midtrans.isProduction'] ?? false, FILTER_VALIDATE_BOOLEAN);
         Config::$isSanitized = true;

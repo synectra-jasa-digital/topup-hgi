@@ -37,11 +37,11 @@
     </div>
     <div>
         <label for="midtrans_key" class="form-label">Kunci Midtrans</label>
-        <input type="text" id="midtrans_key" name="midtrans_key" value="<?= esc(old('midtrans_key', $settings['midtrans_key'] ?? '')) ?>" class="form-input">
+        <input type="password" id="midtrans_key" name="midtrans_key" value="" class="form-input" autocomplete="new-password">
     </div>
     <div>
         <label for="wablas_key" class="form-label">Token / Kunci Wablas</label>
-        <input type="text" id="wablas_key" name="wablas_key" value="<?= esc(old('wablas_key', $settings['wablas_key'] ?? '')) ?>" class="form-input">
+        <input type="password" id="wablas_key" name="wablas_key" value="" class="form-input" autocomplete="new-password">
     </div>
     <label class="flex items-center gap-2.5 text-sm text-neutral-700">
         <input type="checkbox" id="maintenance" name="maintenance" value="1" <?= (old('maintenance', $settings['maintenance'] ?? '0') === '1') ? 'checked' : '' ?> class="h-4 w-4 rounded border-neutral-300 accent-primary">

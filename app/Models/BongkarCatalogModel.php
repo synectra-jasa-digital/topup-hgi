@@ -12,6 +12,7 @@ class BongkarCatalogModel extends Model
     protected $allowedFields = ['code', 'name', 'unit_label', 'base_rate', 'sort_order', 'is_active'];
     protected $useTimestamps = true;
     protected $validationRules = [
+        'id'         => 'permit_empty|is_natural',
         'code'       => 'required|max_length[100]|is_unique[bongkar_catalogs.code,id,{id}]',
         'name'       => 'required|max_length[150]',
         'unit_label' => 'required|max_length[50]',

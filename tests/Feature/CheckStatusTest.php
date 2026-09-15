@@ -31,30 +31,29 @@ class CheckStatusTest extends CIUnitTestCase
             'category_id' => $categoryModel->getInsertID(), 'name' => 'Prod', 'nominal' => '1',
             'cost_price' => 10, 'sell_price' => 20, 'is_active' => 1,
         ]);
-        $token = str_repeat('a', 64);
         $orderModel = new OrderModel();
         $orderModel->insert([
             'invoice_number' => 'INV99999', 'product_id' => $productModel->getInsertID(),
             'product_name_snapshot' => 'Prod', 'nominal_snapshot' => '1', 'price_snapshot' => 20,
             'game_id' => '123', 'whatsapp_number' => '0811111111', 'total_amount' => 20,
-            'status' => 'menunggu_pembayaran', 'public_access_token' => $token,
+            'status' => 'menunggu_pembayaran',
         ]);
         $categoryModel->db->query('PRAGMA foreign_keys = ON');
 
-        $result = $this->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => 'INV99999', 'access_token' => $token]);
-        $result->assertRedirectTo('/pesanan/INV99999/' . $token);
-        $invoice = $this->get('/pesanan/INV99999/' . $token);
+        $result = $this->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => 'INV99999']);
+        $result->assertRedirectTo('/pesanan/INV99999');
+        $invoice = $this->get('/pesanan/INV99999');
         $invoice->assertOK();
         $invoice->assertHeader('Cache-Control');
         $this->assertStringNotContainsString('123', $invoice->getBody());
         $this->assertStringNotContainsString('0811111111', $invoice->getBody());
         $this->expectException(\CodeIgniter\Exceptions\PageNotFoundException::class);
-        $this->get('/pesanan/INV99999/' . str_repeat('b', 64));
+        $this->get('/pesanan/INVDOESNOTEXIST');
     }
 
     public function testCheckStatusNotFound(): void
     {
-        $result = $this->withSession()->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => 'INVKOSONG', 'access_token' => str_repeat('a', 64)]);
+        $result = $this->withSession()->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => 'INVKOSONG']);
         $result->assertRedirect();
         $this->assertTrue(session()->has('error'));
     }
