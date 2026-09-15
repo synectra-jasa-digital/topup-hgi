@@ -14,7 +14,8 @@ class OrderModel extends Model
         'invoice_number', 'product_id', 'product_name_snapshot', 'nominal_snapshot',
         'price_snapshot', 'game_id', 'whatsapp_number', 'voucher_id', 'discount_amount',
         'voucher_reserved', 'voucher_committed', 'voucher_reserved_until', 'idempotency_token', 'wablas_notification_claimed',
-        'total_amount', 'status', 'processed_by', 'completed_at', 'snap_token',
+        'payment_channel_id', 'payment_proof_path', 'payment_proof_uploaded_at', 'payment_verified_by', 'payment_verified_at',
+        'total_amount', 'status', 'processed_by', 'completed_at',
     ];
     protected $useTimestamps = true;
     protected $validationRules = [
@@ -52,7 +53,7 @@ class OrderModel extends Model
 
     public static function adminStatuses(): array
     {
-        return ['menunggu_pembayaran', 'dibayar', 'diproses', 'selesai', 'gagal', 'dibatalkan'];
+        return ['menunggu_pembayaran', 'menunggu_verifikasi', 'diproses', 'selesai', 'gagal', 'dibatalkan'];
     }
 
     public function countByStatus(): array
