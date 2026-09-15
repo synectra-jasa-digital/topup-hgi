@@ -4,12 +4,12 @@ if (! function_exists('order_status_label')) {
     function order_status_label(string $status): string
     {
         return [
-            'menunggu_pembayaran' => 'Menunggu Pembayaran',
-            'dibayar'             => 'Dibayar',
-            'diproses'            => 'Diproses',
-            'selesai'             => 'Selesai',
-            'gagal'               => 'Gagal',
-            'dibatalkan'          => 'Dibatalkan',
+            'menunggu_pembayaran'  => 'Menunggu Pembayaran',
+            'menunggu_verifikasi'  => 'Menunggu Verifikasi',
+            'diproses'             => 'Diproses',
+            'selesai'              => 'Selesai',
+            'gagal'                => 'Gagal',
+            'dibatalkan'           => 'Dibatalkan',
         ][$status] ?? $status;
     }
 }
@@ -19,7 +19,7 @@ if (! function_exists('order_status_badge_class')) {
     {
         return [
             'menunggu_pembayaran' => 'badge-warning',
-            'dibayar'             => 'badge-primary',
+            'menunggu_verifikasi' => 'badge-warning',
             'diproses'            => 'badge-primary',
             'selesai'             => 'badge-success',
             'gagal'               => 'badge-danger',
