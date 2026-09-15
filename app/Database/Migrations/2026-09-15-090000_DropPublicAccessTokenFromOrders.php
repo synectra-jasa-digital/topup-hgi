@@ -8,14 +8,11 @@ class DropPublicAccessTokenFromOrders extends Migration
 {
     public function up()
     {
-        $this->forge->dropColumn('orders', 'public_access_token');
+        // Retained for private customer access to invoices and proof uploads.
     }
 
     public function down()
     {
-        $this->forge->addColumn('orders', [
-            'public_access_token' => ['type' => 'CHAR', 'constraint' => 64, 'null' => true, 'after' => 'idempotency_token'],
-        ]);
-        $this->forge->addUniqueKey('orders', 'public_access_token');
+        // No-op: the access token remains part of the orders schema.
     }
 }

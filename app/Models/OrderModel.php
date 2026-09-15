@@ -14,7 +14,9 @@ class OrderModel extends Model
         'invoice_number', 'product_id', 'product_name_snapshot', 'nominal_snapshot',
         'price_snapshot', 'game_id', 'whatsapp_number', 'voucher_id', 'discount_amount',
         'voucher_reserved', 'voucher_committed', 'voucher_reserved_until', 'idempotency_token', 'wablas_notification_claimed',
-        'payment_channel_id', 'payment_proof_path', 'payment_proof_uploaded_at', 'payment_verified_by', 'payment_verified_at',
+        'public_access_token', 'payment_channel_id', 'payment_channel_type', 'payment_channel_name',
+        'payment_account_number', 'payment_account_holder', 'payment_qr_image_path',
+        'payment_proof_path', 'payment_proof_uploaded_at', 'payment_verified_by', 'payment_verified_at', 'payment_rejection_reason',
         'total_amount', 'status', 'processed_by', 'completed_at',
     ];
     protected $useTimestamps = true;
@@ -40,6 +42,37 @@ class OrderModel extends Model
     public function findByToken(string $token): ?array
     {
         return $this->where('idempotency_token', $token)->first();
+    }
+
+    public function findByInvoiceAndAccessToken(string $invoiceNumber, string $token): ?array
+    {
+        if ($token === '') {
+            return null;
+        }
+
+        return $this->where('invoice_number', $invoiceNumber)->where('public_access_token', $token)->first();
+    }
+
+    public function verifyPayment(int $orderId, int $adminId): bool
+    {
+        $now = date('Y-m-d H:i:s');
+        $this->builder()->where('id', $orderId)->where('status', 'menunggu_verifikasi')->update([
+            'status' => 'diproses', 'payment_verified_by' => $adminId,
+            'payment_verified_at' => $now, 'payment_rejection_reason' => null, 'updated_at' => $now,
+        ]);
+
+        return $this->db->affectedRows() === 1;
+    }
+
+    public function rejectPayment(int $orderId, int $adminId, string $reason): bool
+    {
+        $now = date('Y-m-d H:i:s');
+        $this->builder()->where('id', $orderId)->where('status', 'menunggu_verifikasi')->update([
+            'status' => 'menunggu_pembayaran', 'payment_verified_by' => $adminId,
+            'payment_verified_at' => $now, 'payment_rejection_reason' => $reason, 'updated_at' => $now,
+        ]);
+
+        return $this->db->affectedRows() === 1;
     }
 
     public function adminList(?string $status = null, int $perPage = 15): array

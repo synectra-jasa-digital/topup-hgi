@@ -34,13 +34,13 @@
 
     <div class="mt-4 flex items-center gap-2.5 text-[11px] text-slate-600 bg-blue-50/70 p-3 rounded-xl border border-blue-200/70">
       <span class="material-symbols-outlined text-[20px] text-blue-600 shrink-0">lock</span>
-      <span>Halaman pembayaran gateway resmi akan dibuka secara otomatis. Produk langsung dikirim setelah terkonfirmasi.</span>
+      <span>Detail rekening atau QRIS akan tampil di invoice. Upload bukti pembayaran setelah transfer agar pesanan dapat diverifikasi.</span>
     </div>
 
     <div class="mt-5 flex gap-3">
       <button class="flex-1 py-3 rounded-xl border border-slate-300 font-bold text-xs text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer" id="btn-cancel-checkout" type="button">Batal</button>
       <button class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 font-display font-black text-xs text-white transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/20 cursor-pointer" id="btn-submit-pay" type="button">
-        <span>Lanjut Bayar</span>
+        <span>Buat Pesanan</span>
         <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
       </button>
     </div>

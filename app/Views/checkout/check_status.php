@@ -40,6 +40,12 @@
                 <?php endif ?>
             </div>
 
+            <div class="space-y-1.5">
+                <label for="access_token" class="block text-xs font-bold text-neutral-800">Token Akses Invoice <span class="text-rose-500">*</span></label>
+                <input type="text" name="access_token" id="access_token" value="<?= old('access_token') ?>" class="w-full rounded-xl border border-slate-300 bg-slate-50/50 py-2.5 px-3.5 text-sm font-mono text-neutral-900 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none transition-all" placeholder="Token dari halaman invoice" required autocomplete="off">
+                <?php if (session('errors.access_token')) : ?><p class="text-rose-600 text-xs mt-1"><?= esc(session('errors.access_token')) ?></p><?php endif ?>
+            </div>
+
             <button type="submit" class="w-full py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-display font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer border border-blue-700">
                 <span class="material-symbols-outlined text-[18px]">search</span>
                 <span>Cek Status Pesanan</span>

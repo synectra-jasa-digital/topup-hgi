@@ -4,7 +4,6 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\StoreSettingModel;
-use App\Libraries\IntegrationSettings;
 
 class StoreSettingController extends BaseController
 {
@@ -48,12 +47,9 @@ class StoreSettingController extends BaseController
             'maintenance'   => $this->request->getPost('maintenance') ? '1' : '0',
         ];
 
-        $integrationSettings = new IntegrationSettings($this->settings);
-        foreach (['midtrans_key' => 'midtrans.serverKey', 'wablas_key' => 'wablas.token'] as $key => $environmentKey) {
-            $value = trim((string) $this->request->getPost($key));
-            if ($value !== '') {
-                $data[$key] = $integrationSettings->encrypt($value);
-            }
+        $wablasToken = trim((string) $this->request->getPost('wablas_key'));
+        if ($wablasToken !== '') {
+            $data['wablas_key'] = (new \App\Libraries\IntegrationSettings($this->settings))->encrypt($wablasToken);
         }
 
         if ($logo && $logo->isValid()) {

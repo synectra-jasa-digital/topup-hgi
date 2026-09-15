@@ -25,8 +25,16 @@
             <?php if ((float) $order['discount_amount'] > 0): ?>
                 <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3 text-success"><dt class="text-neutral-500">Diskon Voucher</dt><dd class="font-medium">-Rp<?= number_format((float) $order['discount_amount'], 0, ',', '.') ?></dd></div>
             <?php endif; ?>
-            <div class="flex items-center justify-between gap-4 pt-1"><dt class="text-sm font-semibold text-neutral-900">Total Pembayaran</dt><dd class="text-base font-semibold text-primary">Rp<?= number_format((float) $order['total_amount'], 0, ',', '.') ?></dd></div>
-        </dl>
+           <div class="flex items-center justify-between gap-4 pt-1"><dt class="text-sm font-semibold text-neutral-900">Total Pembayaran</dt><dd class="text-base font-semibold text-primary">Rp<?= number_format((float) $order['total_amount'], 0, ',', '.') ?></dd></div>
+        <?php if (!empty($order['payment_qr_image_path']) && $order['payment_channel_type'] === 'qris'): ?>
+            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3">
+                <dt class="text-neutral-500">QRIS</dt>
+                <dd>
+                    <img src="<?= base_url($order['payment_qr_image_path']) ?>" alt="QRIS" class="cursor-pointer h-24 w-24 object-contain rounded border" id="qr-image-<?= $order['id'] ?>">
+                </dd>
+            </div>
+        <?php endif; ?>
+    </dl>
     </section>
 
     <section class="panel-surface">
@@ -40,7 +48,15 @@
             <?php endif; ?>
         </dl>
 
-        <?php if ($order['status'] === 'diproses'): ?>
+        <?php if (! empty($order['payment_proof_path'])): ?>
+            <a href="<?= base_url('admin/pesanan/' . $order['id'] . '/bukti') ?>" class="btn btn-secondary mt-6 w-full justify-center">Lihat Bukti Pembayaran</a>
+        <?php endif; ?>
+        <?php if ($order['status'] === 'menunggu_verifikasi'): ?>
+            <div class="mt-6 flex gap-2">
+                <form method="post" action="<?= base_url('admin/pesanan/' . $order['id'] . '/verifikasi') ?>" class="flex-1"><?= csrf_field() ?><button class="btn btn-primary w-full justify-center">Verifikasi</button></form>
+                <form method="post" action="<?= base_url('admin/pesanan/' . $order['id'] . '/tolak') ?>" class="flex-1 space-y-2"><?= csrf_field() ?><input name="reason" required maxlength="500" placeholder="Alasan penolakan" class="form-input"><button class="btn btn-secondary w-full justify-center">Tolak</button></form>
+            </div>
+        <?php elseif ($order['status'] === 'diproses'): ?>
             <form method="post" action="<?= base_url('admin/pesanan/' . $order['id'] . '/selesai') ?>" class="mt-6" data-confirm="Tandai pesanan ini sebagai selesai dan kirim notifikasi WhatsApp ke customer?" data-confirm-title="Selesaikan Pesanan" data-confirm-button="Ya, selesaikan">
                 <?= csrf_field() ?>
                 <button type="submit" class="btn btn-primary w-full justify-center">
@@ -55,5 +71,28 @@
             <div class="mt-6 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500">Tidak ada aksi tersedia untuk status saat ini.</div>
         <?php endif; ?>
     </section>
+
+    <?php if (!empty($order['payment_qr_image_path']) && $order['payment_channel_type'] === 'qris'): ?>
+        <div id="qr-modal-<?= $order['id'] ?>" class="qr-modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div class="bg-white rounded-lg p-4 max-w-xs w-full relative">
+                <span class="absolute top-2 right-2 text-gray-500 cursor-pointer hover:text-gray-700" id="close-qr-<?= $order['id'] ?>">&times;</span>
+                <img src="<?= base_url($order['payment_qr_image_path']) ?>" alt="QRIS Large" class="w-full h-auto rounded">
+            </div>
+        </div>
+        <script>
+            document.getElementById('qr-image-<?= $order['id'] ?>').addEventListener('click', function() {
+                document.getElementById('qr-modal-<?= $order['id'] ?>').classList.remove('hidden');
+            });
+            document.getElementById('close-qr-<?= $order['id'] ?>').addEventListener('click', function() {
+                document.getElementById('qr-modal-<?= $order['id'] ?>').classList.add('hidden');
+            });
+            // Close when clicking outside the image
+            document.getElementById('qr-modal-<?= $order['id'] ?>').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        </script>
+    <?php endif; ?>
 </div>
 <?= $this->endSection() ?>

@@ -5,12 +5,14 @@ namespace App\Controllers;
 use App\Models\OrderModel;
 use App\Models\VoucherModel;
 use App\Models\ProductModel;
+use App\Models\PaymentChannelModel;
 use App\Libraries\Money;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class OrderController extends BaseController
 {
+    private const PROOF_PATH = WRITEPATH . 'uploads/payment-proofs/';
     protected ProductModel $products;
     protected OrderModel $orders;
     protected VoucherModel $vouchers;
@@ -44,7 +46,7 @@ class OrderController extends BaseController
         if ($idempotencyToken !== '') {
             $existingOrder = $this->orders->findByToken($idempotencyToken);
             if ($existingOrder) {
-                return redirect()->to('/pesanan/' . $existingOrder['invoice_number']);
+                return redirect()->to('/pesanan/' . $existingOrder['invoice_number'] . '?token=' . $existingOrder['public_access_token']);
             }
         }
 
@@ -91,6 +93,12 @@ class OrderController extends BaseController
             'status'                => 'menunggu_pembayaran',
             'idempotency_token'     => $idempotencyToken !== '' ? $idempotencyToken : null,
             'payment_channel_id'    => $paymentChannel['id'],
+            'payment_channel_type'  => $paymentChannel['type'],
+            'payment_channel_name'  => $paymentChannel['name'],
+            'payment_account_number'=> $paymentChannel['account_number'],
+            'payment_account_holder'=> $paymentChannel['account_holder'],
+            'payment_qr_image_path' => $paymentChannel['qr_image_path'],
+            'public_access_token'   => bin2hex(random_bytes(32)),
         ];
 
         $this->orders->db->transStart();
@@ -109,7 +117,7 @@ class OrderController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Pesanan gagal disimpan. Silakan coba lagi.');
         }
 
-        return redirect()->to('/pesanan/' . $data['invoice_number']);
+        return redirect()->to('/pesanan/' . $data['invoice_number'] . '?token=' . $data['public_access_token']);
     }
 
     public function checkStatus()
@@ -125,6 +133,7 @@ class OrderController extends BaseController
     {
         $rules = [
             'invoice_number' => ['label' => 'Nomor Invoice', 'rules' => 'required|max_length[30]'],
+            'access_token' => ['label' => 'Token Akses', 'rules' => 'required|exact_length[64]|alpha_numeric'],
         ];
 
         if (! $this->validate($rules)) {
@@ -132,18 +141,20 @@ class OrderController extends BaseController
         }
 
         $invoiceNumber = trim((string) $this->request->getPost('invoice_number'));
-        $order = $this->orders->findByInvoice($invoiceNumber);
+        $accessToken = trim((string) $this->request->getPost('access_token'));
+        $order = $this->orders->findByInvoiceAndAccessToken($invoiceNumber, $accessToken);
 
         if (! $order) {
             return redirect()->back()->withInput()->with('error', 'Pesanan dengan Nomor Invoice tersebut tidak ditemukan.');
         }
 
-        return redirect()->to('/pesanan/' . $order['invoice_number']);
+        return redirect()->to('/pesanan/' . $order['invoice_number'] . '?token=' . $accessToken);
     }
 
     public function invoice(string $invoiceNumber): ResponseInterface
     {
-        $order = $this->orders->findByInvoice($invoiceNumber);
+        $token = trim((string) $this->request->getGet('token'));
+        $order = $this->orders->findByInvoiceAndAccessToken($invoiceNumber, $token);
 
         if (! $order) {
             throw PageNotFoundException::forPageNotFound();
@@ -156,7 +167,60 @@ class OrderController extends BaseController
             'order'   => $order,
             'masked_game_id' => self::mask((string) $order['game_id']),
             'masked_whatsapp' => self::mask((string) $order['whatsapp_number']),
+            'access_token' => $token,
         ]));
+    }
+
+    public function uploadPaymentProof(string $invoiceNumber)
+    {
+        helper('upload');
+        $token = trim((string) $this->request->getPost('access_token'));
+        $order = $this->orders->findByInvoiceAndAccessToken($invoiceNumber, $token);
+        if (! $order) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        if (empty($order['payment_channel_name']) && ! empty($order['payment_channel_id'])) {
+            $channel = (new PaymentChannelModel())->find((int) $order['payment_channel_id']);
+            if ($channel) {
+                $order['payment_channel_type'] = $channel['type'];
+                $order['payment_channel_name'] = $channel['name'];
+                $order['payment_account_number'] = $channel['account_number'];
+                $order['payment_account_holder'] = $channel['account_holder'];
+                $order['payment_qr_image_path'] = $channel['qr_image_path'];
+            }
+        }
+        if ($order['status'] !== 'menunggu_pembayaran') {
+            return redirect()->to('/pesanan/' . $invoiceNumber . '?token=' . $token)->with('error', 'Bukti pembayaran tidak dapat diubah pada status ini.');
+        }
+
+        $proof = $this->request->getFile('payment_proof');
+        $rules = ['payment_proof' => 'uploaded[payment_proof]|max_size[payment_proof,5120]|is_image[payment_proof]|mime_in[payment_proof,image/jpeg,image/png,image/webp]|ext_in[payment_proof,jpg,jpeg,png,webp]'];
+        if (! $this->validate($rules) || ! validate_uploaded_image_dimensions($proof)) {
+            return redirect()->to('/pesanan/' . $invoiceNumber . '?token=' . $token)->with('errors', $this->validator?->getErrors() ?: ['payment_proof' => 'Bukti pembayaran tidak valid.']);
+        }
+
+        if (! is_dir(self::PROOF_PATH)) {
+            mkdir(self::PROOF_PATH, 0750, true);
+        }
+        $filename = $proof->getRandomName();
+        $proof->move(self::PROOF_PATH, $filename);
+        $oldPath = $order['payment_proof_path'] ?? null;
+        $saved = $this->orders->update($order['id'], [
+            'payment_proof_path' => $filename,
+            'payment_proof_uploaded_at' => date('Y-m-d H:i:s'),
+            'payment_rejection_reason' => null,
+            'status' => 'menunggu_verifikasi',
+        ]);
+        if (! $saved) {
+            @unlink(self::PROOF_PATH . $filename);
+            return redirect()->to('/pesanan/' . $invoiceNumber . '?token=' . $token)->with('error', 'Bukti pembayaran gagal disimpan.');
+        }
+        if ($oldPath && is_file(self::PROOF_PATH . basename($oldPath))) {
+            @unlink(self::PROOF_PATH . basename($oldPath));
+        }
+
+        return redirect()->to('/pesanan/' . $invoiceNumber . '?token=' . $token)->with('success', 'Bukti pembayaran berhasil dikirim dan menunggu verifikasi.');
     }
 
     private static function mask(string $value): string

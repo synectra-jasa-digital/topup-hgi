@@ -94,15 +94,37 @@
             </div>
         </div>
 
-        <!-- Tombol Pembayaran Midtrans Snap -->
-        <?php if ($order['status'] === 'menunggu_pembayaran' && !empty($order['snap_token'])): ?>
-            <div class="pt-2 space-y-2">
-                <button id="pay-button" class="w-full py-3.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-display font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer border border-blue-700">
-                    <span class="material-symbols-outlined text-[20px]">payments</span>
-                    <span>Bayar Sekarang</span>
-                </button>
-                <p class="text-[11px] text-center text-slate-400">Mendukung QRIS, E-Wallet, VA, &amp; Bank Transfer.</p>
+        <?php if (! empty($order['payment_channel_name'])): ?>
+            <div class="rounded-xl border border-blue-100 bg-blue-50 p-4 space-y-2 text-sm">
+                <h2 class="font-bold text-blue-900">Transfer Pembayaran</h2>
+                <p class="font-semibold text-blue-900"><?= esc($order['payment_channel_name']) ?></p>
+                <?php if ($order['payment_channel_type'] === 'qris' && ! empty($order['payment_qr_image_path'])): ?>
+                    <img src="<?= base_url($order['payment_qr_image_path']) ?>" alt="QRIS <?= esc($order['payment_channel_name']) ?>" class="mx-auto h-48 w-48 rounded-lg bg-white object-contain p-2">
+                <?php else: ?>
+                    <p class="text-blue-800">Nomor rekening: <strong><?= esc($order['payment_account_number']) ?></strong></p>
+                    <p class="text-blue-800">Atas nama: <strong><?= esc($order['payment_account_holder']) ?></strong></p>
+                <?php endif; ?>
             </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('error') || session()->getFlashdata('success')): ?>
+            <div class="rounded-xl <?= session()->getFlashdata('error') ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700' ?> p-3 text-sm"><?= esc(session()->getFlashdata('error') ?: session()->getFlashdata('success')) ?></div>
+        <?php endif; ?>
+
+        <?php if (! empty($order['payment_rejection_reason'])): ?>
+            <div class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800"><strong>Bukti pembayaran ditolak:</strong> <?= esc($order['payment_rejection_reason']) ?></div>
+        <?php endif; ?>
+
+        <?php if ($order['status'] === 'menunggu_pembayaran'): ?>
+            <form method="post" action="<?= base_url('pesanan/' . $order['invoice_number'] . '/bukti') ?>" enctype="multipart/form-data" class="space-y-3 rounded-xl border border-slate-200 p-4">
+                <?= csrf_field() ?><input type="hidden" name="access_token" value="<?= esc($access_token) ?>">
+                <label for="payment_proof" class="block text-sm font-bold text-neutral-800">Upload Bukti Pembayaran</label>
+                <input type="file" name="payment_proof" id="payment_proof" accept="image/png,image/jpeg,image/webp" required class="form-input">
+                <p class="text-xs text-slate-500">PNG/JPG/WEBP, maksimal 5MB.</p>
+                <button type="submit" class="w-full rounded-xl bg-blue-600 py-3 font-bold text-white">Kirim Bukti Pembayaran</button>
+            </form>
+        <?php elseif ($order['status'] === 'menunggu_verifikasi'): ?>
+            <div class="rounded-xl bg-amber-50 p-4 text-center text-sm font-medium text-amber-800">Bukti pembayaran sedang diperiksa admin.</div>
         <?php endif; ?>
 
         <!-- Tombol Cetak Invoice -->
@@ -128,32 +150,4 @@
 
 </div>
 
-<?php if ($order['status'] === 'menunggu_pembayaran' && !empty($order['snap_token'])): ?>
-<?php 
-    $midtransIsProd = filter_var(getenv('midtrans.isProduction') ?: $_ENV['midtrans.isProduction'] ?? false, FILTER_VALIDATE_BOOLEAN);
-    $snapJsUrl = $midtransIsProd ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
-    $clientKey = getenv('midtrans.clientKey') ?: $_ENV['midtrans.clientKey'] ?? '';
-?>
-<script type="text/javascript" src="<?= $snapJsUrl ?>" data-client-key="<?= $clientKey ?>"></script>
-<script type="text/javascript">
-    const payBtn = document.getElementById('pay-button');
-    if (payBtn) {
-        payBtn.onclick = function(){
-            snap.pay('<?= esc($order['snap_token']) ?>', {
-                onSuccess: function(result){
-                    window.location.reload();
-                },
-                onPending: function(result){
-                    window.location.reload();
-                },
-                onError: function(result){
-                    alert("Pembayaran Gagal!");
-                }
-            });
-        };
-    }
-</script>
-<?php endif; ?>
-
 <?= $this->endSection() ?>
-

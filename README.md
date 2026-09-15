@@ -83,9 +83,9 @@ Use `app.proxyIPs` only for trusted reverse-proxy addresses. Do not put API cred
 ### Deployment checklist
 
 - [ ] Set `CI_ENVIRONMENT=production`, HTTPS `app.baseURL`, hostname allowlist, dan proxy allowlist.
-- [ ] Pastikan `encryption.key`, Midtrans, Wablas, database, dan Redis berasal dari secret manager/environment.
+- [ ] Pastikan `encryption.key`, Wablas, database, dan Redis berasal dari secret manager/environment.
 - [ ] Jalankan `php spark migrate --all` pada database target setelah memverifikasi backup dan migration history.
 - [ ] Pastikan `php spark uploads:audit` berjalan dan folder upload menolak eksekusi PHP/script.
-- [ ] Uji checkout, webhook Midtrans, invoice dengan token salah, cek status, pengajuan bongkar, perubahan status, dan retry notifikasi.
+- [ ] Uji checkout, upload bukti pembayaran, verifikasi/penolakan admin, invoice dengan token salah, cek status, pengajuan bongkar, perubahan status, dan retry notifikasi.
 - [ ] Uji backup create/download/delete dengan akun owner dan verifikasi retention.
 - [ ] Jalankan `php vendor/bin/phpunit --no-coverage`, `composer validate --strict`, `composer audit --locked`, dan `npm run build:css`.

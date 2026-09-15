@@ -5,7 +5,7 @@
 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
     <div>
         <h1 class="section-title">Pengaturan Toko</h1>
-        <p class="section-subtitle">Kelola identitas toko dan kredensial integrasi.</p>
+        <p class="section-subtitle">Kelola identitas toko dan kredensial integrasi WhatsApp.</p>
     </div>
 </div>
 
@@ -34,10 +34,6 @@
     <div>
         <label for="store_address" class="form-label">Alamat Toko</label>
         <textarea id="store_address" name="store_address" rows="3" class="form-input"><?= esc(old('store_address', $settings['store_address'] ?? '')) ?></textarea>
-    </div>
-    <div>
-        <label for="midtrans_key" class="form-label">Kunci Midtrans</label>
-        <input type="password" id="midtrans_key" name="midtrans_key" value="" class="form-input" autocomplete="new-password">
     </div>
     <div>
         <label for="wablas_key" class="form-label">Token / Kunci Wablas</label>

@@ -38,6 +38,11 @@ class CheckoutTest extends CIUnitTestCase
         ]);
         $categoryModel->db->query("PRAGMA foreign_keys = ON");
 
+        $paymentChannelId = (new \App\Models\PaymentChannelModel())->insert([
+            'type' => 'bank', 'name' => 'BCA', 'account_number' => '1234567890',
+            'account_holder' => 'Ayong Store', 'is_active' => 1,
+        ]);
+
         $this->get("/checkout/" . $productId);
         $idempotencyToken = session("checkout_idempotency_token");
         $this->assertNotEmpty($idempotencyToken);
@@ -50,6 +55,7 @@ class CheckoutTest extends CIUnitTestCase
                 "whatsapp_number" => "08123456789",
                 "idempotency_token" => $idempotencyToken,
                 "voucher_code" => "",
+                "payment_channel_id" => $paymentChannelId,
             ]);
         $result1->assertRedirect();
 
@@ -61,6 +67,7 @@ class CheckoutTest extends CIUnitTestCase
                 "whatsapp_number" => "08123456789",
                 "idempotency_token" => $idempotencyToken,
                 "voucher_code" => "",
+                "payment_channel_id" => $paymentChannelId,
             ]);
         $result2->assertRedirect();
 

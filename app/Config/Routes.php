@@ -10,8 +10,8 @@ $routes->get('kategori/(:segment)', 'Home::kategori/$1');
 $routes->get('checkout/(:num)', 'OrderController::create/$1', ['filter' => 'ratelimit:30:60']);
 $routes->post('checkout/(:num)', 'OrderController::store/$1', ['filter' => 'ratelimit:10:60']);
 $routes->get('pesanan/(:segment)', 'OrderController::invoice/$1', ['filter' => 'ratelimit:30:60']);
-$routes->post('webhook/midtrans', 'MidtransController::webhook');
 $routes->post('bongkar/submit', 'BongkarController::submit', ['filter' => 'ratelimit:10:60']);
+$routes->post('pesanan/(:segment)/bukti', 'OrderController::uploadPaymentProof/$1', ['filter' => 'ratelimit:10:60']);
 
 $routes->get('cek-pesanan', 'OrderController::checkStatus', ['filter' => 'ratelimit:30:60']);
 $routes->post('cek-pesanan', 'OrderController::processCheckStatus', ['filter' => 'ratelimit:10:60']);
@@ -59,6 +59,10 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     // Fase 10 - Pesanan
     $routes->get('pesanan', 'Admin\OrderController::index');
     $routes->get('pesanan/(:num)', 'Admin\OrderController::show/$1');
+    $routes->get('pesanan/(:num)/bukti', 'Admin\OrderController::proof/$1');
+    $routes->get('pesanan/(:num)/preview-bukti', 'Admin\OrderController::previewProof/$1');
+    $routes->post('pesanan/(:num)/verifikasi', 'Admin\OrderController::verify/$1');
+    $routes->post('pesanan/(:num)/tolak', 'Admin\OrderController::reject/$1');
     $routes->post('pesanan/(:num)/selesai', 'Admin\OrderController::complete/$1');
 
     // Info Berjalan (ticker beranda)

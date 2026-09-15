@@ -53,4 +53,58 @@ class OrderController extends BaseController
         }
         return redirect()->to('/admin/pesanan/' . $id)->with('warning', 'Pesanan selesai, tetapi notifikasi WhatsApp gagal terkirim. Silakan kirim ulang secara manual.');
     }
+
+    public function proof(int $id)
+    {
+        $order = $this->orders->find($id);
+        $path = $order ? WRITEPATH . 'uploads/payment-proofs/' . basename((string) $order['payment_proof_path']) : '';
+        if (! $order || empty($order['payment_proof_path']) || ! is_file($path)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        return $this->response->download($path, null)->setFileName('bukti-' . $order['invoice_number'] . '.' . pathinfo($path, PATHINFO_EXTENSION));
+    }
+
+    public function verify(int $id)
+    {
+        if (! $this->orders->verifyPayment($id, (int) session()->get('admin_id'))) {
+            return redirect()->back()->with('error', 'Bukti pembayaran tidak dapat diverifikasi.');
+        }
+        return redirect()->to('/admin/pesanan/' . $id)->with('success', 'Pembayaran diverifikasi dan pesanan siap diproses.');
+    }
+
+    public function reject(int $id)
+    {
+        $reason = trim((string) $this->request->getPost('reason'));
+        if ($reason === '' || mb_strlen($reason) > 500) {
+            return redirect()->back()->with('error', 'Alasan penolakan wajib diisi dan maksimal 500 karakter.');
+        }
+        if (! $this->orders->rejectPayment($id, (int) session()->get('admin_id'), $reason)) {
+            return redirect()->back()->with('error', 'Bukti pembayaran tidak dapat ditolak.');
+        }
+        return redirect()->to('/admin/pesanan/' . $id)->with('success', 'Bukti ditolak. Customer dapat mengunggah bukti baru.');
+    }
+
+    public function previewProof(int $id)
+    {
+        $order = $this->orders->find($id);
+        if (! $order || empty($order['payment_proof_path'])) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        $filePath = WRITEPATH . 'uploads/payment-proofs/' . $order['payment_proof_path'];
+        if (! is_file($filePath)) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+        $mime = mime_content_type($filePath);
+        if ($mime === false) {
+            $mime = 'application/octet-stream';
+        }
+        $this->response
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Disposition', 'inline; filename="' . esc($order['payment_proof_path']) . '"')
+            ->setFile($filePath)
+            ->setCacheControl('private, max-age=3600')
+            ->setLastModified(filemtime($filePath));
+        return $this->response;
+    }
 }

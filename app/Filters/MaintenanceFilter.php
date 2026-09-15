@@ -12,7 +12,7 @@ final class MaintenanceFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         $path = trim($request->getUri()->getPath(), '/');
-        if ($path === '' || str_starts_with($path, 'admin') || str_starts_with($path, 'login') || $path === 'webhook/midtrans') {
+        if ($path === '' || str_starts_with($path, 'admin') || str_starts_with($path, 'login')) {
             return null;
         }
 
