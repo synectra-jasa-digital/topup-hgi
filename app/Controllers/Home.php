@@ -60,8 +60,8 @@ class Home extends BaseController
         }
 
         return view('catalog/index', [
-            'title'             => $storeName . ' - Top Up Higgs Games Island',
-            'metaDescription'   => "Top up {$categoryList} otomatis di {$storeName}. Proses instan 24 jam, pembayaran QRIS/e-wallet/VA, harga bersaing.",
+            'title'             => $storeName . ' - Top Up Koin Emas Higgs Domino & Global Murah 24 Jam',
+            'metaDescription'   => "Situs resmi top up {$categoryList} murah, cepat, dan aman di {$storeName}. Proses 1 detik otomatis 24 jam, bebas biaya admin Rp0 tanpa password akun!",
             'heroPreloadImage'  => $heroPreloadImage,
             'heroPreloadSrcset' => $heroPreloadSrcset,
             'banners'           => $banners,

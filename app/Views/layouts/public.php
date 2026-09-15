@@ -3,9 +3,10 @@
     $storeName = $storeSettings->getVal('store_name', 'Ayong Store');
     $storeLogo = $storeSettings->getVal('store_logo');
     $storeContact = $storeSettings->getVal('store_contact');
-    $metaTitle = isset($title) ? $title : ($storeName . ' - Top Up & Game Store Express 24 Jam');
+    $metaTitle = isset($title) ? $title : ($storeName . ' - Top Up Koin Emas Higgs Domino & Global Murah 24 Jam');
     $waNum = ! empty($storeContact) ? preg_replace('/[^0-9]/', '', $storeContact) : '';
     $waUrl = ! empty($waNum) ? 'https://wa.me/' . $waNum : 'https://wa.me/';
+    $logoUrl = ! empty($storeLogo) ? base_url($storeLogo) : base_url('assets/img/logo.png');
 ?>
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
@@ -19,11 +20,17 @@
     <?php endif; ?>
     
     <!-- Dynamic Metadata -->
-    <?php $metaDesc = $metaDescription ?? 'Platform top up koin emas & item game otomatis, cepat, aman, dan terpercaya 24 jam nonstop.'; ?>
+    <?php $metaDesc = $metaDescription ?? 'Situs resmi top up koin emas Higgs Domino Island & Global paling murah dan instan 24 jam. Bebas biaya admin Rp0, pengiriman 1 detik otomatis tanpa password akun!'; ?>
     <meta name="description" content="<?= esc($metaDesc) ?>">
-    <meta name="keywords" content="<?= esc($metaKeywords ?? 'top up higgs, koin emas higgs, bongkar chip, topup higgs domino') ?>">
+    <meta name="keywords" content="<?= esc($metaKeywords ?? 'top up higgs domino, top up koin emas higgs, bongkar chip higgs domino, top up higgs global, ayong store, topup koin emas murah, jual koin higgs domino, beli chip higgs') ?>">
     <meta name="robots" content="<?= (! empty($noindex)) ? 'noindex, nofollow' : 'index, follow' ?>">
     <link rel="canonical" href="<?= current_url() ?>">
+
+    <!-- Favicon & Touch Icon Specs for Googlebot / Search Engine Results -->
+    <link rel="icon" href="<?= esc($logoUrl) ?>" sizes="32x32 48x48 96x96 192x192 512x512" type="image/png">
+    <link rel="icon" href="<?= esc($logoUrl) ?>" type="image/png">
+    <link rel="shortcut icon" href="<?= esc($logoUrl) ?>" type="image/x-icon">
+    <link rel="apple-touch-icon" href="<?= esc($logoUrl) ?>">
 
     <!-- OpenGraph Metadata -->
     <meta property="og:type" content="website">
@@ -32,29 +39,58 @@
     <meta property="og:title" content="<?= esc($metaTitle) ?>">
     <meta property="og:description" content="<?= esc($metaDesc) ?>">
     <meta property="og:site_name" content="<?= esc($storeName) ?>">
-    <?php if ($storeLogo): ?>
-        <meta property="og:image" content="<?= base_url($storeLogo) ?>">
-        <link rel="icon" href="<?= base_url($storeLogo) ?>" type="image/png">
-        <link rel="shortcut icon" href="<?= base_url($storeLogo) ?>" type="image/png">
-    <?php endif; ?>
+    <meta property="og:image" content="<?= esc($logoUrl) ?>">
+    <meta property="og:image:secure_url" content="<?= esc($logoUrl) ?>">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= esc($metaTitle) ?>">
     <meta name="twitter:description" content="<?= esc($metaDesc) ?>">
-    <?php if ($storeLogo): ?>
-        <meta name="twitter:image" content="<?= base_url($storeLogo) ?>">
-    <?php endif; ?>
+    <meta name="twitter:image" content="<?= esc($logoUrl) ?>">
 
-    <!-- Structured Data -->
+    <!-- Structured Data (Google Rich Results & Favicon Schema) -->
     <script type="application/ld+json">
     <?= json_encode([
         '@context' => 'https://schema.org',
-        '@type'    => 'Organization',
-        'name'     => $storeName,
-        'url'      => base_url('/'),
-        'logo'     => $storeLogo ? base_url($storeLogo) : null,
-    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>
+        '@graph'   => [
+            [
+                '@type'       => 'WebSite',
+                '@id'         => base_url('/#website'),
+                'url'         => base_url('/'),
+                'name'        => $storeName,
+                'description' => $metaDesc,
+                'inLanguage'  => 'id-ID',
+            ],
+            [
+                '@type' => 'Organization',
+                '@id'   => base_url('/#organization'),
+                'name'  => $storeName,
+                'url'   => base_url('/'),
+                'logo'  => [
+                    '@type'  => 'ImageObject',
+                    'url'    => $logoUrl,
+                    'width'  => 512,
+                    'height' => 512,
+                ],
+                'image' => [
+                    '@id' => base_url('/#organization'),
+                ],
+            ],
+            [
+                '@type'              => 'Store',
+                'name'               => $storeName,
+                'description'        => 'Platform Top Up Koin Emas Higgs Domino Island & Global Murah Instan 24 Jam',
+                'url'                => base_url('/'),
+                'image'              => $logoUrl,
+                'priceRange'         => 'Rp1.000 - Rp10.000.000',
+                'currenciesAccepted' => 'IDR',
+                'paymentAccepted'    => 'QRIS, GoPay, DANA, OVO, ShopeePay, LinkAja, BCA, Mandiri, BRI, Virtual Account',
+            ],
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">

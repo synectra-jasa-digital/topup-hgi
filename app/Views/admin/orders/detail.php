@@ -26,14 +26,6 @@
                 <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3 text-success"><dt class="text-neutral-500">Diskon Voucher</dt><dd class="font-medium">-Rp<?= number_format((float) $order['discount_amount'], 0, ',', '.') ?></dd></div>
             <?php endif; ?>
            <div class="flex items-center justify-between gap-4 pt-1"><dt class="text-sm font-semibold text-neutral-900">Total Pembayaran</dt><dd class="text-base font-semibold text-primary">Rp<?= number_format((float) $order['total_amount'], 0, ',', '.') ?></dd></div>
-        <?php if (!empty($order['payment_qr_image_path']) && $order['payment_channel_type'] === 'qris'): ?>
-            <div class="flex items-center justify-between gap-4 border-b border-neutral-100 pb-3">
-                <dt class="text-neutral-500">QRIS</dt>
-                <dd>
-                    <img src="<?= base_url($order['payment_qr_image_path']) ?>" alt="QRIS" class="cursor-pointer h-24 w-24 object-contain rounded border" id="qr-image-<?= $order['id'] ?>">
-                </dd>
-            </div>
-        <?php endif; ?>
     </dl>
     </section>
 
@@ -49,7 +41,17 @@
         </dl>
 
         <?php if (! empty($order['payment_proof_path'])): ?>
-            <a href="<?= base_url('admin/pesanan/' . $order['id'] . '/bukti') ?>" class="btn btn-secondary mt-6 w-full justify-center">Lihat Bukti Pembayaran</a>
+            <div class="mt-4">
+                <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">Bukti Pembayaran (Klik untuk perbesar)</label>
+                <div class="relative group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-2 text-center hover:border-primary/50 transition-all">
+                    <img src="<?= base_url('admin/pesanan/' . $order['id'] . '/preview-bukti') ?>" alt="Bukti Pembayaran" id="proof-image-<?= $order['id'] ?>" class="max-h-56 w-full object-contain mx-auto rounded-lg" />
+                    <div class="absolute inset-0 bg-neutral-900/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <span class="bg-white/90 text-neutral-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">zoom_in</span> Perbesar Bukti
+                        </span>
+                    </div>
+                </div>
+            </div>
         <?php endif; ?>
         <?php if ($order['status'] === 'menunggu_verifikasi'): ?>
             <div class="mt-6 flex gap-2">
@@ -71,28 +73,40 @@
             <div class="mt-6 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-center text-sm text-neutral-500">Tidak ada aksi tersedia untuk status saat ini.</div>
         <?php endif; ?>
     </section>
-
-    <?php if (!empty($order['payment_qr_image_path']) && $order['payment_channel_type'] === 'qris'): ?>
-        <div id="qr-modal-<?= $order['id'] ?>" class="qr-modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div class="bg-white rounded-lg p-4 max-w-xs w-full relative">
-                <span class="absolute top-2 right-2 text-gray-500 cursor-pointer hover:text-gray-700" id="close-qr-<?= $order['id'] ?>">&times;</span>
-                <img src="<?= base_url($order['payment_qr_image_path']) ?>" alt="QRIS Large" class="w-full h-auto rounded">
+    <?php if (! empty($order['payment_proof_path'])): ?>
+        <div id="proof-modal-<?= $order['id'] ?>" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs transition-all">
+            <div class="relative max-w-3xl w-full flex flex-col items-center">
+                <button type="button" id="proof-close-<?= $order['id'] ?>" class="absolute -top-10 right-0 text-white/80 hover:text-white flex items-center gap-1 text-sm font-semibold cursor-pointer">
+                    <span>Tutup</span>
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+                <img src="<?= base_url('admin/pesanan/' . $order['id'] . '/preview-bukti') ?>" alt="Bukti Pembayaran (Ukuran Penuh)" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl bg-neutral-950">
             </div>
         </div>
         <script>
-            document.getElementById('qr-image-<?= $order['id'] ?>').addEventListener('click', function() {
-                document.getElementById('qr-modal-<?= $order['id'] ?>').classList.remove('hidden');
-            });
-            document.getElementById('close-qr-<?= $order['id'] ?>').addEventListener('click', function() {
-                document.getElementById('qr-modal-<?= $order['id'] ?>').classList.add('hidden');
-            });
-            // Close when clicking outside the image
-            document.getElementById('qr-modal-<?= $order['id'] ?>').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
+            (function() {
+                const img = document.getElementById('proof-image-<?= $order['id'] ?>');
+                const modal = document.getElementById('proof-modal-<?= $order['id'] ?>');
+                const closeBtn = document.getElementById('proof-close-<?= $order['id'] ?>');
+                if (img && modal) {
+                    img.addEventListener('click', function() {
+                        modal.classList.remove('hidden');
+                    });
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function() {
+                            modal.classList.add('hidden');
+                        });
+                    }
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === modal) {
+                            modal.classList.add('hidden');
+                        }
+                    });
                 }
-            });
+            })();
         </script>
     <?php endif; ?>
+
+
 </div>
 <?= $this->endSection() ?>

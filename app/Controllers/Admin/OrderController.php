@@ -91,20 +91,17 @@ class OrderController extends BaseController
         if (! $order || empty($order['payment_proof_path'])) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
-        $filePath = WRITEPATH . 'uploads/payment-proofs/' . $order['payment_proof_path'];
+        $filePath = WRITEPATH . 'uploads/payment-proofs/' . basename((string) $order['payment_proof_path']);
         if (! is_file($filePath)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
         $mime = mime_content_type($filePath);
         if ($mime === false) {
-            $mime = 'application/octet-stream';
+            $mime = 'image/jpeg';
         }
-        $this->response
+        return $this->response
             ->setHeader('Content-Type', $mime)
-            ->setHeader('Content-Disposition', 'inline; filename="' . esc($order['payment_proof_path']) . '"')
-            ->setFile($filePath)
-            ->setCacheControl('private, max-age=3600')
-            ->setLastModified(filemtime($filePath));
-        return $this->response;
+            ->setHeader('Content-Disposition', 'inline; filename="' . esc(basename((string) $order['payment_proof_path'])) . '"')
+            ->setBody(file_get_contents($filePath));
     }
 }
