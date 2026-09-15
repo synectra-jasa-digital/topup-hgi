@@ -42,14 +42,12 @@
 
         <?php if (! empty($order['payment_proof_path'])): ?>
             <div class="mt-4">
-                <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">Bukti Pembayaran (Klik untuk perbesar)</label>
-                <div id="proof-trigger-<?= $order['id'] ?>" class="relative group cursor-pointer overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-2 text-center hover:border-primary/50 transition-all">
-                    <img src="<?= base_url('admin/pesanan/' . $order['id'] . '/preview-bukti') ?>" alt="Bukti Pembayaran" id="proof-image-<?= $order['id'] ?>" class="max-h-56 w-full object-contain mx-auto rounded-lg" />
-                    <div class="absolute inset-0 bg-neutral-900/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity pointer-events-none">
-                        <span class="bg-white/90 text-neutral-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[16px]">zoom_in</span> Perbesar Bukti
-                        </span>
-                    </div>
+                <div class="mb-2 flex items-center justify-between gap-3">
+                    <label for="proof-trigger-<?= $order['id'] ?>" class="text-xs font-semibold uppercase tracking-wider text-neutral-500">Bukti Pembayaran</label>
+                    <span class="text-[11px] text-neutral-400">Klik gambar untuk melihat</span>
+                </div>
+                <div id="proof-trigger-<?= $order['id'] ?>" class="group cursor-pointer overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-center transition hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/30" role="button" tabindex="0" aria-label="Lihat bukti pembayaran">
+                    <img src="<?= base_url('admin/pesanan/' . $order['id'] . '/preview-bukti') ?>" alt="Bukti Pembayaran" id="proof-image-<?= $order['id'] ?>" class="mx-auto max-h-44 w-full rounded-md object-contain" />
                 </div>
             </div>
         <?php endif; ?>
@@ -77,20 +75,19 @@
 
 <?= $this->section('modals') ?>
     <?php if (! empty($order['payment_proof_path'])): ?>
-        <div id="proof-modal-<?= $order['id'] ?>" class="hidden fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 sm:p-6 transition-all duration-300" style="background-color: rgba(0, 0, 0, 0.85) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important;">
-            <div class="relative max-w-3xl w-full flex flex-col items-center rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl p-4 sm:p-5 text-white">
-                <div class="w-full flex items-center justify-between pb-3 mb-3 border-b border-slate-800 shrink-0">
+        <div id="proof-modal-<?= $order['id'] ?>" class="hidden fixed inset-0 z-[10000] flex items-center justify-center bg-white/60 p-4 backdrop-blur-xl" style="-webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);" role="dialog" aria-modal="true" aria-labelledby="proof-modal-title-<?= $order['id'] ?>">
+            <div class="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-xl">
+                <div class="flex items-center justify-between border-b border-neutral-100 px-4 py-3">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[20px] text-blue-400">zoom_in</span>
-                        <span class="font-display font-bold text-sm text-white">Bukti Pembayaran (Ukuran Penuh)</span>
+                        <span class="material-symbols-outlined text-[20px] text-primary">receipt_long</span>
+                        <span id="proof-modal-title-<?= $order['id'] ?>" class="font-display text-sm font-semibold text-neutral-900">Bukti Pembayaran</span>
                     </div>
-                    <button type="button" id="proof-close-<?= $order['id'] ?>" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-700 cursor-pointer">
-                        <span>Tutup</span>
-                        <span class="material-symbols-outlined text-[16px]">close</span>
+                    <button type="button" id="proof-close-<?= $order['id'] ?>" class="rounded-md p-1.5 text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-700" aria-label="Tutup bukti pembayaran">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
                     </button>
                 </div>
-                <div class="w-full flex items-center justify-center overflow-auto rounded-xl bg-black/80 p-2 border border-slate-800/80 max-h-[75vh]">
-                    <img src="<?= base_url('admin/pesanan/' . $order['id'] . '/preview-bukti') ?>" alt="Bukti Pembayaran (Ukuran Penuh)" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg">
+                <div class="flex min-h-0 items-center justify-center overflow-auto bg-neutral-50 p-3 sm:p-5">
+                    <img src="<?= base_url('admin/pesanan/' . $order['id'] . '/preview-bukti') ?>" alt="Bukti Pembayaran" class="max-h-[75vh] max-w-full object-contain">
                 </div>
             </div>
         </div>
@@ -111,6 +108,13 @@
                 if (trigger) trigger.addEventListener('click', openModal);
                 if (img) img.addEventListener('click', openModal);
                 if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+                if (trigger) trigger.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openModal();
+                    }
+                });
 
                 if (modal) {
                     modal.addEventListener('click', function(e) {
