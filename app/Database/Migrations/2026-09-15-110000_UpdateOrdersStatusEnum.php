@@ -8,6 +8,8 @@ class UpdateOrdersStatusEnum extends Migration
 {
     public function up()
     {
+        $this->db->table('orders')->where('status', 'dibayar')->update(['status' => 'menunggu_verifikasi']);
+
         $this->forge->modifyColumn('orders', [
             'status' => [
                 'type'       => 'ENUM',
@@ -26,5 +28,7 @@ class UpdateOrdersStatusEnum extends Migration
                 'default'    => 'menunggu_pembayaran',
             ],
         ]);
+
+        $this->db->table('orders')->where('status', 'menunggu_verifikasi')->update(['status' => 'dibayar']);
     }
 }
