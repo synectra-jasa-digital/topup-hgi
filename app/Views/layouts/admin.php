@@ -252,5 +252,6 @@
             };
         }
     </script>
+    <?= $this->renderSection('modals') ?>
 </body>
 </html>
