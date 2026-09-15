@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\BannerModel;
 use App\Models\BongkarCatalogModel;
 use App\Models\BongkarPayoutMethodModel;
+use App\Models\PaymentChannelModel;
 use App\Models\ProductCategoryModel;
 use App\Models\ProductModel;
 use App\Models\StoreSettingModel;
@@ -69,6 +70,7 @@ class Home extends BaseController
             'bongkarCatalogs' => $bongkarCatalogs->listActive(),
             'payoutMethods'   => (new BongkarPayoutMethodModel())->listActive(),
             'adminWhatsapp'   => $adminWhatsapp,
+            'paymentChannels' => (new PaymentChannelModel())->listActive(),
         ]);
     }
 

@@ -112,4 +112,5 @@
   <input type="hidden" name="game_id" id="hidden-game-id">
   <input type="hidden" name="whatsapp_number" id="hidden-whatsapp">
   <input type="hidden" name="voucher_code" id="hidden-voucher">
+  <input type="hidden" name="payment_channel_id" id="hidden-payment-channel-id">
 </form>

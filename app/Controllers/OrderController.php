@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Models\OrderModel;
 use App\Models\VoucherModel;
 use App\Models\ProductModel;
-use App\Libraries\MidtransService;
 use App\Libraries\Money;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -15,14 +14,12 @@ class OrderController extends BaseController
     protected ProductModel $products;
     protected OrderModel $orders;
     protected VoucherModel $vouchers;
-    protected MidtransService $midtrans;
 
-    public function __construct(?MidtransService $midtrans = null)
+    public function __construct()
     {
         $this->products = new ProductModel();
         $this->orders   = new OrderModel();
         $this->vouchers = new VoucherModel();
-        $this->midtrans = $midtrans ?? new MidtransService();
     }
 
     public function create(int $productId): string
@@ -35,6 +32,7 @@ class OrderController extends BaseController
             'title'   => 'Checkout - Ayong Store',
             'noindex' => true,
             'product' => $product,
+            'paymentChannels' => (new \App\Models\PaymentChannelModel())->listActive(),
         ]);
     }
 
@@ -52,6 +50,14 @@ class OrderController extends BaseController
 
         if (! $this->validate($this->orders->getValidationRules())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $paymentChannelId = (int) $this->request->getPost('payment_channel_id');
+        $paymentChannel = $paymentChannelId > 0
+            ? (new \App\Models\PaymentChannelModel())->where('is_active', 1)->find($paymentChannelId)
+            : null;
+        if (! $paymentChannel) {
+            return redirect()->back()->withInput()->with('errors', ['payment_channel_id' => 'Silakan pilih metode pembayaran.']);
         }
 
         $subtotal    = Money::rupiah($product['sell_price']);
@@ -84,13 +90,8 @@ class OrderController extends BaseController
             'total_amount'          => $subtotal - $discount,
             'status'                => 'menunggu_pembayaran',
             'idempotency_token'     => $idempotencyToken !== '' ? $idempotencyToken : null,
+            'payment_channel_id'    => $paymentChannel['id'],
         ];
-
-        $snapToken = $this->midtrans->getSnapToken($data);
-        if ($snapToken === null || $snapToken === '') {
-            return redirect()->back()->withInput()->with('error', 'Pembayaran sedang tidak tersedia. Silakan coba lagi.');
-        }
-        $data['snap_token'] = $snapToken;
 
         $this->orders->db->transStart();
         if (! $this->orders->save($data)) {

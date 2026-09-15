@@ -105,11 +105,33 @@
 
             <hr class="border-neutral-100">
 
+            <!-- Step 3: Payment Channel -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-primary text-white font-bold text-xs flex items-center justify-center">3</span>
+                    <h3 class="font-bold text-sm text-on-surface font-sans">Metode Pembayaran</h3>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    <?php foreach ($paymentChannels as $index => $channel): ?>
+                        <label class="flex flex-col gap-1 rounded-xl border p-3 text-xs cursor-pointer transition-all <?= $index === 0 ? 'border-primary bg-primary/5' : 'border-neutral-200 hover:border-primary/60' ?>">
+                            <input type="radio" name="payment_channel_id" value="<?= (int) $channel['id'] ?>" class="sr-only peer" <?= $index === 0 ? 'checked' : '' ?> required>
+                            <span class="font-bold text-on-surface"><?= esc($channel['name']) ?></span>
+                            <span class="text-neutral-500"><?= $channel['type'] === 'qris' ? 'QRIS' : esc($channel['account_number']) ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+                <?php if (isset($errors['payment_channel_id'])): ?>
+                    <p class="text-danger text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">error</span> <?= esc($errors['payment_channel_id']) ?></p>
+                <?php endif; ?>
+            </div>
+
+            <hr class="border-neutral-100">
+
             <!-- Action Submit -->
             <div class="space-y-3 pt-2">
                 <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white font-bold text-base py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 active:scale-[0.99]">
                     <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
-                    <span>Lanjut ke Pembayaran Snap</span>
+                    <span>Buat Pesanan</span>
                 </button>
 
                 <div class="flex items-center justify-center gap-4 text-xs text-neutral-400 font-inter pt-1">

@@ -50,8 +50,8 @@
       unitRate: "Silakan pilih nominal produk di samping",
       userId: "",
       whatsapp: "",
-      payMethod: "QRIS Resmi",
-      adminFee: 0,
+      payMethod: "",
+      payMethodChannelId: null,
       discount: 0,
       couponApplied: false,
       couponCode: "",
@@ -68,7 +68,7 @@
     }
 
     function updateReceiptUI() {
-      const grandTotal = Math.max(0, state.basePrice + state.adminFee - state.discount);
+      const grandTotal = Math.max(0, state.basePrice - state.discount);
 
       const receiptItemName = document.getElementById('receipt-item-name');
       const receiptUnitRate = document.getElementById('receipt-unit-rate');
@@ -78,7 +78,6 @@
       const receiptWa = document.getElementById('receipt-wa');
       const receiptMethod = document.getElementById('receipt-method');
       const calcSubtotal = document.getElementById('calc-subtotal');
-      const calcAdminFee = document.getElementById('calc-admin-fee');
       const calcDiscountRow = document.getElementById('calc-discount-row');
       const calcDiscountVal = document.getElementById('calc-discount-val');
       const calcGrandTotal = document.getElementById('calc-grand-total');
@@ -96,12 +95,8 @@
       }
       if (receiptUserId) receiptUserId.textContent = state.userId || '-';
       if (receiptWa) receiptWa.textContent = state.whatsapp || '-';
-      if (receiptMethod) receiptMethod.textContent = state.payMethod || 'QRIS Resmi';
+      if (receiptMethod) receiptMethod.textContent = state.payMethod || '-';
       if (calcSubtotal) calcSubtotal.textContent = formatRupiah(state.basePrice);
-      if (calcAdminFee) {
-        calcAdminFee.textContent = state.adminFee > 0 ? formatRupiah(state.adminFee) : 'Rp0 (Gratis)';
-        calcAdminFee.className = state.adminFee > 0 ? 'font-bold text-slate-900 font-mono' : 'font-bold text-emerald-700 font-mono';
-      }
 
       if (calcDiscountRow && calcDiscountVal) {
         if (state.discount > 0) {
@@ -203,14 +198,13 @@
     payMethodCards.forEach(payCard => {
       payCard.addEventListener('click', () => {
         payMethodCards.forEach(p => {
-          p.classList.remove('active', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
-          p.classList.add('border-slate-200', 'bg-white');
+          p.classList.remove('selected', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
+          p.classList.add('border-slate-200');
         });
-        payCard.classList.add('active', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
-        payCard.classList.remove('border-slate-200', 'bg-white');
-
-        state.payMethod = payCard.getAttribute('data-method') || "QRIS Resmi";
-        state.adminFee = parseInt(payCard.getAttribute('data-fee') || "0", 10);
+        payCard.classList.add('selected', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
+        payCard.classList.remove('border-slate-200');
+        state.payMethod = payCard.getAttribute('data-method') || '';
+        state.payMethodChannelId = payCard.getAttribute('data-channel-id');
         updateReceiptUI();
       });
     });
@@ -297,11 +291,15 @@
         inputWa?.focus();
         return;
       }
+      if (!state.payMethodChannelId) {
+        alert('Silakan pilih metode pembayaran.');
+        return;
+      }
 
-      const grandTotal = Math.max(0, state.basePrice + state.adminFee - state.discount);
+      const grandTotal = Math.max(0, state.basePrice - state.discount);
       if (modalItem) modalItem.textContent = state.itemTitle;
       if (modalId) modalId.textContent = state.userId;
-      if (modalMethod) modalMethod.textContent = state.payMethod || 'QRIS Resmi';
+      if (modalMethod) modalMethod.textContent = state.payMethod || '-';
       if (modalTotal) modalTotal.textContent = formatRupiah(grandTotal);
 
       checkoutModal?.classList.remove('hidden');
@@ -323,12 +321,14 @@
       const hiddenGameId = document.getElementById('hidden-game-id');
       const hiddenWa = document.getElementById('hidden-whatsapp');
       const hiddenVoucher = document.getElementById('hidden-voucher');
+      const hiddenPaymentChannel = document.getElementById('hidden-payment-channel-id');
 
       if (form) {
         form.action = '<?= base_url("checkout/") ?>' + state.productId;
         if (hiddenGameId) hiddenGameId.value = state.userId;
         if (hiddenWa) hiddenWa.value = state.whatsapp;
         if (hiddenVoucher) hiddenVoucher.value = state.couponCode || '';
+        if (hiddenPaymentChannel) hiddenPaymentChannel.value = state.payMethodChannelId || '';
         form.submit();
       }
     });

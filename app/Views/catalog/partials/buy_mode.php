@@ -168,84 +168,21 @@
     </div>
   </div>
 
-  <!-- Group A: QRIS & E-Wallet -->
-  <div class="space-y-2 mb-4">
+  <div class="space-y-2 mb-2">
     <div class="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
       <span class="flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[16px] text-blue-600">qr_code_scanner</span> QRIS &amp; E-Wallet
+        <span class="material-symbols-outlined text-[16px] text-blue-600">payments</span> Pilih Metode Pembayaran
       </span>
-    </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-      <!-- QRIS -->
-      <button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all relative shadow-2xs cursor-pointer group" data-badge="Bebas Biaya" data-fee="0" data-method="QRIS Resmi" type="button">
-        <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-600 text-white shadow-2xs">INSTAN</span>
-        <div class="text-xs font-black text-slate-900 group-hover:text-blue-600">QRIS Resmi</div>
-        <div class="text-[10px] text-slate-500 truncate">Semua Bank / e-Wallet</div>
-        <div class="mt-1.5 text-[11px] font-bold text-emerald-700">Rp0 Admin</div>
-      </button>
-      <!-- GoPay -->
-      <button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all relative shadow-2xs cursor-pointer group" data-badge="Bebas Biaya" data-fee="0" data-method="GoPay" type="button">
-        <div class="text-xs font-bold text-sky-700 group-hover:text-blue-600">GoPay</div>
-        <div class="text-[10px] text-slate-500">Gojek App Instant</div>
-        <div class="mt-1.5 text-[11px] font-bold text-emerald-700">Rp0 Admin</div>
-      </button>
-      <!-- DANA -->
-      <button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all relative shadow-2xs cursor-pointer group" data-badge="Bebas Biaya" data-fee="0" data-method="DANA" type="button">
-        <div class="text-xs font-bold text-blue-700 group-hover:text-blue-600">DANA</div>
-        <div class="text-[10px] text-slate-500">Dompet Digital</div>
-        <div class="mt-1.5 text-[11px] font-bold text-emerald-700">Rp0 Admin</div>
-      </button>
-      <!-- ShopeePay -->
-      <button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all relative shadow-2xs cursor-pointer group" data-badge="Bebas Biaya" data-fee="0" data-method="ShopeePay" type="button">
-        <div class="text-xs font-bold text-orange-600 group-hover:text-blue-600">ShopeePay</div>
-        <div class="text-[10px] text-slate-500">SPay Deeplink</div>
-        <div class="mt-1.5 text-[11px] font-bold text-emerald-700">Rp0 Admin</div>
-      </button>
-      <!-- OVO -->
-      <button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all relative shadow-2xs cursor-pointer group" data-badge="Bebas Biaya" data-fee="0" data-method="OVO" type="button">
-        <div class="text-xs font-bold text-purple-700 group-hover:text-blue-600">OVO Cash</div>
-        <div class="text-[10px] text-slate-500">Notifikasi Push</div>
-        <div class="mt-1.5 text-[11px] font-bold text-emerald-700">Rp0 Admin</div>
-      </button>
-      <!-- LinkAja -->
-      <button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all relative shadow-2xs cursor-pointer group" data-badge="Bebas Biaya" data-fee="0" data-method="LinkAja" type="button">
-        <div class="text-xs font-bold text-red-600 group-hover:text-blue-600">LinkAja</div>
-        <div class="text-[10px] text-slate-500">Aplikasi LinkAja</div>
-        <div class="mt-1.5 text-[11px] font-bold text-emerald-700">Rp0 Admin</div>
-      </button>
     </div>
   </div>
 
-  <!-- Group B: Virtual Account -->
-  <div class="space-y-2 pt-3 border-t border-slate-200">
-    <div class="flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-slate-600">
-      <span class="flex items-center gap-1.5">
-        <span class="material-symbols-outlined text-[16px] text-blue-600">account_balance</span> Virtual Account Otomatis 24 Jam
-      </span>
-      <span class="text-slate-500 font-mono text-[10px]">+Rp1.000 Biaya VA</span>
-    </div>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-      <button class="pay-method-card p-2.5 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all shadow-2xs cursor-pointer group" data-badge="+Rp1.000" data-fee="1000" data-method="BCA Virtual Account" type="button">
-        <div class="text-xs font-black text-blue-700 font-display group-hover:text-blue-600">BCA VA</div>
-        <div class="text-[10px] text-slate-500">m-BCA / KlikBCA</div>
-        <div class="mt-1 text-[10px] font-semibold text-slate-500">+Rp1.000</div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+    <?php foreach ($paymentChannels as $index => $channel): ?>
+      <button class="pay-method-card p-3 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all shadow-2xs cursor-pointer group <?= $index === 0 ? 'selected border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20' : '' ?>" data-channel-id="<?= (int) $channel['id'] ?>" data-method="<?= esc($channel['name']) ?>" type="button">
+        <div class="text-xs font-black text-slate-900 group-hover:text-blue-600"><?= esc($channel['name']) ?></div>
+        <div class="text-[10px] text-slate-500"><?= $channel['type'] === 'qris' ? 'Scan QRIS' : esc($channel['account_number']) ?></div>
       </button>
-      <button class="pay-method-card p-2.5 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all shadow-2xs cursor-pointer group" data-badge="+Rp1.000" data-fee="1000" data-method="Mandiri VA" type="button">
-        <div class="text-xs font-black text-amber-700 font-display group-hover:text-blue-600">MANDIRI</div>
-        <div class="text-[10px] text-slate-500">Livin Mandiri</div>
-        <div class="mt-1 text-[10px] font-semibold text-slate-500">+Rp1.000</div>
-      </button>
-      <button class="pay-method-card p-2.5 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all shadow-2xs cursor-pointer group" data-badge="+Rp1.000" data-fee="1000" data-method="BRI Virtual Account" type="button">
-        <div class="text-xs font-black text-sky-700 font-display group-hover:text-blue-600">BRIVA</div>
-        <div class="text-[10px] text-slate-500">BRImo App</div>
-        <div class="mt-1 text-[10px] font-semibold text-slate-500">+Rp1.000</div>
-      </button>
-      <button class="pay-method-card p-2.5 rounded-xl border border-slate-200 text-left hover:border-blue-400 hover:bg-slate-50 bg-white transition-all shadow-2xs cursor-pointer group" data-badge="+Rp1.000" data-fee="1000" data-method="BNI Virtual Account" type="button">
-        <div class="text-xs font-black text-orange-600 font-display group-hover:text-blue-600">BNI VA</div>
-        <div class="text-[10px] text-slate-500">BNI Mobile</div>
-        <div class="mt-1 text-[10px] font-semibold text-slate-500">+Rp1.000</div>
-      </button>
-    </div>
+    <?php endforeach; ?>
   </div>
 </section>
 
