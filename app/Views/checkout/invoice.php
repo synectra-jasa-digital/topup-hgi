@@ -20,9 +20,6 @@
 <div id="print-receipt" class="hidden print:block font-mono text-[11px] text-black leading-snug">
     <div class="text-center">
         <div class="font-bold text-sm uppercase"><?= esc($invoiceStoreName) ?></div>
-        <?php if (! empty($invoiceStoreContact)): ?>
-            <div><?= esc($invoiceStoreContact) ?></div>
-        <?php endif; ?>
     </div>
     <div class="border-t border-dashed border-black my-1.5"></div>
     <div class="flex justify-between"><span>No. Invoice</span><span><?= esc($order['invoice_number']) ?></span></div>
