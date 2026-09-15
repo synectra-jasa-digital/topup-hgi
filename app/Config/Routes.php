@@ -84,6 +84,13 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->post('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::update/$1');
     $routes->post('bongkar-metode-pencairan/(:num)/hapus', 'Admin\BongkarPayoutMethodController::delete/$1');
 
+    $routes->get('metode-bayar', 'Admin\PaymentChannelController::index');
+    $routes->get('metode-bayar/tambah', 'Admin\PaymentChannelController::create');
+    $routes->post('metode-bayar/tambah', 'Admin\PaymentChannelController::store');
+    $routes->get('metode-bayar/(:num)/ubah', 'Admin\PaymentChannelController::edit/$1');
+    $routes->post('metode-bayar/(:num)/ubah', 'Admin\PaymentChannelController::update/$1');
+    $routes->post('metode-bayar/(:num)/hapus', 'Admin\PaymentChannelController::delete/$1');
+
     $routes->get('bongkar-pesanan', 'Admin\BongkarRequestController::index');
     $routes->get('bongkar-pesanan/(:num)', 'Admin\BongkarRequestController::show/$1');
     $routes->post('bongkar-pesanan/(:num)/status', 'Admin\BongkarRequestController::updateStatus/$1');
