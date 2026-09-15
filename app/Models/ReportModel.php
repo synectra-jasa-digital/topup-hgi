@@ -22,14 +22,13 @@ class ReportModel extends Model
                 "SUM(o.total_amount) as revenue,"
                 . "COUNT(o.id) as order_count"
             )
-            ->join('order_payments op', 'op.order_id = o.id', 'left')
             ->where('o.status', 'selesai')
             ->groupStart()
                 ->where('o.created_at >=', "$date 00:00:00")
                 ->where('o.created_at <', date('Y-m-d 00:00:00', strtotime($date . ' +1 day')))
                 ->orGroupStart()
-                    ->where('op.created_at >=', "$date 00:00:00")
-                    ->where('op.created_at <', "$date 23:59:59")
+                    ->where('o.payment_verified_at >=', "$date 00:00:00")
+                    ->where('o.payment_verified_at <', "$date 23:59:59")
                 ->groupEnd()
             ->groupEnd()
             ->get();
