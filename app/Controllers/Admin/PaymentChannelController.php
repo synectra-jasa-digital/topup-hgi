@@ -38,6 +38,10 @@ class PaymentChannelController extends BaseController
             $rules['account_number'] = 'required|max_length[50]';
             $rules['account_holder'] = 'required|max_length[150]';
         } else {
+            $qrImage = $this->request->getFile('qr_image');
+            if (! validate_uploaded_image_dimensions($qrImage)) {
+                return redirect()->back()->withInput()->with('errors', ['qr_image' => 'Dimensi gambar tidak valid atau melebihi batas.']);
+            }
             $rules['qr_image'] = 'uploaded[qr_image]|max_size[qr_image,2048]|is_image[qr_image]|mime_in[qr_image,image/jpeg,image/png,image/webp]|ext_in[qr_image,jpg,jpeg,png,webp]';
         }
 
@@ -99,13 +103,15 @@ class PaymentChannelController extends BaseController
 
         if ($type === 'qris' && $qrImage && $qrImage->isValid()) {
             $data['qr_image_path'] = $this->storeQrImage();
+        } elseif ($type === 'bank') {
+            $data['qr_image_path'] = null;
         }
 
         if (! $this->channels->save($data)) {
             return redirect()->back()->withInput()->with('errors', $this->channels->errors());
         }
 
-        if (isset($data['qr_image_path']) && ! empty($channel['qr_image_path']) && $channel['qr_image_path'] !== $data['qr_image_path']) {
+        if (! empty($channel['qr_image_path']) && array_key_exists('qr_image_path', $data) && $data['qr_image_path'] !== $channel['qr_image_path']) {
             delete_public_asset($channel['qr_image_path']);
         }
 

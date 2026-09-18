@@ -3,6 +3,8 @@ name: Deploy to Production (FTP)
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch: {}
 
 jobs:
@@ -24,6 +26,16 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
+
+      - name: Validate Composer configuration
+        run: composer validate --strict --no-check-publish
+
+      - name: Audit Composer dependencies
+        run: composer audit --locked
+
+      - name: Check PHP syntax
+        shell: bash
+        run: find app tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
       - name: Setup Node
         uses: actions/setup-node@v4

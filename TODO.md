@@ -135,7 +135,6 @@ Dikerjakan satu fase per satu, ditandai `[x]` setelah lulus uji manual (skenario
 - [x] H6.5 Dokumentasikan environment production yang wajib
 
 ### Fase H7 - Store Settings & Maintenance
-- [ ] H7.1 Sinkronkan Store Settings dengan Midtrans/Wablas runtime
 - [x] H7.1 Sinkronkan Store Settings dengan Midtrans/Wablas runtime
 - [x] H7.2 Jangan tampilkan atau simpan credential plaintext tanpa perlindungan
 - [x] H7.3 Implementasikan maintenance mode filter dengan allowlist admin/webhook
@@ -155,3 +154,45 @@ Dikerjakan satu fase per satu, ditandai `[x]` setelah lulus uji manual (skenario
 - [x] H9.4 CSS build lulus
 - [ ] H9.5 Review diff, migration production, dan rollback procedure
 - [x] H9.6 Update README deployment dan checklist manual end-to-end
+
+## Audit Perbaikan Proyek
+> Daftar perbaikan hasil analisis proyek. Deploy via FTP tetap dipertahankan sesuai keputusan saat ini.
+
+### A1 - Dokumentasi & Onboarding
+- [x] A1.1 Ubah `README.md` dari template CodeIgniter menjadi dokumentasi Ayong Store/topup-hgi
+- [x] A1.2 Dokumentasikan setup lokal: composer install, npm ci, konfigurasi `.env`, migrate, seed, dan build CSS
+- [x] A1.3 Dokumentasikan akun awal/admin seed, role Owner/Admin, dan batas akses fitur penting
+- [x] A1.4 Dokumentasikan alur operasional: checkout, upload bukti bayar, verifikasi/tolak, selesai, bongkar, backup, dan laporan
+- [x] A1.5 Tambahkan troubleshooting umum untuk writable permission, baseURL, CSRF, session, cache, dan upload
+
+### A2 - Context Repo & Dokumen Kerja
+- [x] A2.1 Putuskan bahwa `TODO.md` dan `docs/` adalah dokumentasi proyek yang dilacak git
+- [x] A2.2 Hapus `TODO.md` dan `/docs/` dari `.gitignore`
+- [x] A2.3 Rapikan duplikasi item `H7.1` agar status checklist tidak ambigu
+- [x] A2.4 Tambahkan ringkasan arsitektur singkat: modul publik, modul admin, model utama, storage upload, dan integrasi eksternal
+
+### A3 - CI Quality Gates
+- [x] A3.1 Tambahkan `composer validate --strict --no-check-publish` ke workflow test CI
+- [x] A3.2 Tambahkan `composer audit --locked` ke workflow test CI
+- [x] A3.3 Tambahkan `php -l` untuk seluruh file `app` dan `tests` sebagai syntax gate cepat
+- [x] A3.4 Pastikan CI menjalankan command yang sama dengan checklist README: PHPUnit, Composer validation/audit, dan `npm run build:css`
+
+### A4 - Production Security Verification
+- [ ] A4.1 Verifikasi `.env` production berisi `CI_ENVIRONMENT=production`, HTTPS `app.baseURL`, dan `security.CSPEnabled=true`
+- [ ] A4.2 Verifikasi `app.allowedHostnames` dan `app.proxyIPs` sesuai domain/proxy production
+- [ ] A4.3 Verifikasi cache production menggunakan storage shared jika instance lebih dari satu
+- [ ] A4.4 Jalankan pengecekan header production untuk HTTPS redirect, secure headers, cache-control invoice, dan CSP
+- [ ] A4.5 Pastikan folder `writable/uploads` dan `public/assets/uploads` menolak eksekusi PHP/script di hosting
+
+### A5 - Test Coverage Prioritas
+- [ ] A5.1 Tambahkan/cek test role owner untuk backup database, laporan, store settings, dan akun admin
+- [ ] A5.2 Tambahkan/cek test CSRF untuk aksi POST sensitif admin dan endpoint publik
+- [ ] A5.3 Tambahkan/cek test invoice dengan token salah/kosong tidak membuka data order
+- [ ] A5.4 Tambahkan/cek test upload bukti pembayaran: token valid, status salah, file invalid, dan file oversized
+- [ ] A5.5 Tambahkan/cek test backup create/download/delete serta retention maksimal file backup
+
+### A6 - Operasional Rilis
+- [ ] A6.1 Buat checklist manual sebelum rilis untuk migrate, backup, rollback, dan smoke test
+- [ ] A6.2 Dokumentasikan urutan deploy: backup database, upload artefak, migrate, clear cache, audit upload, smoke test
+- [ ] A6.3 Dokumentasikan rollback aplikasi dan rollback database untuk migration yang gagal
+- [ ] A6.4 Simpan hasil verifikasi rilis terakhir: tanggal, commit, migration, test command, dan reviewer
