@@ -5,7 +5,6 @@ namespace App\Filters;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Cache\CacheInterface;
 
 final class RateLimitFilter implements FilterInterface
 {
@@ -40,30 +39,50 @@ final class RateLimitFilter implements FilterInterface
         if ($count === false) {
             return null;
         }
-        if ($count === 1) {
-            $cache->save($key, 1, $window + 1);
-        }
+
+        // Some cache handlers give an incremented key a very long lifetime. Pin it to this window again,
+        // with the same value, so stale counters do not pile up. The cache backend should be shared
+        // (Redis/Memcached) when using multiple app instances.
+        $cache->save($key, $count, $window + 1);
+
         if ($count > $limit) {
-            $retryAfter = max(1, ($bucket + 1) * $window - time());
-
-            return service('response')
-                ->setStatusCode(429)
-                ->setHeader('Retry-After', (string) $retryAfter)
-                ->setHeader('Cache-Control', 'no-store')
-                ->setJSON([
-                    'error' => 'Terlalu banyak permintaan. Silakan coba lagi nanti.',
-                ]);
+            return $this->tooManyRequests($request, max(1, ($bucket + 1) * $window - time()));
         }
-
-        // The short TTL prevents stale counters from accumulating in the cache.
-        // The cache backend should be shared (Redis/Memcached) when using multiple app instances.
-        $cache->save($key, $count + 1, $window + 1);
 
         return null;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
+    }
+
+    /**
+     * 429 with a Retry-After header. Scripts (fetch/XHR) get JSON; a person using a form or link gets a readable page.
+     */
+    public function tooManyRequests(RequestInterface $request, int $retryAfter): ResponseInterface
+    {
+        $response = service('response')
+            ->setStatusCode(429)
+            ->setHeader('Retry-After', (string) $retryAfter)
+            ->setHeader('Cache-Control', 'no-store');
+
+        $wantsJson = $request->isAJAX()
+            || str_contains(strtolower($request->getHeaderLine('Accept')), 'application/json');
+
+        if ($wantsJson) {
+            return $response->setJSON(['error' => 'Terlalu banyak permintaan. Silakan coba lagi nanti.']);
+        }
+
+        return $response->setBody(view('errors/public_message', [
+            'code'    => '429',
+            'icon'    => 'hourglass_top',
+            'heading' => 'Terlalu banyak percobaan',
+            'message' => 'Untuk menjaga keamanan, permintaan Anda dibatasi sementara. Tunggu sekitar ' . $retryAfter . ' detik lalu coba lagi.',
+            'actions' => [
+                ['label' => 'Ke Beranda', 'href' => base_url('/'), 'primary' => true],
+                ['label' => 'Cek Pesanan', 'href' => base_url('cek-pesanan')],
+            ],
+        ]));
     }
 
     /**

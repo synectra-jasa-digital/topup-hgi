@@ -385,3 +385,25 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Login page: the two columns rise in one after another, and a rejected sign-in shakes once. */
+@keyframes login-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes login-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rise-stagger > * {
+    animation: login-rise 600ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+  .rise-stagger > :nth-child(2) { animation-delay: 100ms; }
+  .rise-stagger > :nth-child(3) { animation-delay: 200ms; }
+  .login-shake {
+    animation: login-shake 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+}

@@ -14,12 +14,13 @@ $routes->post('bongkar/submit', 'BongkarController::submit', ['filter' => 'ratel
 $routes->post('pesanan/(:segment)/bukti', 'OrderController::uploadPaymentProof/$1', ['filter' => 'ratelimit:10:60']);
 
 $routes->get('cek-pesanan', 'OrderController::checkStatus', ['filter' => 'ratelimit:30:60']);
+$routes->get('cek-pesanan/(:segment)', 'OrderController::orderStatus/$1', ['filter' => 'ratelimit:30:60']);
 $routes->post('cek-pesanan', 'OrderController::processCheckStatus', ['filter' => 'ratelimit:10:60']);
 
 $routes->get('login', 'Admin\AuthController::loginForm');
-$routes->post('login', 'Admin\AuthController::login');
+$routes->post('login', 'Admin\AuthController::login', ['filter' => 'ratelimit:10:60']);
 $routes->get('admin/login', 'Admin\AuthController::loginForm');
-$routes->post('admin/login', 'Admin\AuthController::login');
+$routes->post('admin/login', 'Admin\AuthController::login', ['filter' => 'ratelimit:10:60']);
 
 $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->post('logout', 'Admin\AuthController::logout');

@@ -4,7 +4,6 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\ReportModel;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class ReportController extends BaseController
 {

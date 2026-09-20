@@ -4,7 +4,6 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\StaticPageModel;
-use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class StaticPageController extends BaseController
 {

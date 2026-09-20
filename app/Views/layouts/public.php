@@ -4,8 +4,12 @@
     $storeLogo = $storeSettings->getVal('store_logo');
     $storeContact = $storeSettings->getVal('store_contact');
     $metaTitle = isset($title) ? $title : ($storeName . ' - Top Up Koin Emas Higgs Domino & Global Murah 24 Jam');
-    $waNum = ! empty($storeContact) ? preg_replace('/[^0-9]/', '', $storeContact) : '';
-    $waUrl = ! empty($waNum) ? 'https://wa.me/' . $waNum : 'https://wa.me/';
+    $waUrl = whatsapp_url($storeContact);
+    // What the footer and the structured data say about payment comes from the channels the admin switched on.
+    $footerChannelNames = array_map(
+        static fn (array $channel): string => (string) $channel['name'],
+        (new \App\Models\PaymentChannelModel())->listActive()
+    );
     $logoUrl = ! empty($storeLogo) ? base_url($storeLogo) : base_url('assets/img/logo.png');
 ?>
 <!DOCTYPE html>
@@ -20,7 +24,7 @@
     <?php endif; ?>
     
     <!-- Dynamic Metadata -->
-    <?php $metaDesc = $metaDescription ?? 'Situs resmi top up koin emas Higgs Domino Island & Global paling murah dan instan 24 jam. Bebas biaya admin Rp0, pengiriman 1 detik otomatis tanpa password akun!'; ?>
+    <?php $metaDesc = $metaDescription ?? 'Top up koin emas Higgs Domino Island & Global dan bongkar kartu. Bayar lewat transfer bank atau QRIS, tanpa biaya layanan dan tanpa password akun.'; ?>
     <meta name="description" content="<?= esc($metaDesc) ?>">
     <meta name="keywords" content="<?= esc($metaKeywords ?? 'top up higgs domino, top up koin emas higgs, bongkar chip higgs domino, top up higgs global, ayong store, topup koin emas murah, jual koin higgs domino, beli chip higgs') ?>">
     <meta name="robots" content="<?= (! empty($noindex)) ? 'noindex, nofollow' : 'index, follow' ?>">
@@ -82,13 +86,11 @@
             [
                 '@type'              => 'Store',
                 'name'               => $storeName,
-                'description'        => 'Platform Top Up Koin Emas Higgs Domino Island & Global Murah Instan 24 Jam',
+                'description'        => 'Top up koin emas Higgs Domino Island & Global dan bongkar kartu',
                 'url'                => base_url('/'),
                 'image'              => $logoUrl,
-                'priceRange'         => 'Rp1.000 - Rp10.000.000',
                 'currenciesAccepted' => 'IDR',
-                'paymentAccepted'    => 'QRIS, GoPay, DANA, OVO, ShopeePay, LinkAja, BCA, Mandiri, BRI, Virtual Account',
-            ],
+            ] + ($footerChannelNames !== [] ? ['paymentAccepted' => implode(', ', $footerChannelNames)] : []),
         ],
     ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
     </script>
@@ -108,172 +110,160 @@
 </head>
 <body class="light-felt-pattern font-sans text-neutral-800 antialiased selection:bg-blue-100 selection:text-blue-900 min-h-screen flex flex-col justify-between pb-28 md:pb-0">
 
-    <!-- Header Navigation Bar -->
-    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-        <div class="max-w-[1360px] mx-auto px-4 sm:px-6 h-16 sm:h-18 py-2 flex items-center justify-between gap-3">
-            <!-- Brand Logo -->
-            <a class="flex items-center group transition-transform hover:scale-[1.01]" href="<?= base_url('/') ?>">
+    <a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[1000] focus:rounded-lg focus:bg-slate-950 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white" href="#konten-utama">Lewati ke konten</a>
+
+    <?php
+        $navPath  = trim(uri_string(), '/');
+        $navItems = [
+            ['mode' => 'buy', 'label' => 'Beli Koin', 'href' => base_url('/'), 'icon' => 'payments',
+             'current' => $navPath === '' || str_starts_with($navPath, 'kategori')],
+            ['mode' => 'sell', 'label' => 'Jual Chip', 'href' => base_url('/#jual'), 'icon' => 'sell',
+             'current' => false],
+            ['mode' => null, 'label' => 'Cek Pesanan', 'href' => base_url('cek-pesanan'), 'icon' => 'receipt_long',
+             'current' => str_starts_with($navPath, 'cek-pesanan') || str_starts_with($navPath, 'pesanan')],
+        ];
+    ?>
+
+    <!-- Header: solid bar, active link's underline sits on the bar's bottom rule -->
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white">
+        <div class="mx-auto flex h-14 max-w-[1360px] items-stretch gap-6 px-4 sm:px-6 md:h-16">
+            <a class="flex items-center self-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600" href="<?= base_url('/') ?>">
                 <?php if ($storeLogo): ?>
-                    <img alt="<?= esc($storeName) ?> Logo" class="h-10 sm:h-12 w-auto object-contain" src="<?= base_url($storeLogo) ?>">
+                    <img alt="<?= esc($storeName) ?>" class="h-9 w-auto object-contain md:h-10" src="<?= base_url($storeLogo) ?>">
                 <?php else: ?>
-                    <span class="font-display text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-[24px] text-blue-600">bolt</span>
-                        <?= esc($storeName) ?>
-                    </span>
+                    <span class="font-display text-lg font-extrabold tracking-tight text-slate-950 md:text-xl"><?= esc($storeName) ?></span>
                 <?php endif; ?>
             </a>
 
-            <!-- Nav Links Cockpit Pill -->
-            <nav class="hidden md:flex items-center gap-1 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/90 text-xs font-semibold shadow-inner">
-                <a class="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white font-bold shadow-xs flex items-center gap-1.5 transition-all" href="<?= base_url('/') ?>">
-                    <span class="material-symbols-outlined text-[16px]">home</span> Beranda
-                </a>
-                <a class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white transition-all flex items-center gap-1.5" href="<?= base_url('/#katalog-section') ?>">
-                    <span class="material-symbols-outlined text-[16px]">sports_esports</span> Katalog Produk
-                </a>
-                <a class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white transition-all flex items-center gap-1.5" href="<?= base_url('cek-pesanan') ?>">
-                    <span class="material-symbols-outlined text-[16px]">receipt_long</span> Cek Status Pesanan
-                </a>
+            <nav class="hidden md:flex" aria-label="Menu utama">
+                <?php foreach ($navItems as $item): ?>
+                    <a class="relative flex items-center px-4 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 aria-[current=page]:text-slate-950 after:absolute after:inset-x-4 after:-bottom-px after:h-0.5 after:bg-blue-600 after:opacity-0 aria-[current=page]:after:opacity-100"
+                       href="<?= esc($item['href']) ?>"
+                       <?= $item['mode'] ? 'data-nav-mode="' . $item['mode'] . '"' : '' ?>
+                       <?= $item['current'] ? 'aria-current="page"' : '' ?>><?= esc($item['label']) ?></a>
+                <?php endforeach; ?>
             </nav>
 
-            <!-- Header Action Support -->
-            <div class="flex items-center gap-2">
-                <a class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-all shadow-xs border border-emerald-500/30" href="<?= esc($waUrl) ?>" rel="noopener noreferrer" target="_blank">
-                    <span class="material-symbols-outlined text-[18px]">chat</span>
-                    <span class="hidden sm:inline">CS WhatsApp 24 Jam</span>
-                    <span class="sm:hidden">CS WA</span>
+            <?php if ($waUrl !== ''): ?>
+                <a class="ml-auto inline-flex h-11 items-center self-center rounded-lg bg-emerald-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" href="<?= esc($waUrl) ?>" rel="noopener noreferrer" target="_blank">
+                    <span class="sm:hidden">Chat CS</span>
+                    <span class="hidden sm:inline">Chat CS WhatsApp</span>
                 </a>
-            </div>
+            <?php endif; ?>
         </div>
     </header>
 
-    <!-- Live Gaming Ticker -->
+    <!-- Info ticker: messages come from the announcements table (admin: Info Berjalan). -->
     <?php $announcements = (new \App\Models\AnnouncementModel())->listActive(); ?>
     <?php if (! empty($announcements)): ?>
-    <div class="announcement-ticker bg-slate-900 text-slate-200 text-xs py-2 px-4 font-bold shadow-xs relative overflow-hidden border-b border-slate-800">
-        <div class="max-w-[1360px] mx-auto flex items-center gap-3 overflow-hidden text-xs">
-            <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500 text-neutral-950 font-black text-[10px] uppercase tracking-wider shrink-0 shadow-xs">
-                <span class="material-symbols-outlined text-[14px]">campaign</span>
-                <span>INFO RESMI</span>
-            </div>
-            <div class="flex-1 overflow-hidden relative">
-                <div class="animate-marquee whitespace-nowrap flex items-center gap-8 text-slate-200 font-medium text-xs">
-                    <?php foreach (array_merge($announcements, $announcements) as $i => $announcement): ?>
-                        <span class="inline-flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full <?= $i % 2 === 0 ? 'bg-amber-400' : 'bg-emerald-400' ?>"></span>
-                            <?= esc($announcement['message']) ?>
-                        </span>
-                    <?php endforeach; ?>
-                </div>
+    <?php
+        // Scroll speed follows the amount of text, so it stays readable whatever the admin writes.
+        $tickerChars   = array_sum(array_map(static fn (array $a): int => mb_strlen((string) $a['message']), $announcements));
+        $tickerSeconds = max(30, (int) round($tickerChars * 0.13));
+    ?>
+    <section id="announcement-ticker" class="announcement-ticker overflow-hidden border-b border-slate-800 bg-slate-900 text-slate-100" aria-label="Info toko">
+        <div class="flex h-10 items-center overflow-hidden">
+            <div class="announcement-track whitespace-nowrap text-sm font-medium" style="--marquee-duration: <?= $tickerSeconds ?>s">
+                <?php foreach ([false, true] as $isCopy): ?>
+                    <ul class="flex shrink-0 items-center gap-x-4 pr-4"<?= $isCopy ? ' aria-hidden="true"' : '' ?>>
+                        <?php foreach ($announcements as $announcement): ?>
+                            <li><?= esc($announcement['message']) ?></li>
+                            <li aria-hidden="true" class="text-slate-500">&middot;</li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endforeach; ?>
             </div>
         </div>
-    </div>
+    </section>
     <?php endif; ?>
 
     <!-- MAIN CONTENT SECTION -->
-    <div class="flex-1">
+    <div class="flex-1" id="konten-utama">
         <?= $this->renderSection('content') ?>
     </div>
 
-    <!-- Footer (Professional Gaming Theme) -->
-    <footer class="mt-16 bg-slate-950 text-slate-400 text-xs pb-20 lg:pb-8 border-t border-slate-800">
-        <div class="max-w-[1360px] mx-auto px-4 sm:px-6 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-800">
-                <!-- Brand & Info -->
-                <div class="space-y-4">
-                    <a class="flex items-center gap-3" href="<?= base_url('/') ?>">
-                        <?php if ($storeLogo): ?>
-                            <img alt="<?= esc($storeName) ?> Logo" class="h-9 w-auto object-contain" src="<?= base_url($storeLogo) ?>">
-                        <?php else: ?>
-                            <span class="font-display font-black text-base text-white tracking-tight"><?= esc($storeName) ?></span>
-                        <?php endif; ?>
-                    </a>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        Platform layanan top-up game &amp; voucher digital otomatis. Transaksi cepat, harga bersaing, dan pengiriman otomatis 24 jam nonstop.
-                    </p>
-                    <div class="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 w-fit font-semibold">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span>Sistem Otomatis Instan 24/7</span>
-                    </div>
+    <!-- Footer: light editorial. A statement and spec-sheet rows. Only states what the system really does. -->
+    <?php
+        $footerRing = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600';
+        $footerLink = 'footer-link inline-flex min-h-11 items-center pb-0.5 text-base font-semibold text-slate-950 transition-colors hover:text-blue-700 ' . $footerRing;
+    ?>
+    <footer class="mt-16 border-t border-slate-200 bg-white pb-24 text-slate-600 md:pb-4" aria-label="Footer">
+        <div class="mx-auto max-w-[1360px] px-4 pt-14 sm:px-6">
+            <div class="grid gap-12 lg:grid-cols-12 lg:gap-x-14">
+                <div class="footer-rise lg:col-span-5">
+                    <?php if ($storeLogo): ?>
+                        <a class="inline-flex min-h-11 items-center rounded-md <?= $footerRing ?>" href="<?= base_url('/') ?>">
+                            <img alt="<?= esc($storeName) ?>" class="h-10 w-auto object-contain" src="<?= base_url($storeLogo) ?>">
+                        </a>
+                    <?php endif; ?>
+                    <p class="<?= $storeLogo ? 'mt-5 ' : '' ?>max-w-md font-display text-2xl font-extrabold leading-tight tracking-tight text-slate-950 sm:text-3xl">Top up koin emas dan bongkar kartu Higgs Domino Island &amp; Global.</p>
                 </div>
 
-                <!-- Navigasi -->
-                <div class="space-y-3">
-                    <h4 class="font-display font-bold text-xs text-white tracking-wider uppercase">Navigasi Utama</h4>
-                    <ul class="space-y-2 text-xs text-slate-400">
-                        <li><a class="hover:text-amber-400 transition-colors flex items-center gap-1.5" href="<?= base_url('/') ?>"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Beli / Top Up Koin</a></li>
-                        <li><a class="hover:text-amber-400 transition-colors flex items-center gap-1.5" href="<?= base_url('/#jual') ?>"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Jual / Bongkar Chip</a></li>
-                        <li><a class="hover:text-amber-400 transition-colors flex items-center gap-1.5" href="<?= base_url('cek-pesanan') ?>"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Cek Status Pesanan</a></li>
-                        <li><a class="hover:text-amber-400 transition-colors flex items-center gap-1.5" href="<?= esc($waUrl) ?>" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined text-[14px] text-slate-500">chevron_right</span> Bantuan CS WhatsApp</a></li>
-                    </ul>
-                </div>
-
-                <!-- Metode Pembayaran -->
-                <div class="space-y-3">
-                    <h4 class="font-display font-bold text-xs text-white tracking-wider uppercase">Metode Pembayaran</h4>
-                    <p class="text-xs text-slate-400">Mendukung saluran pembayaran instan terverifikasi:</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-slate-200">QRIS</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-blue-400">GoPay</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-sky-400">DANA</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-orange-400">ShopeePay</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-purple-400">OVO</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-red-400">LinkAja</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-blue-300">BCA VA</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-amber-300">Mandiri VA</div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-center text-[10px] font-extrabold text-sky-300">BRI VA</div>
+                <dl class="footer-rise lg:col-span-7">
+                    <div class="footer-row grid gap-x-8 gap-y-1 py-6 md:grid-cols-[9rem_1fr]">
+                        <dt class="text-sm font-semibold text-slate-600 md:pt-3">Menu</dt>
+                        <dd>
+                            <ul class="flex flex-wrap gap-x-8 gap-y-0">
+                                <li><a class="<?= $footerLink ?>" href="<?= base_url('/') ?>">Beli Koin</a></li>
+                                <li><a class="<?= $footerLink ?>" href="<?= base_url('/#jual') ?>">Jual Chip</a></li>
+                                <li><a class="<?= $footerLink ?>" href="<?= base_url('cek-pesanan') ?>">Cek Pesanan</a></li>
+                            </ul>
+                        </dd>
                     </div>
-                </div>
 
-                <!-- Bantuan CS -->
-                <div class="space-y-3">
-                    <h4 class="font-display font-bold text-xs text-white tracking-wider uppercase">Layanan Bantuan</h4>
-                    <p class="text-xs text-slate-400">Tim Customer Service aktif membantu kendala transaksi Anda:</p>
-                    <a class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm" href="<?= esc($waUrl) ?>" rel="noopener noreferrer" target="_blank">
-                        <span class="material-symbols-outlined text-[18px]">support_agent</span>
-                        <span>Hubungi CS WhatsApp</span>
-                    </a>
-                    <div class="flex items-center gap-1.5 text-[11px] text-slate-400 pt-1">
-                        <span class="material-symbols-outlined text-[15px] text-blue-400">verified_user</span>
-                        <span>Sistem Terenkripsi &amp; Garansi Resmi</span>
+                    <?php if ($footerChannelNames !== []): ?>
+                    <div class="footer-row grid gap-x-8 gap-y-1 py-6 md:grid-cols-[9rem_1fr]">
+                        <dt class="text-sm font-semibold text-slate-600">Pembayaran</dt>
+                        <dd>
+                            <ul class="flex flex-wrap items-center gap-x-3 gap-y-1 text-base font-semibold text-slate-950">
+                                <?php foreach ($footerChannelNames as $i => $channelName): ?>
+                                    <?php if ($i > 0): ?><li aria-hidden="true" class="text-slate-500">&middot;</li><?php endif; ?>
+                                    <li><?= esc($channelName) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <p class="mt-1.5 text-sm text-slate-600">Bukti pembayaran diunggah di halaman invoice, lalu diverifikasi admin.</p>
+                        </dd>
                     </div>
-                </div>
+                    <?php endif; ?>
+
+                    <div class="footer-row grid gap-x-8 gap-y-1 py-6 md:grid-cols-[9rem_1fr]">
+                        <dt class="text-sm font-semibold text-slate-600 <?= $waUrl !== '' ? 'md:pt-3' : '' ?>">Bantuan</dt>
+                        <dd>
+                            <?php if ($waUrl !== ''): ?>
+                                <a class="<?= $footerLink ?>" href="<?= esc($waUrl) ?>" target="_blank" rel="noopener noreferrer">Chat CS WhatsApp</a>
+                                <p class="text-sm text-slate-600">Sertakan nomor invoice bila menanyakan pesanan.</p>
+                            <?php else: ?>
+                                <p class="text-base text-slate-950">Simpan nomor invoice dan token akses Anda untuk mengecek pesanan di halaman Cek Pesanan.</p>
+                            <?php endif; ?>
+                        </dd>
+                    </div>
+                </dl>
             </div>
 
-            <!-- Copyright Bottom Bar -->
-            <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-                <p class="text-center md:text-left">© <?= date('Y') ?> <strong><?= esc($storeName) ?></strong>. All rights reserved.</p>
-                <p class="text-center md:text-right text-[11px] text-slate-500">Hak cipta seluruh merek dagang &amp; aset game milik penerbit masing-masing.</p>
+            <div class="mt-10 flex flex-col gap-1 border-t border-slate-200 py-6 text-sm text-slate-600 md:flex-row md:items-center md:justify-between">
+                <p>&copy; <?= date('Y') ?> <?= esc($storeName) ?>. Merek dagang dan aset game milik penerbit masing-masing.</p>
+                <a class="footer-link inline-flex min-h-11 items-center gap-1 pb-0.5 font-semibold text-slate-950 transition-colors hover:text-blue-700 <?= $footerRing ?>" href="#konten-utama">
+                    Kembali ke atas <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_upward</span>
+                </a>
             </div>
         </div>
     </footer>
 
-    <!-- CSS Helper for Mobile Navigation & Hiding on Desktop -->
-    <style>
-        @media (min-width: 768px) {
-            .mobile-only-nav,
-            .mobile-only-sticky {
-                display: none !important;
-            }
-        }
-    </style>
-
-    <!-- Mobile Bottom Navigation (Only Beranda & Cek Pesanan - Flat Rectangular White Bar) -->
-    <?php $uriPath = parse_url(current_url(), PHP_URL_PATH) ?? '/'; ?>
-    <?php 
-        $isHome = ($uriPath === '/' || $uriPath === '/index.php' || empty($uriPath));
-        $isCek = str_contains($uriPath, 'cek-pesanan');
-    ?>
-    <nav class="mobile-only-nav" style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; background: #ffffff; border-top: 1px solid #e2e8f0; border-radius: 0px !important; padding: 6px 12px; box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08); display: flex; align-items: center; justify-content: space-around; height: 58px;">
-        <a href="<?= base_url('/') ?>" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border-radius: 8px; text-decoration: none; flex: 1; transition: all 0.2s ease; <?= $isHome ? 'background: #eff6ff; color: #2563eb; font-weight: 800; border: 1px solid #bfdbfe;' : 'color: #0f172a; font-weight: 700;' ?>">
-            <span class="material-symbols-outlined" style="font-size: 20px;">home</span>
-            <span style="font-size: 12px; font-family: Plus Jakarta Sans, Inter, sans-serif;">Beranda</span>
-        </a>
-
-        <a href="<?= base_url('cek-pesanan') ?>" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border-radius: 8px; text-decoration: none; flex: 1; transition: all 0.2s ease; <?= $isCek ? 'background: #eff6ff; color: #2563eb; font-weight: 800; border: 1px solid #bfdbfe;' : 'color: #0f172a; font-weight: 700;' ?>">
-            <span class="material-symbols-outlined" style="font-size: 20px;">receipt_long</span>
-            <span style="font-size: 12px; font-family: Plus Jakarta Sans, Inter, sans-serif;">Cek Pesanan</span>
-        </a>
+    <!-- Mobile bottom nav: same three destinations as the header. Height stays 58px because overlays.php offsets its sticky bar by that value. -->
+    <nav class="fixed inset-x-0 bottom-0 z-[999] h-[58px] border-t border-slate-200 bg-white md:hidden" aria-label="Menu utama">
+        <ul class="flex h-full">
+            <?php foreach ($navItems as $item): ?>
+                <li class="flex-1">
+                    <a class="relative flex h-full flex-col items-center justify-center gap-0.5 text-xs font-semibold text-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 aria-[current=page]:text-blue-700 before:absolute before:inset-x-5 before:-top-px before:h-0.5 before:bg-blue-700 before:opacity-0 aria-[current=page]:before:opacity-100"
+                       href="<?= esc($item['href']) ?>"
+                       <?= $item['mode'] ? 'data-nav-mode="' . $item['mode'] . '"' : '' ?>
+                       <?= $item['current'] ? 'aria-current="page"' : '' ?>>
+                        <span class="material-symbols-outlined text-[22px]" aria-hidden="true"><?= $item['icon'] ?></span>
+                        <?= esc($item['label']) ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
     </nav>
 </body>
 </html>

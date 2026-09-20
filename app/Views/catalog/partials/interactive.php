@@ -1,126 +1,237 @@
 <!-- Interactive & Logic State Handler -->
 <script>
   (function() {
-    const adminWhatsapp = <?= json_encode($adminWhatsapp ?? '') ?>;
-    
-    // Main Mode Switcher Tabs (Top Up / Beli vs Jual / Bongkar)
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let ready = false; // false during the first render, so nothing flashes on page load
+
+    // ---------- Motion + feedback helpers ----------
+
+    // Sections rise into view once. The hidden start state only exists after .reveal-ready is set here.
+    (function setupReveal() {
+      const targets = document.querySelectorAll('[data-reveal]');
+      if (reduceMotion.matches || !('IntersectionObserver' in window) || targets.length === 0) return;
+
+      let observed = false;
+      const io = new IntersectionObserver((entries) => {
+        observed = true;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+      document.documentElement.classList.add('reveal-ready');
+      targets.forEach((el) => io.observe(el));
+      // If the browser never reports (background tab), show everything instead of leaving it invisible.
+      setTimeout(() => { if (!observed) targets.forEach((el) => el.classList.add('is-visible')); }, 3000);
+    })();
+
+    function replay(el, className) {
+      if (!el || reduceMotion.matches) return;
+      el.classList.remove(className);
+      void el.offsetWidth;
+      el.classList.add(className);
+    }
+
+    // Sets text; a value that changed lights up briefly so the eye can follow it.
+    function setText(el, text) {
+      if (!el || el.textContent === text) return;
+      el.textContent = text;
+      if (ready) replay(el, 'value-flash');
+    }
+
+    // Counts a rupiah figure from its old value to the new one.
+    function animateNumber(el, to) {
+      if (!el) return;
+      const from = Number(el.dataset.value !== undefined ? el.dataset.value : to);
+      el.dataset.value = String(to);
+      cancelAnimationFrame(el._raf);
+      clearTimeout(el._done);
+      if (reduceMotion.matches || document.hidden || from === to) {
+        el.textContent = formatRupiah(to);
+        return;
+      }
+      const start = performance.now();
+      const duration = 450;
+      const step = (now) => {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = formatRupiah(Math.round(from + (to - from) * eased));
+        if (p < 1) el._raf = requestAnimationFrame(step);
+      };
+      el._raf = requestAnimationFrame(step);
+      el._done = setTimeout(() => { el.textContent = formatRupiah(to); }, duration + 120); // final value even if frames stall
+    }
+
+    // One message area for validation and results (replaces alert()).
+    const toast = document.getElementById('form-toast');
+    const toastBox = document.getElementById('form-toast-box');
+    const toastIcon = document.getElementById('form-toast-icon');
+    const toastText = document.getElementById('form-toast-text');
+
+    function hideToast() {
+      toast?.classList.add('hidden');
+    }
+
+    function showToast(message, tone) {
+      if (!toast || !toastBox) return;
+      const ok = tone === 'success';
+      toastBox.dataset.tone = ok ? 'success' : 'error';
+      toastBox.classList.toggle('border-emerald-300', ok);
+      toastBox.classList.toggle('border-rose-300', !ok);
+      toastIcon.textContent = ok ? 'check_circle' : 'error';
+      toastIcon.classList.toggle('text-emerald-700', ok);
+      toastIcon.classList.toggle('text-rose-600', !ok);
+      toastText.textContent = message;
+      toast.classList.remove('hidden');
+      if (!ok) replay(toastBox, 'shake');
+    }
+
+    document.getElementById('form-toast-close')?.addEventListener('click', hideToast);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideToast(); });
+
+    // Reports a problem, marks the field, and puts the cursor there.
+    function fail(message, field) {
+      showToast(message, 'error');
+      if (field) {
+        field.setAttribute('aria-invalid', 'true');
+        field.focus({ preventScroll: false });
+      }
+      return false;
+    }
+
+    document.addEventListener('input', (e) => {
+      if (e.target instanceof HTMLElement && e.target.getAttribute('aria-invalid') === 'true') {
+        e.target.removeAttribute('aria-invalid');
+      }
+    });
+
+    function formatRupiah(num) {
+      return 'Rp' + Number(num).toLocaleString('id-ID');
+    }
+
+    // ---------- Main mode switcher (Top Up / Beli vs Jual / Bongkar) ----------
     const tabModeBuy = document.getElementById('tab-mode-buy');
     const tabModeSell = document.getElementById('tab-mode-sell');
     const viewModeBuy = document.getElementById('view-mode-buy');
     const viewModeSell = document.getElementById('view-mode-sell');
 
+    function syncNav(mode) {
+      document.querySelectorAll('[data-nav-mode]').forEach((link) => {
+        if (link.dataset.navMode === mode) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+    }
+
     function switchMode(mode) {
-      const mobileFooter = document.querySelector('.lg\\:hidden.fixed.bottom-0');
-      if (mode === 'sell') {
-        tabModeSell?.classList.add('active', 'bg-amber-500', 'text-neutral-950', 'shadow-xs', 'border-amber-400');
-        tabModeSell?.classList.remove('text-slate-300');
-        tabModeBuy?.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-xs', 'border-blue-500');
-        tabModeBuy?.classList.add('text-slate-300');
+      syncNav(mode);
+      const sell = mode === 'sell';
+      const mobileFooter = document.querySelector('.mobile-only-sticky'); // buy-only "Total Tagihan" bar, overlays.php
 
-        viewModeBuy?.classList.add('tab-mode-hidden');
-        viewModeSell?.classList.remove('tab-mode-hidden');
-        if (mobileFooter) mobileFooter?.classList.add('tab-mode-hidden');
-      } else {
-        tabModeBuy?.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-xs', 'border-blue-500');
-        tabModeBuy?.classList.remove('text-slate-300');
-        tabModeSell?.classList.remove('active', 'bg-amber-500', 'text-neutral-950', 'shadow-xs', 'border-amber-400');
-        tabModeSell?.classList.add('text-slate-300');
+      tabModeBuy?.setAttribute('aria-pressed', String(!sell));
+      tabModeSell?.setAttribute('aria-pressed', String(sell));
+      document.querySelectorAll('[data-hero-copy]').forEach((el) => { el.hidden = el.dataset.heroCopy !== mode; });
 
-        viewModeSell?.classList.add('tab-mode-hidden');
-        viewModeBuy?.classList.remove('tab-mode-hidden');
-        if (mobileFooter) mobileFooter?.classList.remove('tab-mode-hidden');
-      }
+      viewModeBuy?.classList.toggle('tab-mode-hidden', sell);
+      viewModeSell?.classList.toggle('tab-mode-hidden', !sell);
+      mobileFooter?.classList.toggle('tab-mode-hidden', sell);
+      hideToast();
     }
 
     tabModeBuy?.addEventListener('click', () => switchMode('buy'));
     tabModeSell?.addEventListener('click', () => switchMode('sell'));
 
-    if (window.location.hash === '#jual' || window.location.hash === '#bongkar') {
-      switchMode('sell');
-    } else {
-      switchMode('buy');
-    }
+    const modeFromHash = () => (window.location.hash === '#jual' || window.location.hash === '#bongkar') ? 'sell' : 'buy';
+    switchMode(modeFromHash());
+    window.addEventListener('hashchange', () => switchMode(modeFromHash()));
 
+    // ---------- State ----------
     const state = {
       productId: null,
       itemTitle: "Belum memilih produk",
-      category: "",
-      categoryIcon: "",
       basePrice: 0,
       unitRate: "Silakan pilih nominal produk di samping",
+      categoryIcon: "",
       userId: "",
       whatsapp: "",
       payMethod: "",
       payMethodChannelId: null,
-      discount: 0,
-      couponApplied: false,
-      couponCode: "",
+      couponCode: "", // sent as-is; the server checks it when the order is created
       bongkarCatalogId: null,
       bongkarType: "",
       bongkarRate: 0,
       bongkarUnit: "kartu",
       bongkarQty: 1,
-      bongkarPayout: "BCA"
+      bongkarPayout: ""
     };
 
-    function formatRupiah(num) {
-      return 'Rp' + num.toLocaleString('id-ID');
+    // ---------- Buy: steps, summary ----------
+    const stepBadges = {};
+    document.querySelectorAll('.step-number-badge[data-step]').forEach((badge) => { stepBadges[badge.dataset.step] = badge; });
+
+    function setStepDone(n, done) {
+      const badge = stepBadges[n];
+      if (!badge || badge.classList.contains('is-done') === done) return;
+      badge.classList.toggle('is-done', done);
+      const face = badge.querySelector('[aria-hidden]');
+      const status = badge.querySelector('[data-step-status]');
+      if (face) face.textContent = done ? '✓' : String(n);
+      if (status) status.textContent = done ? 'selesai' : '';
+      if (ready) replay(badge, 'pop-in');
+    }
+
+    function refreshSteps() {
+      setStepDone('1', !!document.querySelector('.category-pill.active'));
+      setStepDone('2', !!state.productId);
+      setStepDone('3', state.userId !== '' && state.whatsapp !== '');
+      setStepDone('4', !!state.payMethodChannelId);
     }
 
     function updateReceiptUI() {
-      const grandTotal = Math.max(0, state.basePrice - state.discount);
+      const grandTotal = Math.max(0, state.basePrice);
 
-      const receiptItemName = document.getElementById('receipt-item-name');
-      const receiptUnitRate = document.getElementById('receipt-unit-rate');
-      const receiptItemPrice = document.getElementById('receipt-item-price');
       const receiptIconContainer = document.getElementById('receipt-category-icon-container');
-      const receiptUserId = document.getElementById('receipt-user-id');
-      const receiptWa = document.getElementById('receipt-wa');
-      const receiptMethod = document.getElementById('receipt-method');
-      const calcSubtotal = document.getElementById('calc-subtotal');
-      const calcDiscountRow = document.getElementById('calc-discount-row');
-      const calcDiscountVal = document.getElementById('calc-discount-val');
-      const calcGrandTotal = document.getElementById('calc-grand-total');
-      const mobileBottomTotal = document.getElementById('mobile-bottom-total');
-
-      if (receiptItemName) receiptItemName.textContent = state.productId ? state.itemTitle : 'Belum memilih produk';
-      if (receiptUnitRate) receiptUnitRate.textContent = state.productId ? state.unitRate : 'Silakan pilih nominal produk di samping';
-      if (receiptItemPrice) receiptItemPrice.textContent = state.productId ? formatRupiah(state.basePrice) : 'Rp0';
+      setText(document.getElementById('receipt-item-name'), state.productId ? state.itemTitle : 'Belum memilih produk');
+      setText(document.getElementById('receipt-unit-rate'), state.productId ? state.unitRate : 'Silakan pilih nominal produk di samping');
+      setText(document.getElementById('receipt-item-price'), state.productId ? formatRupiah(state.basePrice) : 'Rp0');
       if (receiptIconContainer) {
         if (state.productId && state.categoryIcon) {
           receiptIconContainer.innerHTML = `<img src="${state.categoryIcon}" alt="" class="w-full h-full object-contain">`;
         } else {
-          receiptIconContainer.innerHTML = `<span class="material-symbols-outlined text-[22px]">sports_esports</span>`;
+          receiptIconContainer.innerHTML = `<span class="material-symbols-outlined text-[22px]" aria-hidden="true">sports_esports</span>`;
         }
       }
-      if (receiptUserId) receiptUserId.textContent = state.userId || '-';
-      if (receiptWa) receiptWa.textContent = state.whatsapp || '-';
-      if (receiptMethod) receiptMethod.textContent = state.payMethod || '-';
-      if (calcSubtotal) calcSubtotal.textContent = formatRupiah(state.basePrice);
+      setText(document.getElementById('receipt-user-id'), state.userId || '-');
+      setText(document.getElementById('receipt-wa'), state.whatsapp || '-');
+      setText(document.getElementById('receipt-method'), state.payMethod || '-');
 
-      if (calcDiscountRow && calcDiscountVal) {
-        if (state.discount > 0) {
-          calcDiscountRow.classList.remove('hidden');
-          calcDiscountVal.textContent = '-' + formatRupiah(state.discount);
-        } else {
-          calcDiscountRow.classList.add('hidden');
-        }
-      }
-
-      if (calcGrandTotal) calcGrandTotal.textContent = formatRupiah(grandTotal);
-      if (mobileBottomTotal) mobileBottomTotal.textContent = formatRupiah(grandTotal);
+      animateNumber(document.getElementById('calc-subtotal'), state.basePrice);
+      animateNumber(document.getElementById('calc-grand-total'), grandTotal);
+      animateNumber(document.getElementById('mobile-bottom-total'), grandTotal);
+      refreshSteps();
     }
 
     // Step 1: Category Pill Tabs & Quick Search
     const catPills = document.querySelectorAll('.category-pill');
     const categoryGroups = document.querySelectorAll('[data-category-group]');
     const catalogSearchInput = document.getElementById('catalog-search-input');
+    const searchEmpty = document.getElementById('catalog-search-empty');
+
+    function refreshSearchEmpty() {
+      if (!searchEmpty) return;
+      const query = (catalogSearchInput ? catalogSearchInput.value : '').trim();
+      const visible = document.querySelectorAll('[data-category-group]:not(.hidden) .product-card:not(.hidden)').length;
+      searchEmpty.classList.toggle('hidden', !(query !== '' && visible === 0));
+    }
 
     function showCategoryGroup(slug) {
       categoryGroups.forEach(group => {
         const match = group.getAttribute('data-category-group') === slug;
         group.classList.toggle('hidden', !match);
       });
+      refreshSearchEmpty();
     }
 
     catPills.forEach(pill => {
@@ -129,24 +240,27 @@
         catPills.forEach(p => {
           p.classList.remove('active');
           p.classList.add('text-slate-700', 'bg-slate-100/90');
+          p.setAttribute('aria-pressed', 'false');
         });
         pill.classList.add('active');
         pill.classList.remove('text-slate-700', 'bg-slate-100/90');
-        showCategoryGroup(slug);
+        pill.setAttribute('aria-pressed', 'true');
         if (catalogSearchInput) catalogSearchInput.value = '';
+        document.querySelectorAll('.product-card').forEach(card => card.classList.remove('hidden'));
+        showCategoryGroup(slug);
       });
     });
 
     if (catalogSearchInput) {
       catalogSearchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
-        const productCards = document.querySelectorAll('.product-card');
-        productCards.forEach(card => {
+        document.querySelectorAll('.product-card').forEach(card => {
           const title = (card.getAttribute('data-title') || '').toLowerCase();
           const unit = (card.getAttribute('data-unit') || '').toLowerCase();
           const match = title.includes(query) || unit.includes(query);
           card.classList.toggle('hidden', !match && query !== '');
         });
+        refreshSearchEmpty();
       });
     }
 
@@ -162,9 +276,12 @@
         productCards.forEach(c => {
           c.classList.remove('active', 'border-2', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20', 'product-card-selected');
           c.classList.add('border-slate-200', 'bg-white');
+          c.setAttribute('aria-pressed', 'false');
         });
         card.classList.add('active', 'product-card-selected');
         card.classList.remove('border-slate-200', 'bg-white');
+        card.setAttribute('aria-pressed', 'true');
+        replay(card.querySelector('.check-mark'), 'pop-in');
 
         state.productId = card.getAttribute('data-id') || null;
         state.itemTitle = card.getAttribute('data-title') || "";
@@ -175,23 +292,26 @@
       });
     });
 
-    // Step 3: User ID & WhatsApp Binding
+    // Step 3: User ID & WhatsApp Binding (values can come back from the server after a failed checkout)
     const inputUserId = document.getElementById('input-user-id');
     const inputWa = document.getElementById('input-whatsapp');
+    const promoInput = document.getElementById('receipt-promo-input');
+    const promoStatus = document.getElementById('promo-status');
+    const promoDefaultText = promoStatus ? promoStatus.textContent : '';
 
-    if (inputUserId) {
-      inputUserId.addEventListener('input', (e) => {
-        state.userId = e.target.value.trim();
-        updateReceiptUI();
-      });
-    }
+    state.userId = inputUserId ? inputUserId.value.trim() : '';
+    state.whatsapp = inputWa ? inputWa.value.trim() : '';
+    state.couponCode = promoInput ? promoInput.value.trim().toUpperCase() : '';
 
-    if (inputWa) {
-      inputWa.addEventListener('input', (e) => {
-        state.whatsapp = e.target.value.trim();
-        updateReceiptUI();
-      });
-    }
+    inputUserId?.addEventListener('input', (e) => {
+      state.userId = e.target.value.trim();
+      updateReceiptUI();
+    });
+
+    inputWa?.addEventListener('input', (e) => {
+      state.whatsapp = e.target.value.trim();
+      updateReceiptUI();
+    });
 
     // Step 4: Payment Method Selection
     const payMethodCards = document.querySelectorAll('.pay-method-card');
@@ -200,9 +320,12 @@
         payMethodCards.forEach(p => {
           p.classList.remove('selected', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
           p.classList.add('border-slate-200');
+          p.setAttribute('aria-checked', 'false');
         });
         payCard.classList.add('selected', 'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-500/20');
         payCard.classList.remove('border-slate-200');
+        payCard.setAttribute('aria-checked', 'true');
+        replay(payCard.querySelector('.check-mark'), 'pop-in');
         state.payMethod = payCard.getAttribute('data-method') || '';
         state.payMethodChannelId = payCard.getAttribute('data-channel-id');
         updateReceiptUI();
@@ -213,46 +336,67 @@
     if (defaultPayMethodCard) {
       state.payMethodChannelId = defaultPayMethodCard.getAttribute('data-channel-id');
       state.payMethod = defaultPayMethodCard.getAttribute('data-method') || '';
-      updateReceiptUI();
     }
 
-    // Promo Coupon Logic
-    const btnSampleCoupon = document.getElementById('btn-sample-coupon');
-    const receiptPromoInput = document.getElementById('receipt-promo-input');
-    const btnApplyCoupon = document.getElementById('btn-apply-coupon');
-    const promoStatus = document.getElementById('promo-status');
+    // Voucher: no discount is computed here. The code goes to the server with the order, which validates it.
+    promoInput?.addEventListener('input', () => {
+      state.couponCode = promoInput.value.trim().toUpperCase();
+      if (promoStatus) {
+        promoStatus.textContent = state.couponCode
+          ? `Kode ${state.couponCode} akan dicek saat pesanan dibuat. Potongan harga tampil di invoice.`
+          : promoDefaultText;
+      }
+    });
 
-    if (btnSampleCoupon && receiptPromoInput) {
-      btnSampleCoupon.addEventListener('click', () => {
-        receiptPromoInput.value = 'AYONGHEMAT';
-      });
+    // ---------- Dialogs: focus goes in, stays in, and returns; Escape and the backdrop close; the page behind stops scrolling ----------
+    const dialogStack = [];
+    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    function openDialog(dialog, opener) {
+      if (!dialog || dialogStack.includes(dialog)) return;
+      dialog._opener = opener || document.activeElement;
+      dialog.classList.remove('hidden');
+      document.documentElement.classList.add('modal-open');
+      dialogStack.push(dialog);
+      dialog.querySelector('.dialog-panel')?.focus({ preventScroll: true });
     }
 
-    if (btnApplyCoupon && receiptPromoInput) {
-      btnApplyCoupon.addEventListener('click', () => {
-        const code = receiptPromoInput.value.trim().toUpperCase();
-        if (code === 'AYONGHEMAT') {
-          state.discount = 1000;
-          state.couponApplied = true;
-          state.couponCode = code;
-          if (promoStatus) {
-            promoStatus.classList.remove('hidden', 'text-rose-600');
-            promoStatus.classList.add('text-emerald-600');
-            promoStatus.textContent = '✓ Potongan Rp1.000 berhasil diterapkan!';
-          }
-        } else if (code !== '') {
-          state.discount = 0;
-          state.couponApplied = false;
-          state.couponCode = '';
-          if (promoStatus) {
-            promoStatus.classList.remove('hidden', 'text-emerald-600');
-            promoStatus.classList.add('text-rose-600');
-            promoStatus.textContent = '✗ Kode voucher tidak valid / kadaluarsa';
-          }
-        }
-        updateReceiptUI();
-      });
+    function closeDialog(dialog, restoreFocus = true) {
+      if (!dialog || dialog.classList.contains('hidden')) return;
+      dialog.classList.add('hidden');
+      const at = dialogStack.indexOf(dialog);
+      if (at !== -1) dialogStack.splice(at, 1);
+      if (dialogStack.length === 0) document.documentElement.classList.remove('modal-open');
+      if (restoreFocus && dialog._opener && document.contains(dialog._opener)) dialog._opener.focus();
     }
+
+    document.addEventListener('keydown', (e) => {
+      const top = dialogStack[dialogStack.length - 1];
+      if (!top) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeDialog(top);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = Array.from(top.querySelectorAll(FOCUSABLE)).filter((el) => el.offsetParent !== null);
+      if (items.length === 0) { e.preventDefault(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const panel = top.querySelector('.dialog-panel');
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    // A press that starts on the dark backdrop itself (not inside the panel) dismisses the dialog.
+    document.querySelectorAll('.dialog-backdrop').forEach((backdrop) => {
+      backdrop.addEventListener('mousedown', (e) => { if (e.target === backdrop) closeDialog(backdrop); });
+    });
 
     // Modal Guide ID
     const btnGuideId = document.getElementById('btn-guide-id');
@@ -260,15 +404,13 @@
     const btnCloseGuideModal = document.getElementById('btn-close-guide-modal');
     const btnUnderstandGuide = document.getElementById('btn-understand-guide');
 
-    function toggleGuideModal(show) {
-      if (guideModal) {
-        guideModal.classList.toggle('hidden', !show);
-      }
-    }
-
-    btnGuideId?.addEventListener('click', () => toggleGuideModal(true));
-    btnCloseGuideModal?.addEventListener('click', () => toggleGuideModal(false));
-    btnUnderstandGuide?.addEventListener('click', () => toggleGuideModal(false));
+    btnGuideId?.addEventListener('click', () => openDialog(guideModal, btnGuideId));
+    btnCloseGuideModal?.addEventListener('click', () => closeDialog(guideModal));
+    // "Isi ID Sekarang" continues the task: close the guide and put the cursor in the ID field.
+    btnUnderstandGuide?.addEventListener('click', () => {
+      closeDialog(guideModal, false);
+      inputUserId?.focus();
+    });
 
     // Checkout Confirmation Modal
     const btnPayNow = document.getElementById('btn-pay-now');
@@ -282,48 +424,67 @@
     const modalId = document.getElementById('modal-id');
     const modalMethod = document.getElementById('modal-method');
     const modalTotal = document.getElementById('modal-total');
+    const modalVoucherRow = document.getElementById('modal-voucher-row');
+    const modalVoucher = document.getElementById('modal-voucher');
+    const modalVoucherNote = document.getElementById('modal-voucher-note');
 
-    function openCheckoutModal() {
+    function openCheckoutModal(e) {
+      if (payMethodCards.length === 0) {
+        return fail('Belum ada metode pembayaran yang aktif, jadi pesanan belum bisa dibuat.');
+      }
       if (!state.productId) {
-        alert('Silakan pilih nominal produk koin/item yang ingin Anda beli terlebih dahulu.');
-        return;
+        const firstCard = document.querySelector('[data-category-group]:not(.hidden) .product-card');
+        firstCard?.scrollIntoView({ block: 'center', behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+        return fail('Pilih nominal top up terlebih dahulu.', firstCard);
       }
       if (!state.userId) {
-        alert('Silakan masukkan User ID Game Anda.');
-        inputUserId?.focus();
-        return;
+        return fail('Masukkan User ID Game Anda.', inputUserId);
       }
       if (!state.whatsapp) {
-        alert('Silakan masukkan nomor WhatsApp Anda untuk mengirimkan bukti transaksi.');
-        inputWa?.focus();
-        return;
+        return fail('Masukkan nomor WhatsApp Anda untuk menerima invoice.', inputWa);
+      }
+      if (!/^(08|628)[0-9]{7,12}$/.test(state.whatsapp)) {
+        return fail('Nomor WhatsApp harus diawali 08 atau 628 dan tanpa spasi atau tanda hubung.', inputWa);
       }
       if (!state.payMethodChannelId) {
-        alert('Silakan pilih metode pembayaran.');
-        return;
+        return fail('Pilih metode pembayaran terlebih dahulu.');
       }
 
-      const grandTotal = Math.max(0, state.basePrice - state.discount);
+      hideToast();
       if (modalItem) modalItem.textContent = state.itemTitle;
       if (modalId) modalId.textContent = state.userId;
       if (modalMethod) modalMethod.textContent = state.payMethod || '-';
-      if (modalTotal) modalTotal.textContent = formatRupiah(grandTotal);
+      if (modalTotal) modalTotal.textContent = formatRupiah(Math.max(0, state.basePrice));
 
-      checkoutModal?.classList.remove('hidden');
-    }
+      // The voucher is only checked by the server, so the buyer sees the code that will be sent.
+      const hasVoucher = state.couponCode !== '';
+      if (modalVoucher) modalVoucher.textContent = state.couponCode;
+      modalVoucherRow?.classList.toggle('hidden', !hasVoucher);
+      modalVoucherRow?.classList.toggle('flex', hasVoucher);
+      modalVoucherNote?.classList.toggle('hidden', !hasVoucher);
 
-    function closeCheckoutModal() {
-      checkoutModal?.classList.add('hidden');
+      openDialog(checkoutModal, e && e.currentTarget ? e.currentTarget : document.activeElement);
     }
 
     btnPayNow?.addEventListener('click', openCheckoutModal);
     btnMobileCheckout?.addEventListener('click', openCheckoutModal);
-    btnCloseModal?.addEventListener('click', closeCheckoutModal);
-    btnCancelCheckout?.addEventListener('click', closeCheckoutModal);
+    btnCloseModal?.addEventListener('click', () => closeDialog(checkoutModal));
+    btnCancelCheckout?.addEventListener('click', () => closeDialog(checkoutModal));
 
-    // Form Submission Trigger
+    // Form Submission Trigger. The button locks so a second tap cannot create a second order.
+    const payButtonLabel = btnSubmitPay ? btnSubmitPay.innerHTML : '';
+    function unlockPayButton() {
+      if (!btnSubmitPay) return;
+      btnSubmitPay.disabled = false;
+      btnSubmitPay.innerHTML = payButtonLabel;
+    }
+    window.addEventListener('pageshow', () => { // back button restores the page from cache
+      unlockPayButton();
+      closeDialog(checkoutModal, false);
+    });
+
     btnSubmitPay?.addEventListener('click', () => {
-      if (!state.productId) return;
+      if (!state.productId || btnSubmitPay.disabled) return;
       const form = document.getElementById('backend-checkout-form');
       const hiddenGameId = document.getElementById('hidden-game-id');
       const hiddenWa = document.getElementById('hidden-whatsapp');
@@ -336,11 +497,13 @@
         if (hiddenWa) hiddenWa.value = state.whatsapp;
         if (hiddenVoucher) hiddenVoucher.value = state.couponCode || '';
         if (hiddenPaymentChannel) hiddenPaymentChannel.value = state.payMethodChannelId || '';
+        btnSubmitPay.disabled = true;
+        btnSubmitPay.textContent = 'Membuat pesanan...';
         form.submit();
       }
     });
 
-    // --- Bongkar / Jual Mode Interactive Script ---
+    // ---------- Sell: Bongkar / Jual ----------
     const bongkarCards = document.querySelectorAll('.bongkar-card');
     const bongkarQtyInput = document.getElementById('input-card-qty');
     const bongkarWaInput = document.getElementById('input-sell-wa');
@@ -349,6 +512,8 @@
     const bongkarPayoutNameInput = document.getElementById('input-payout-name');
     const bongkarPayoutButtons = document.querySelectorAll('.bongkar-payout-btn');
     const btnSubmitBongkar = document.getElementById('btn-submit-bongkar');
+    const btnSubmitBongkarIcon = document.getElementById('btn-submit-bongkar-icon');
+    const btnSubmitBongkarLabel = document.getElementById('btn-submit-bongkar-label');
     const btnQtyMinus = document.getElementById('btn-qty-minus');
     const btnQtyPlus = document.getElementById('btn-qty-plus');
 
@@ -359,37 +524,50 @@
       state.bongkarRate = parseInt(firstBongkarCard.getAttribute('data-rate') || '0', 10);
       state.bongkarUnit = firstBongkarCard.getAttribute('data-unit') || 'kartu';
     }
+    const firstPayoutButton = document.querySelector('.bongkar-payout-btn');
+    if (firstPayoutButton) {
+      state.bongkarPayout = firstPayoutButton.getAttribute('data-method') || '';
+    }
 
     function refreshBongkarUI() {
       const rate = state.bongkarRate || 0;
       const qty = state.bongkarQty || 1;
-      const total = qty * rate;
 
-      const bongkarEstimated = document.getElementById('bongkar-estimated');
-      const bongkarReceiptLabel = document.getElementById('bongkar-receipt-label');
-      const bongkarReceiptRate = document.getElementById('bongkar-receipt-rate');
-      const bongkarReceiptQty = document.getElementById('bongkar-receipt-qty');
-      const bongkarReceiptPayout = document.getElementById('bongkar-receipt-payout');
-      const bongkarReceiptWa = document.getElementById('bongkar-receipt-wa');
+      animateNumber(document.getElementById('bongkar-estimated'), qty * rate);
+      setText(document.getElementById('bongkar-receipt-label'), state.bongkarType || 'Belum memilih item');
+      setText(document.getElementById('bongkar-receipt-rate'), rate > 0 ? `${formatRupiah(rate)} / ${state.bongkarUnit}` : '-');
+      setText(document.getElementById('bongkar-receipt-qty'), `${qty} ${state.bongkarUnit}`);
+      setText(document.getElementById('bongkar-receipt-payout'), state.bongkarPayout || '-');
+      setText(document.getElementById('bongkar-receipt-wa'), (bongkarWaInput ? bongkarWaInput.value.trim() : '') || '-');
       const bongkarUnitLabel = document.getElementById('bongkar-unit-label');
-
-      if (bongkarEstimated) bongkarEstimated.textContent = formatRupiah(total);
-      if (bongkarReceiptLabel) bongkarReceiptLabel.textContent = state.bongkarType || 'Belum memilih item';
-      if (bongkarReceiptRate) bongkarReceiptRate.textContent = rate > 0 ? `${formatRupiah(rate)} / ${state.bongkarUnit}` : '-';
-      if (bongkarReceiptQty) bongkarReceiptQty.textContent = `${qty} ${state.bongkarUnit}`;
-      if (bongkarReceiptPayout) bongkarReceiptPayout.textContent = state.bongkarPayout || 'BCA';
-      if (bongkarReceiptWa) bongkarReceiptWa.textContent = (bongkarWaInput ? bongkarWaInput.value.trim() : '') || '-';
       if (bongkarUnitLabel) bongkarUnitLabel.textContent = state.bongkarUnit || 'kartu';
     }
+
+    // After a submit the button says "Terkirim"; any change to the form unlocks it again.
+    let submitted = false;
+    function unlockBongkarButton() {
+      if (!submitted || !btnSubmitBongkar) return;
+      submitted = false;
+      btnSubmitBongkar.disabled = false;
+      btnSubmitBongkarLabel.textContent = 'Kirim Pengajuan Bongkar';
+      btnSubmitBongkarIcon.textContent = 'send';
+    }
+    document.getElementById('view-mode-sell')?.addEventListener('input', unlockBongkarButton);
+    document.getElementById('view-mode-sell')?.addEventListener('click', (e) => {
+      if (e.target instanceof Element && e.target.closest('.bongkar-card, .bongkar-payout-btn, #btn-qty-minus, #btn-qty-plus')) unlockBongkarButton();
+    });
 
     bongkarCards.forEach(card => {
       card.addEventListener('click', () => {
         bongkarCards.forEach(c => {
           c.classList.remove('selected', 'border-2', 'border-amber-500', 'bg-amber-50/70', 'ring-2', 'ring-amber-400/20');
           c.classList.add('border-slate-200', 'bg-white');
+          c.setAttribute('aria-checked', 'false');
         });
         card.classList.add('selected', 'border-2', 'border-amber-500', 'bg-amber-50/70', 'ring-2', 'ring-amber-400/20');
         card.classList.remove('border-slate-200', 'bg-white');
+        card.setAttribute('aria-checked', 'true');
+        replay(card.querySelector('.check-mark'), 'pop-in');
 
         state.bongkarCatalogId = card.getAttribute('data-bongkar-catalog-id');
         state.bongkarType = card.getAttribute('data-label') || '';
@@ -399,62 +577,56 @@
       });
     });
 
-    if (btnQtyMinus && bongkarQtyInput) {
-      btnQtyMinus.addEventListener('click', () => {
-        let val = parseInt(bongkarQtyInput.value || '1', 10);
-        if (val > 1) {
-          bongkarQtyInput.value = val - 1;
-          state.bongkarQty = val - 1;
-          refreshBongkarUI();
-        }
-      });
+    function setQty(value) {
+      const qty = Math.min(1000, Math.max(1, value));
+      state.bongkarQty = qty;
+      if (bongkarQtyInput) {
+        bongkarQtyInput.value = qty;
+        replay(bongkarQtyInput, 'pop-in');
+      }
+      refreshBongkarUI();
     }
 
-    if (btnQtyPlus && bongkarQtyInput) {
-      btnQtyPlus.addEventListener('click', () => {
-        let val = parseInt(bongkarQtyInput.value || '1', 10);
-        if (val < 1000) {
-          bongkarQtyInput.value = val + 1;
-          state.bongkarQty = val + 1;
-          refreshBongkarUI();
-        }
-      });
-    }
+    btnQtyMinus?.addEventListener('click', () => setQty(parseInt(bongkarQtyInput.value || '1', 10) - 1));
+    btnQtyPlus?.addEventListener('click', () => setQty(parseInt(bongkarQtyInput.value || '1', 10) + 1));
 
-    if (bongkarQtyInput) {
-      bongkarQtyInput.addEventListener('input', (e) => {
-        let val = parseInt(e.target.value || '1', 10);
-        if (val < 1) val = 1;
-        if (val > 1000) val = 1000;
-        state.bongkarQty = val;
-        refreshBongkarUI();
-      });
-    }
+    bongkarQtyInput?.addEventListener('input', (e) => {
+      let val = parseInt(e.target.value || '1', 10);
+      if (Number.isNaN(val) || val < 1) val = 1;
+      if (val > 1000) val = 1000;
+      state.bongkarQty = val;
+      refreshBongkarUI();
+    });
 
-    if (bongkarWaInput) {
-      bongkarWaInput.addEventListener('input', () => {
-        refreshBongkarUI();
-      });
-    }
+    bongkarWaInput?.addEventListener('input', refreshBongkarUI);
 
     bongkarPayoutButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         bongkarPayoutButtons.forEach(b => {
           b.classList.remove('selected', 'border-2', 'border-amber-500', 'bg-amber-50', 'font-bold', 'text-amber-900');
           b.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+          b.setAttribute('aria-checked', 'false');
         });
         btn.classList.add('selected', 'border-2', 'border-amber-500', 'bg-amber-50', 'font-bold', 'text-amber-900');
         btn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+        btn.setAttribute('aria-checked', 'true');
 
-        state.bongkarPayout = btn.getAttribute('data-method') || 'BCA';
+        state.bongkarPayout = btn.getAttribute('data-method') || '';
         refreshBongkarUI();
       });
     });
 
+    function setBongkarBusy(busy) {
+      if (!btnSubmitBongkar) return;
+      btnSubmitBongkar.disabled = busy;
+      btnSubmitBongkarLabel.textContent = busy ? 'Mengirim pengajuan...' : 'Kirim Pengajuan Bongkar';
+      btnSubmitBongkarIcon.textContent = busy ? 'progress_activity' : 'send';
+      btnSubmitBongkarIcon.classList.toggle('animate-spin', busy);
+    }
+
     btnSubmitBongkar?.addEventListener('click', async () => {
       if (!state.bongkarCatalogId) {
-        alert('Silakan pilih jenis kartu/koin yang ingin dijual terlebih dahulu.');
-        return;
+        return fail('Pilih jenis kartu atau koin yang ingin dijual terlebih dahulu.', firstBongkarCard);
       }
 
       const wa = bongkarWaInput ? bongkarWaInput.value.trim() : '';
@@ -463,16 +635,20 @@
       const gameId = bongkarGameIdInput ? bongkarGameIdInput.value.trim() : '';
 
       if (!wa) {
-        alert('Silakan masukkan nomor WhatsApp Anda.');
-        bongkarWaInput?.focus();
-        return;
+        return fail('Masukkan nomor WhatsApp Anda.', bongkarWaInput);
+      }
+      if (!state.bongkarPayout) {
+        return fail('Belum ada metode pencairan yang aktif, jadi pengajuan belum bisa dikirim.');
+      }
+      if (!account) {
+        return fail('Isi nomor rekening atau e-wallet tujuan pencairan.', bongkarPayoutAccountInput);
+      }
+      if (!name) {
+        return fail('Isi nama pemilik rekening tujuan pencairan.', bongkarPayoutNameInput);
       }
 
-      if (!account || !name) {
-        alert('Silakan lengkapi nomor rekening/e-wallet dan nama pemilik rekening tujuan pencairan.');
-        bongkarPayoutAccountInput?.focus();
-        return;
-      }
+      hideToast();
+      setBongkarBusy(true);
 
       try {
         const response = await fetch('<?= base_url("bongkar/submit") ?>', {
@@ -495,21 +671,31 @@
 
         const resData = await response.json();
         if (resData.success) {
+          submitted = true;
+          setBongkarBusy(false);
+          btnSubmitBongkar.disabled = true;
+          btnSubmitBongkarLabel.textContent = 'Pengajuan terkirim';
+          btnSubmitBongkarIcon.textContent = 'check_circle';
+          replay(btnSubmitBongkarIcon, 'pop-in');
           if (resData.wa_url) {
+            showToast('Pengajuan terkirim. Membuka WhatsApp...', 'success');
             window.location.href = resData.wa_url;
           } else {
-            alert('Pengajuan bongkar berhasil dikirim! Tim CS kami akan segera menghubungi Anda via WhatsApp.');
+            showToast('Pengajuan bongkar berhasil dikirim. Tunggu konfirmasi dari admin.', 'success');
           }
         } else {
-          alert(resData.messages?.error || resData.error || 'Pengajuan bongkar gagal disimpan. Silakan periksa kembali data Anda.');
+          setBongkarBusy(false);
+          fail(resData.messages?.error || resData.error || 'Pengajuan bongkar gagal disimpan. Periksa kembali data Anda.');
         }
       } catch (err) {
-        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
+        setBongkarBusy(false);
+        fail('Koneksi terputus, pengajuan belum terkirim. Silakan coba lagi.');
       }
     });
 
-    // Initial state refresh
+    // ---------- Initial render ----------
     updateReceiptUI();
     refreshBongkarUI();
+    ready = true;
   })();
 </script>

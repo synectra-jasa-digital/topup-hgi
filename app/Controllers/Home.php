@@ -38,25 +38,9 @@ class Home extends BaseController
         $heroPreloadImage  = null;
         $heroPreloadSrcset = null;
         if (! empty($banners[0]['image_path']) && ! str_starts_with($banners[0]['image_path'], 'http')) {
-            $path = $banners[0]['image_path'];
-            $webp = str_ends_with($path, '.png') ? substr($path, 0, -4) . '.webp' : null;
-            $heroPreloadImage = base_url(($webp && is_file(FCPATH . $webp)) ? $webp : $path);
-
-            if ($webp && is_file(FCPATH . $webp)) {
-                $webp400 = substr($webp, 0, -5) . '-400w.webp';
-                $webp700 = substr($webp, 0, -5) . '-700w.webp';
-                $tiers   = [];
-                if (is_file(FCPATH . $webp400)) {
-                    $tiers[] = base_url($webp400) . ' 400w';
-                }
-                if (is_file(FCPATH . $webp700)) {
-                    $tiers[] = base_url($webp700) . ' 700w';
-                }
-                if ($tiers !== []) {
-                    $tiers[]           = base_url($webp) . ' 900w';
-                    $heroPreloadSrcset = implode(', ', $tiers);
-                }
-            }
+            $image             = banner_image_set($banners[0]['image_path']);
+            $heroPreloadImage  = $image['webp'] ?? $image['src'];
+            $heroPreloadSrcset = $image['srcset'];
         }
 
         return view('catalog/index', [

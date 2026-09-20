@@ -8,7 +8,8 @@ Ayong Store adalah aplikasi web top-up Higgs Games Island berbasis CodeIgniter 4
 - Checkout tanpa login dengan validasi ID game dan nomor WhatsApp.
 - Voucher dengan reservasi, commit, dan release.
 - Pembayaran manual melalui kanal bank atau QRIS.
-- Invoice privat menggunakan token akses terpisah dari nomor invoice.
+- Invoice lengkap bersifat privat: hanya bisa dibuka dengan token akses yang terpisah dari nomor invoice.
+- Cek Pesanan cukup dengan nomor invoice dan hanya menampilkan status (tanpa ID game, WhatsApp, atau rekening).
 - Upload bukti pembayaran dan verifikasi atau penolakan oleh admin.
 - Notifikasi WhatsApp melalui Wablas.
 - Panel admin dengan role `owner` dan `admin`.
@@ -97,7 +98,7 @@ Segera ganti password setelah login pertama. Jangan gunakan credential default d
 
 - `owner`: seluruh akses admin, termasuk akun admin, laporan, backup database, activity log, pengaturan toko, dan kanal pembayaran.
 - `admin`: operasional harian seperti dashboard, katalog, banner, voucher, pengumuman, halaman statis, pesanan, verifikasi pembayaran, dan workflow bongkar sesuai route.
-- Pengunjung publik tidak perlu akun untuk melihat katalog, membuat pesanan, upload bukti dengan token, atau mengecek status dengan invoice dan token akses.
+- Pengunjung publik tidak perlu akun untuk melihat katalog, membuat pesanan, upload bukti dengan tautan invoice pribadi, atau mengecek status dengan nomor invoice.
 
 ## Perintah Pengembangan
 
@@ -146,7 +147,7 @@ Invoice publik memakai token akses acak dan menyamarkan ID game serta nomor What
 6. Pesanan yang diverifikasi masuk status diproses; admin menandainya selesai setelah top-up berhasil.
 7. Sistem mencoba mengirim notifikasi WhatsApp setelah pesanan selesai.
 
-Customer dapat mengecek status melalui halaman `cek-pesanan` menggunakan nomor invoice dan token akses. Token harus diperlakukan sebagai rahasia.
+Customer dapat mengecek status melalui halaman `cek-pesanan` cukup dengan nomor invoice. Halaman itu (`cek-pesanan/{invoice}`) hanya menampilkan status dan tahapan pesanan, sedangkan rekening pembayaran, unggah bukti, dan rincian pesanan hanya ada di tautan invoice pribadi yang memuat token akses. Token dan tautan invoice harus diperlakukan sebagai rahasia.
 
 ### Pengajuan Bongkar
 

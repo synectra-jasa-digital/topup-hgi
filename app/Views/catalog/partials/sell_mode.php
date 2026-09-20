@@ -2,9 +2,11 @@
 <?php
   $storeSettingModelSell = new \App\Models\StoreSettingModel();
   $sellStoreContact = $storeSettingModelSell->getVal('store_contact');
-  $sellWaNum = ! empty($sellStoreContact) ? preg_replace('/[^0-9]/', '', $sellStoreContact) : '';
-  $sellWaUrl = ! empty($sellWaNum) ? 'https://wa.me/' . $sellWaNum : 'https://wa.me/';
+  $sellWaUrl = whatsapp_url($sellStoreContact);
   $hasBongkarCatalog = ! empty($bongkarCatalogs);
+
+  $sellRing  = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600';
+  $sellInput = 'w-full min-h-11 rounded-xl border border-slate-300 bg-slate-50 py-2.5 pr-3 text-base sm:text-sm text-slate-900 placeholder:font-medium placeholder:text-slate-500 outline-none transition-all focus:border-amber-600 focus:bg-white focus:ring-2 focus:ring-amber-200';
 ?>
 <div id="view-mode-sell" class="flex flex-col lg:flex-row gap-6 items-start tab-mode-hidden">
 
@@ -12,16 +14,18 @@
 
 <!-- EMPTY STATE: belum ada katalog bongkar dari admin -->
 <div class="w-full max-w-xl mx-auto py-4">
-  <section class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm text-center">
-    <div class="mx-auto rounded-xl bg-amber-50 text-amber-600 border border-amber-200/80 flex items-center justify-center shadow-xs" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
-      <span class="material-symbols-outlined text-[24px]">currency_exchange</span>
+  <section class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm text-center" data-reveal>
+    <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-700 shadow-xs">
+      <span class="material-symbols-outlined text-[24px]" aria-hidden="true">currency_exchange</span>
     </div>
     <h3 class="mt-3.5 font-display font-bold text-base text-slate-900">Layanan Bongkar Belum Tersedia</h3>
-    <p class="mt-1 text-xs text-slate-500 leading-relaxed max-w-sm mx-auto">Saat ini belum ada katalog jenis koin atau kartu yang dibuka untuk dijual. Silakan hubungi Customer Service kami untuk info ketersediaan dan rate transaksi terbaru.</p>
-    <a href="<?= esc($sellWaUrl) ?>" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-xs border border-emerald-500/30">
-      <span class="material-symbols-outlined text-[16px]">chat</span>
+    <p class="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-slate-700">Saat ini belum ada katalog jenis koin atau kartu yang dibuka untuk dijual.<?= $sellWaUrl !== '' ? ' Hubungi Customer Service untuk info ketersediaan dan rate terbaru.' : ' Silakan kembali lagi nanti.' ?></p>
+    <?php if ($sellWaUrl !== ''): ?>
+    <a href="<?= esc($sellWaUrl) ?>" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-emerald-600/30 bg-emerald-700 px-5 text-sm font-bold text-white shadow-xs transition-all hover:bg-emerald-800 active:scale-95 <?= $sellRing ?>">
+      <span class="material-symbols-outlined text-[18px]" aria-hidden="true">chat</span>
       <span>Hubungi CS WhatsApp</span>
     </a>
+    <?php endif; ?>
   </section>
 </div>
 
@@ -29,168 +33,154 @@
 
 <!-- LEFT COLUMN: Form Bongkar -->
 <div class="w-full lg:w-7/12 xl:w-8/12 min-w-0">
-  <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs relative overflow-hidden">
+  <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs relative overflow-hidden" data-reveal aria-labelledby="sell-title">
     <!-- Section Header -->
-    <div class="flex items-start sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-100">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-500 text-neutral-950 font-display font-black flex items-center justify-center text-base shadow-xs shrink-0">
-          <span class="material-symbols-outlined text-[20px]">currency_exchange</span>
-        </div>
-        <div>
-          <h2 class="font-display font-bold text-base sm:text-lg text-slate-900 leading-tight">Jual atau Bongkar Kartu / Koin</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Tukar kartu atau koin game Anda menjadi uang tunai langsung ke rekening/e-wallet.</p>
-        </div>
+    <div class="flex items-start sm:items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-500 text-neutral-950 flex items-center justify-center shadow-xs shrink-0">
+        <span class="material-symbols-outlined text-[20px]" aria-hidden="true">currency_exchange</span>
       </div>
-      <span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-300 shrink-0">
-        <span class="material-symbols-outlined text-[14px] text-emerald-600">verified</span> Pencairan Dana Langsung
-      </span>
+      <div>
+        <h2 id="sell-title" class="font-display font-bold text-base sm:text-lg text-slate-900 leading-tight">Jual atau Bongkar Kartu / Koin</h2>
+        <p class="text-xs text-slate-600 mt-0.5">Ajukan kartu atau koin yang ingin dijual. Dana dicairkan ke rekening atau e-wallet yang Anda isi.</p>
+      </div>
     </div>
 
     <div class="space-y-5 text-xs">
       <!-- 1. Choice of Card -->
-      <div class="space-y-2">
-        <label class="block font-bold text-slate-800">1. Pilih Jenis Kartu / Koin <span class="text-rose-500">*</span></label>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <fieldset class="space-y-2">
+        <legend class="mb-2 font-bold text-slate-800">1. Pilih Jenis Kartu / Koin <span class="text-rose-600">*</span></legend>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" role="radiogroup" aria-label="Jenis kartu atau koin">
           <?php foreach ($bongkarCatalogs as $index => $catalog): ?>
             <?php
               $rate = (float) $catalog['base_rate'];
               $rateLabel = 'Rp' . number_format($rate, 0, ',', '.');
               $isSelected = $index === 0;
             ?>
-            <button type="button" class="bongkar-card <?= $isSelected ? 'selected border-2 border-amber-500 bg-amber-50/70 ring-2 ring-amber-400/20' : 'border border-slate-200 bg-white hover:border-amber-400' ?> p-3.5 rounded-2xl text-left transition-all relative cursor-pointer shadow-2xs hover:shadow-md hover:-translate-y-0.5 group" data-bongkar-catalog-id="<?= esc($catalog['id']) ?>" data-label="<?= esc($catalog['name']) ?>" data-rate="<?= esc($rate) ?>" data-unit="<?= esc($catalog['unit_label']) ?>">
-              <div class="flex items-center justify-between">
-                <span class="font-display font-black text-slate-900 text-xs sm:text-sm group-hover:text-amber-600 transition-colors"><?= esc($catalog['name']) ?></span>
-              </div>
-              <div class="mt-2.5 pt-2 border-t border-slate-100 font-black text-amber-600 font-mono text-xs"><?= esc($rateLabel) ?> / <?= esc($catalog['unit_label']) ?></div>
+            <button type="button" role="radio" aria-checked="<?= $isSelected ? 'true' : 'false' ?>" class="bongkar-card group <?= $isSelected ? 'selected border-2 border-amber-500 bg-amber-50/70 ring-2 ring-amber-400/20' : 'border border-slate-200 bg-white hover:border-amber-400' ?> relative min-h-[76px] p-3.5 pr-8 rounded-2xl text-left transition-all cursor-pointer shadow-2xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] <?= $sellRing ?>" data-bongkar-catalog-id="<?= esc($catalog['id']) ?>" data-label="<?= esc($catalog['name']) ?>" data-rate="<?= esc($rate) ?>" data-unit="<?= esc($catalog['unit_label']) ?>">
+              <span class="block font-display font-black text-slate-900 text-sm group-hover:text-amber-700 transition-colors"><?= esc($catalog['name']) ?></span>
+              <span class="mt-2.5 block border-t border-slate-100 pt-2 font-mono text-xs font-black text-amber-700"><?= esc($rateLabel) ?> / <?= esc($catalog['unit_label']) ?></span>
+              <span class="check-mark absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-neutral-950 opacity-0 transition-opacity group-[.selected]:opacity-100" aria-hidden="true">✓</span>
             </button>
           <?php endforeach; ?>
         </div>
-      </div>
+      </fieldset>
 
       <!-- 2. Inputs Row -->
-      <div class="space-y-2">
-        <label class="block font-bold text-slate-800">2. Detail Pengajuan <span class="text-rose-500">*</span></label>
+      <fieldset class="space-y-2">
+        <legend class="mb-2 font-bold text-slate-800">2. Detail Pengajuan <span class="text-rose-600">*</span></legend>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <!-- Quantity -->
           <div class="space-y-1.5">
-            <label class="block font-bold text-slate-700" for="input-card-qty">Jumlah (<span id="bongkar-unit-label">kartu</span>) <span class="text-rose-500">*</span></label>
-            <div class="flex items-center rounded-xl border border-slate-300 bg-slate-50 overflow-hidden focus-within:border-amber-500 focus-within:bg-white transition-all">
-              <button type="button" id="btn-qty-minus" class="w-10 h-9 flex items-center justify-center text-slate-600 hover:bg-slate-200 font-bold text-base transition-colors shrink-0 cursor-pointer">-</button>
-              <input id="input-card-qty" type="number" min="1" value="1" class="flex-1 text-center py-1.5 text-sm bg-transparent outline-none font-mono font-bold text-slate-900 border-none focus:ring-0 min-w-0">
-              <button type="button" id="btn-qty-plus" class="w-10 h-9 flex items-center justify-center text-slate-600 hover:bg-slate-200 font-bold text-base transition-colors shrink-0 cursor-pointer">+</button>
+            <label class="block font-bold text-slate-800" for="input-card-qty">Jumlah (<span id="bongkar-unit-label">kartu</span>) <span class="text-rose-600">*</span></label>
+            <div class="flex items-center overflow-hidden rounded-xl border border-slate-300 bg-slate-50 transition-all focus-within:border-amber-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-amber-200">
+              <button type="button" id="btn-qty-minus" aria-label="Kurangi jumlah" class="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center text-lg font-bold text-slate-700 transition-colors hover:bg-slate-200 active:scale-90 <?= $sellRing ?> focus-visible:-outline-offset-2">&minus;</button>
+              <input id="input-card-qty" type="number" inputmode="numeric" min="1" max="1000" value="1" class="min-w-0 flex-1 border-none bg-transparent py-2.5 text-center font-mono text-base font-bold text-slate-900 outline-none focus:ring-0 sm:text-sm">
+              <button type="button" id="btn-qty-plus" aria-label="Tambah jumlah" class="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center text-lg font-bold text-slate-700 transition-colors hover:bg-slate-200 active:scale-90 <?= $sellRing ?> focus-visible:-outline-offset-2">+</button>
             </div>
           </div>
 
           <!-- User ID Game -->
           <div class="space-y-1.5">
-            <label class="block font-bold text-slate-700" for="input-card-game-id">User ID Game <span class="text-[10px] font-normal text-slate-400">(Opsional)</span></label>
+            <label class="block font-bold text-slate-800" for="input-card-game-id">User ID Game <span class="font-normal text-slate-600">(opsional)</span></label>
             <div class="relative">
-              <span class="material-symbols-outlined absolute left-3 top-2 text-[18px] text-slate-400">sports_esports</span>
-              <input id="input-card-game-id" type="text" placeholder="ID Game Anda" class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-amber-500 focus:bg-white outline-none transition-all font-mono font-bold text-slate-900 placeholder:text-slate-400">
+              <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-slate-500" aria-hidden="true">sports_esports</span>
+              <input id="input-card-game-id" type="text" inputmode="numeric" autocomplete="off" placeholder="ID Game Anda" class="<?= $sellInput ?> pl-9 font-mono font-bold">
             </div>
           </div>
 
           <!-- WA Seller -->
           <div class="space-y-1.5">
-            <label class="block font-bold text-slate-700" for="input-sell-wa">Nomor WhatsApp <span class="text-rose-500">*</span></label>
+            <label class="block font-bold text-slate-800" for="input-sell-wa">Nomor WhatsApp <span class="text-rose-600">*</span></label>
             <div class="relative">
-              <span class="material-symbols-outlined absolute left-3 top-2 text-[18px] text-emerald-600">chat</span>
-              <input id="input-sell-wa" type="tel" placeholder="08xxxxxxxxxx" class="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-amber-500 focus:bg-white outline-none transition-all font-mono font-bold text-slate-900 placeholder:text-slate-400">
+              <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-emerald-700" aria-hidden="true">chat</span>
+              <input id="input-sell-wa" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" class="<?= $sellInput ?> pl-9 font-mono font-bold">
             </div>
           </div>
         </div>
-      </div>
+      </fieldset>
 
       <!-- 3. Destination Payout Account -->
-      <div class="space-y-2">
-        <label class="block font-bold text-slate-800">3. Rekening / E-Wallet Tujuan Pencairan Dana <span class="text-rose-500">*</span></label>
-        
-        <!-- Payout Bank Badges -->
+      <fieldset class="space-y-2">
+        <legend class="mb-2 font-bold text-slate-800">3. Rekening / E-Wallet Tujuan Pencairan Dana <span class="text-rose-600">*</span></legend>
+
         <?php if (! empty($payoutMethods)): ?>
-          <div class="flex flex-wrap gap-2" id="bongkar-payout-grid">
+          <div class="flex flex-wrap gap-2" id="bongkar-payout-grid" role="radiogroup" aria-label="Metode pencairan">
             <?php foreach ($payoutMethods as $pIndex => $payout): ?>
-              <button type="button" class="bongkar-payout-btn <?= $pIndex === 0 ? 'selected border-2 border-amber-500 bg-amber-50 font-bold text-amber-900' : 'border border-slate-200 bg-white hover:border-amber-300 text-slate-700' ?> px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer" data-method="<?= esc($payout['code']) ?>">
+              <button type="button" role="radio" aria-checked="<?= $pIndex === 0 ? 'true' : 'false' ?>" class="bongkar-payout-btn <?= $pIndex === 0 ? 'selected border-2 border-amber-500 bg-amber-50 font-bold text-amber-900' : 'border border-slate-200 bg-white hover:border-amber-300 text-slate-700' ?> min-h-11 px-4 py-2 rounded-lg text-xs sm:text-sm transition-all cursor-pointer active:scale-95 <?= $sellRing ?>" data-method="<?= esc($payout['code']) ?>">
                 <?= esc($payout['name']) ?>
               </button>
             <?php endforeach; ?>
           </div>
         <?php else: ?>
-          <p class="text-[11px] text-slate-500 italic">Belum ada metode pencairan aktif. Hubungi CS untuk bantuan.</p>
+          <p class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 text-sm text-slate-700" id="payout-empty">Belum ada metode pencairan yang aktif, jadi pengajuan belum bisa dikirim<?= $sellWaUrl !== '' ? '. Silakan tanyakan ke CS' : '' ?>.</p>
         <?php endif; ?>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           <div class="space-y-1">
-            <label class="block text-[11px] font-semibold text-slate-600" for="input-payout-account">Nomor Rekening / E-Wallet <span class="text-rose-500">*</span></label>
-            <input id="input-payout-account" type="text" placeholder="Contoh: 1234567890" class="w-full px-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-amber-500 focus:bg-white outline-none font-mono font-bold text-slate-900">
+            <label class="block text-xs font-semibold text-slate-800" for="input-payout-account">Nomor Rekening / E-Wallet <span class="text-rose-600">*</span></label>
+            <input id="input-payout-account" type="text" inputmode="numeric" autocomplete="off" placeholder="Contoh: 1234567890" class="<?= $sellInput ?> pl-3 font-mono font-bold">
           </div>
           <div class="space-y-1">
-            <label class="block text-[11px] font-semibold text-slate-600" for="input-payout-name">Nama Pemilik Rekening <span class="text-rose-500">*</span></label>
-            <input id="input-payout-name" type="text" placeholder="Sesuai nama di buku tabungan/e-wallet" class="w-full px-3 py-1.5 text-sm bg-slate-50 rounded-xl border border-slate-300 focus:border-amber-500 focus:bg-white outline-none font-bold text-slate-900">
+            <label class="block text-xs font-semibold text-slate-800" for="input-payout-name">Nama Pemilik Rekening <span class="text-rose-600">*</span></label>
+            <input id="input-payout-name" type="text" autocomplete="name" placeholder="Sesuai nama di buku tabungan/e-wallet" class="<?= $sellInput ?> pl-3 font-bold">
           </div>
         </div>
-      </div>
+      </fieldset>
     </div>
   </section>
 </div>
 
 <!-- RIGHT COLUMN: Summary & Action Card -->
 <div class="w-full lg:w-5/12 xl:w-4/12 lg:sticky lg:top-24 space-y-4 shrink-0">
-  <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-md overflow-hidden relative">
+  <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-md overflow-hidden relative" data-reveal style="--rd: 120ms">
     <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 p-4 text-neutral-950 relative border-b border-amber-300">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-neutral-950 text-amber-400 flex items-center justify-center font-bold shadow-xs shrink-0">
-            <span class="material-symbols-outlined text-[20px]">payments</span>
-          </div>
-          <div>
-            <h3 class="font-display font-black text-sm tracking-wide">Ringkasan Bongkar</h3>
-            <p class="text-[10px] text-neutral-800 font-semibold">Estimasi pencairan dana langsung</p>
-          </div>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-neutral-950 text-amber-400 flex items-center justify-center font-bold shadow-xs shrink-0">
+          <span class="material-symbols-outlined text-[20px]" aria-hidden="true">payments</span>
         </div>
-        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-neutral-950 text-amber-300">LIVE RATE</span>
+        <div>
+          <h3 class="font-display font-black text-sm tracking-wide">Ringkasan Bongkar</h3>
+          <p class="text-xs font-semibold text-neutral-900">Estimasi dari rate patokan</p>
+        </div>
       </div>
     </div>
 
     <div class="p-4 space-y-4 text-xs">
-      <div class="bg-slate-50/80 rounded-xl p-3 space-y-2 border border-slate-100 text-[11px]">
-        <div class="flex justify-between items-center">
-          <span class="text-slate-500">Item Bongkar:</span>
-          <span class="font-bold text-slate-900" id="bongkar-receipt-label">Belum memilih item</span>
+      <dl class="bg-slate-50/80 rounded-xl p-3 space-y-2 border border-slate-100 text-xs">
+        <div class="flex justify-between items-center gap-3">
+          <dt class="text-slate-600">Item Bongkar:</dt>
+          <dd class="rounded px-1 text-right font-bold text-slate-900" id="bongkar-receipt-label">Belum memilih item</dd>
         </div>
-        <div class="flex justify-between items-center">
-          <span class="text-slate-500">Rate Patokan:</span>
-          <span class="font-mono font-bold text-amber-600" id="bongkar-receipt-rate">-</span>
+        <div class="flex justify-between items-center gap-3">
+          <dt class="text-slate-600">Rate Patokan:</dt>
+          <dd class="rounded px-1 font-mono font-bold text-amber-700" id="bongkar-receipt-rate">-</dd>
         </div>
-        <div class="flex justify-between items-center">
-          <span class="text-slate-500">Jumlah Diajukan:</span>
-          <span class="font-mono font-bold text-slate-900" id="bongkar-receipt-qty">-</span>
+        <div class="flex justify-between items-center gap-3">
+          <dt class="text-slate-600">Jumlah Diajukan:</dt>
+          <dd class="rounded px-1 font-mono font-bold text-slate-900" id="bongkar-receipt-qty">-</dd>
         </div>
-        <div class="flex justify-between items-center">
-          <span class="text-slate-500">Metode Pencairan:</span>
-          <span class="font-bold text-blue-700" id="bongkar-receipt-payout">-</span>
+        <div class="flex justify-between items-center gap-3">
+          <dt class="text-slate-600">Metode Pencairan:</dt>
+          <dd class="rounded px-1 font-bold text-blue-700" id="bongkar-receipt-payout">-</dd>
         </div>
-        <div class="flex justify-between items-center">
-          <span class="text-slate-500">No. WA Penjual:</span>
-          <span class="font-mono font-semibold text-slate-900" id="bongkar-receipt-wa">-</span>
+        <div class="flex justify-between items-center gap-3">
+          <dt class="text-slate-600">No. WhatsApp:</dt>
+          <dd class="rounded px-1 font-mono font-semibold text-slate-900" id="bongkar-receipt-wa">-</dd>
         </div>
-      </div>
+      </dl>
 
       <div class="border-b-2 border-dashed border-slate-200 my-1"></div>
 
       <!-- Estimated Payout Total -->
-      <div class="flex items-end justify-between">
-        <div>
-          <span class="text-[10px] uppercase font-black tracking-wider text-slate-500 block">Estimasi Dana Diterima</span>
-          <div class="text-3xl sm:text-4xl font-black text-amber-600 font-display flex items-baseline gap-1 tracking-tight" id="bongkar-estimated">Rp0</div>
-        </div>
-        <div class="text-right">
-          <span class="text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-300 block">Pencairan Cepat</span>
-        </div>
+      <div>
+        <span class="block text-xs font-semibold text-slate-600">Estimasi Dana Diterima</span>
+        <div class="text-3xl sm:text-4xl font-black text-amber-700 font-display flex items-baseline gap-1 tracking-tight tabular-nums" id="bongkar-estimated">Rp0</div>
+        <p class="mt-0.5 text-xs text-slate-600">Jumlah dikali rate patokan.</p>
       </div>
 
-      <button class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-neutral-950 font-display font-black text-base shadow-md transition-all flex items-center justify-center gap-2 group cursor-pointer border border-amber-400 active:scale-[0.99]" id="btn-submit-bongkar" type="button">
-        <span class="material-symbols-outlined text-[20px]">send</span>
-        <span>Kirim Pengajuan Bongkar</span>
+      <button class="w-full min-h-12 py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-neutral-950 font-display font-black text-base shadow-md transition-all flex items-center justify-center gap-2 group cursor-pointer border border-amber-400 active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 <?= $sellRing ?>" id="btn-submit-bongkar" type="button">
+        <span class="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" aria-hidden="true" id="btn-submit-bongkar-icon">send</span>
+        <span id="btn-submit-bongkar-label">Kirim Pengajuan Bongkar</span>
       </button>
     </div>
   </div>

@@ -90,9 +90,7 @@ class BongkarController extends BaseController
         }
 
         $adminPhone = trim((string) (getenv('wablas.adminPhone') ?: ($_ENV['wablas.adminPhone'] ?? '')));
-        $waUrl = $adminPhone !== ''
-            ? 'https://wa.me/' . preg_replace('/\D+/', '', $adminPhone) . '?text=' . rawurlencode('Pengajuan bongkar ' . $requestNumber)
-            : '';
+        $waUrl = whatsapp_url($adminPhone, 'Pengajuan bongkar ' . $requestNumber);
 
         return $this->respond([
             'success' => true,

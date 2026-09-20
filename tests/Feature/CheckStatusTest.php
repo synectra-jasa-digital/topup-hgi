@@ -21,7 +21,7 @@ class CheckStatusTest extends CIUnitTestCase
         $migrations->setNamespace('App')->setGroup('tests')->latest();
     }
 
-    public function testCheckStatusFound(): void
+    private function makeOrder(): void
     {
         $categoryModel = new \App\Models\ProductCategoryModel();
         $categoryModel->db->query('PRAGMA foreign_keys = OFF');
@@ -31,30 +31,71 @@ class CheckStatusTest extends CIUnitTestCase
             'category_id' => $categoryModel->getInsertID(), 'name' => 'Prod', 'nominal' => '1',
             'cost_price' => 10, 'sell_price' => 20, 'is_active' => 1,
         ]);
-        $orderModel = new OrderModel();
-        $orderModel->insert([
+        (new OrderModel())->insert([
             'invoice_number' => 'INV99999', 'product_id' => $productModel->getInsertID(),
             'product_name_snapshot' => 'Prod', 'nominal_snapshot' => '1', 'price_snapshot' => 20,
-            'game_id' => '123', 'whatsapp_number' => '0811111111', 'total_amount' => 20,
+            'game_id' => '987650432', 'whatsapp_number' => '0811111111', 'total_amount' => 20,
             'status' => 'menunggu_pembayaran', 'public_access_token' => str_repeat('a', 64),
+            'payment_channel_type' => 'bank', 'payment_channel_name' => 'BCA Toko',
+            'payment_account_number' => '5550001234', 'payment_account_holder' => 'Toko',
         ]);
         $categoryModel->db->query('PRAGMA foreign_keys = ON');
+    }
 
-        $result = $this->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => 'INV99999', 'access_token' => str_repeat('a', 64)]);
-        $result->assertRedirectTo('/pesanan/INV99999?token=' . str_repeat('a', 64));
+    public function testCheckStatusNeedsOnlyTheInvoiceNumberAndShowsNothingPersonal(): void
+    {
+        $this->makeOrder();
+
+        // Lookup by invoice number alone (a stray space and lower case are tolerated).
+        $result = $this->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => ' inv99999 ']);
+        $result->assertRedirectTo('/cek-pesanan/INV99999');
+
+        $status = $this->get('/cek-pesanan/INV99999');
+        $status->assertOK();
+        $status->assertHeader('Cache-Control');
+        $body = $status->getBody();
+        self::assertStringContainsString('INV99999', $body);
+        self::assertStringContainsString('Menunggu Pembayaran', $body);
+        // The public page must not leak what the private invoice protects.
+        self::assertStringNotContainsString('987650432', $body);
+        self::assertStringNotContainsString('0811111111', $body);
+        self::assertStringNotContainsString('5550001234', $body);
+        self::assertStringNotContainsString(str_repeat('a', 64), $body);
+        self::assertStringNotContainsString('Unggah bukti pembayaran', $body);
+    }
+
+    public function testFullInvoiceStillNeedsTheAccessToken(): void
+    {
+        $this->makeOrder();
+
         $invoice = $this->get('/pesanan/INV99999?token=' . str_repeat('a', 64));
         $invoice->assertOK();
         $invoice->assertHeader('Cache-Control');
-        $this->assertStringNotContainsString('123', $invoice->getBody());
-        $this->assertStringNotContainsString('0811111111', $invoice->getBody());
+        // Even the private invoice masks the game ID and phone number.
+        self::assertStringNotContainsString('987650432', $invoice->getBody());
+        self::assertStringNotContainsString('0811111111', $invoice->getBody());
+
         $this->expectException(\CodeIgniter\Exceptions\PageNotFoundException::class);
-        $this->get('/pesanan/INVDOESNOTEXIST?token=' . str_repeat('a', 64));
+        $this->get('/pesanan/INV99999?token=' . str_repeat('b', 64));
+    }
+
+    public function testStatusPageOfAnUnknownInvoiceIsNotFound(): void
+    {
+        $this->expectException(\CodeIgniter\Exceptions\PageNotFoundException::class);
+        $this->get('/cek-pesanan/INVDOESNOTEXIST');
     }
 
     public function testCheckStatusNotFound(): void
     {
-        $result = $this->withSession()->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => 'INVKOSONG', 'access_token' => str_repeat('a', 64)]);
+        $result = $this->withSession()->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => 'INVKOSONG']);
         $result->assertRedirect();
         $this->assertTrue(session()->has('error'));
+    }
+
+    public function testCheckStatusRequiresAnInvoiceNumber(): void
+    {
+        $result = $this->withSession()->call('post', 'cek-pesanan', [csrf_token() => csrf_hash(), 'invoice_number' => '']);
+        $result->assertRedirect();
+        $this->assertTrue(session()->has('errors'));
     }
 }

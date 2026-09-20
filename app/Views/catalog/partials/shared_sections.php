@@ -1,149 +1,142 @@
 <?php
   $storeSettingModel = new \App\Models\StoreSettingModel();
   $storeContact = $storeSettingModel->getVal('store_contact');
-  $waNum = ! empty($storeContact) ? preg_replace('/[^0-9]/', '', $storeContact) : '';
-  $waUrl = ! empty($waNum) ? 'https://wa.me/' . $waNum : 'https://wa.me/';
+  $waUrl = whatsapp_url($storeContact);
+  $checkUrl = base_url('cek-pesanan');
 
+  $focusRing = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600';
+  $linkClass = 'font-semibold text-blue-700 underline underline-offset-2 hover:text-blue-800 ' . $focusRing;
+
+  // Payment methods are whatever the admin has switched on, so the FAQ reads them from the same list as checkout.
+  $channelNames = array_map(static fn (array $channel): string => (string) $channel['name'], (array) ($paymentChannels ?? []));
+  $paymentAnswer = $channelNames !== []
+      ? 'Pembayaran lewat transfer bank atau QRIS ke rekening toko. Saat ini tersedia: ' . esc(implode(', ', $channelNames)) . '. Setelah pesanan dibuat, unggah bukti pembayaran di halaman invoice.'
+      : 'Metode pembayaran sedang belum tersedia. Silakan kembali lagi nanti.';
+
+  // Answers are HTML built only from escaped values and links defined above.
   $faqs = [
       [
-          'q' => 'Berapa lama proses pengiriman koin chip atau item game?',
-          'a' => 'Pesanan Anda diproses secara instan dan otomatis oleh sistem gateway dalam 1–3 detik setelah pembayaran berhasil diverifikasi.',
+          'q' => 'Berapa lama pesanan saya diproses?',
+          'a' => 'Setelah Anda membayar dan mengunggah bukti pembayaran, admin memeriksa buktinya, lalu pesanan diproses. Lamanya bergantung pada antrean admin. Pantau statusnya kapan saja di <a class="' . $linkClass . '" href="' . esc($checkUrl) . '">Cek Pesanan</a>.',
       ],
       [
-          'q' => 'Apakah aman dan apakah perlu memberikan password akun?',
-          'a' => 'Sangat aman 100%. Anda hanya perlu memasukkan User ID akun game. Kami tidak pernah meminta password, kata sandi, atau data login pribadi Anda.',
+          'q' => 'Apakah saya perlu memberikan password akun game?',
+          'a' => 'Tidak. Checkout hanya meminta User ID game dan nomor WhatsApp. Jangan pernah membagikan password akun game Anda kepada siapa pun.',
       ],
       [
           'q' => 'Metode pembayaran apa saja yang tersedia?',
-          'a' => 'Kami mendukung QRIS Bebas Biaya Admin (GoPay, DANA, OVO, ShopeePay, LinkAja, BCA Mobile, Livin Mandiri, BRImo, semua e-wallet & m-banking), serta Virtual Account Bank 24 Jam otomatis.',
+          'a' => $paymentAnswer,
       ],
       [
-          'q' => 'Bagaimana cara melakukan Bongkar / Jual koin atau kartu?',
-          'a' => 'Pilih tab "Bongkar / Jual" di bagian atas, pilih jenis kartu/koin, tentukan jumlah, dan masukkan nomor rekening/e-wallet pencairan Anda. Tim CS kami akan memverifikasi dan mentransfer dana langsung ke rekening Anda.',
+          'q' => 'Bagaimana cara Bongkar / Jual koin atau kartu?',
+          'a' => 'Pilih tombol "Bongkar / Jual" di bagian atas, pilih jenis kartu atau koin, tentukan jumlah, lalu isi rekening atau e-wallet tujuan pencairan dan kirim pengajuan. Admin yang memproses pengajuan Anda.',
       ],
       [
-          'q' => 'Bagaimana jika pesanan terkendala atau koin belum masuk?',
-          'a' => 'Apabila terdapat kendala jaringan atau bank maintenance, silakan klik tombol "Bantuan CS WhatsApp". Tim Customer Service kami aktif 24 jam nonstop siap membantu memeriksa invoice Anda.',
+          'q' => 'Bagaimana cara mengecek atau melacak pesanan saya?',
+          'a' => 'Buka <a class="' . $linkClass . '" href="' . esc($checkUrl) . '">Cek Pesanan</a>, lalu isi nomor invoice dan token akses. Keduanya ada di halaman invoice yang muncul setelah pesanan dibuat, jadi simpan tautannya.' . ($waUrl !== '' ? ' Bila pesanan bermasalah, hubungi CS lewat WhatsApp.' : ''),
       ],
   ];
+
+  $facts = [
+      ['icon' => 'payments', 'title' => 'Biaya Layanan Rp0', 'note' => 'Bayar sebesar harga produk', 'href' => null],
+      ['icon' => 'lock', 'title' => 'Invoice Privat', 'note' => 'Dibuka dengan token akses', 'href' => null],
+      ['icon' => 'receipt_long', 'title' => 'Cek Status Pesanan', 'note' => 'Pakai nomor invoice dan token', 'href' => $checkUrl],
+  ];
+  if ($waUrl !== '') {
+      $facts[] = ['icon' => 'support_agent', 'title' => 'Bantuan via WhatsApp', 'note' => 'Hubungi CS bila ada kendala', 'href' => $waUrl];
+  }
 ?>
 
-<!-- 3 LANGKAH MUDAH TOP UP SECTION -->
-<section class="mt-8">
-  <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 sm:p-7 shadow-md text-white">
-    <div class="text-center max-w-xl mx-auto mb-6">
-      <span class="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[11px] font-extrabold uppercase tracking-wider border border-blue-500/30">Panduan Transaksi</span>
-      <h3 class="font-display font-black text-lg sm:text-xl text-white mt-2">Cara Mudah Top Up di Ayong Store</h3>
-      <p class="text-xs text-slate-300 mt-1">Cukup 3 langkah sederhana, pesanan koin Anda langsung terkirim otomatis</p>
+<!-- PANDUAN: editorial two-column guide. Left stays in view on desktop, right holds the steps and the FAQ. -->
+<section class="mt-12 mb-10" aria-labelledby="guide-title">
+  <div class="flex flex-col gap-10 lg:grid lg:grid-cols-12 lg:gap-x-14">
+
+    <!-- Left: title + facts. On phones the wrapper dissolves so the order becomes title, steps and FAQ, facts. -->
+    <div class="contents lg:col-span-4 lg:block lg:self-start lg:sticky lg:top-24">
+      <div class="order-1" data-reveal>
+        <h2 id="guide-title" class="font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-slate-950 sm:text-4xl">Cara top up di Ayong Store</h2>
+        <p class="mt-4 max-w-sm text-base leading-relaxed text-slate-600">Empat langkah dari memilih nominal sampai pesanan diproses. Yang perlu Anda siapkan hanya ID game dan nomor WhatsApp.</p>
+      </div>
+
+      <ul class="order-3 border-b border-slate-300 lg:mt-10" aria-label="Hal yang perlu Anda ketahui">
+        <?php foreach ($facts as $i => $fact): ?>
+          <li class="ruled" data-reveal style="--rd: <?= $i * 80 ?>ms">
+            <?php if ($fact['href'] !== null): ?>
+              <a class="group flex items-start gap-3.5 py-4 <?= $focusRing ?>" href="<?= esc($fact['href']) ?>"<?= str_starts_with($fact['href'], 'https://wa.me/') ? ' target="_blank" rel="noopener noreferrer"' : '' ?>>
+            <?php else: ?>
+              <div class="flex items-start gap-3.5 py-4">
+            <?php endif; ?>
+                <span class="material-symbols-outlined mt-0.5 text-[22px] text-blue-700" aria-hidden="true"><?= $fact['icon'] ?></span>
+                <span class="min-w-0 flex-1">
+                  <span class="block font-display text-base font-bold leading-snug text-slate-900 <?= $fact['href'] !== null ? 'group-hover:text-blue-700' : '' ?> transition-colors"><?= esc($fact['title']) ?></span>
+                  <span class="block text-sm text-slate-600"><?= esc($fact['note']) ?></span>
+                </span>
+                <?php if ($fact['href'] !== null): ?>
+                  <span class="material-symbols-outlined mt-0.5 text-[20px] text-slate-500 transition-all duration-300 group-hover:translate-x-1 group-hover:text-blue-700" aria-hidden="true">arrow_forward</span>
+                <?php endif; ?>
+            <?php if ($fact['href'] !== null): ?>
+              </a>
+            <?php else: ?>
+              </div>
+            <?php endif; ?>
+          </li>
+        <?php endforeach; ?>
+      </ul>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-slate-800 rounded-xl p-4 border border-slate-700/80 flex items-start shadow-xs" style="gap: 16px;">
-        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-display font-black flex items-center justify-center text-sm shrink-0 shadow-sm">1</div>
-        <div>
-          <h4 class="font-display font-bold text-sm text-white">Pilih Nominal Produk</h4>
-          <p class="text-xs text-slate-300 mt-1 leading-relaxed">Tentukan paket koin emas atau kartu yang sesuai kebutuhan bermain Anda.</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-800 rounded-xl p-4 border border-slate-700/80 flex items-start shadow-xs" style="gap: 16px;">
-        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-display font-black flex items-center justify-center text-sm shrink-0 shadow-sm">2</div>
-        <div>
-          <h4 class="font-display font-bold text-sm text-white">Masukkan User ID</h4>
-          <p class="text-xs text-slate-300 mt-1 leading-relaxed">Ketik 8–10 digit User ID game Anda tanpa perlu memberikan password.</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-800 rounded-xl p-4 border border-slate-700/80 flex items-start shadow-xs" style="gap: 16px;">
-        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-display font-black flex items-center justify-center text-sm shrink-0 shadow-sm">3</div>
-        <div>
-          <h4 class="font-display font-bold text-sm text-white">Bayar &amp; Koin Masuk</h4>
-          <p class="text-xs text-slate-300 mt-1 leading-relaxed">Pilih QRIS/VA, lakukan pembayaran, dan koin langsung terkirim instan.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TRUST & STATS BADGE BAR -->
-<section class="mt-4">
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex items-center gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all">
-      <div class="w-11 h-11 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-glow-gold">
-        <span class="material-symbols-outlined text-[22px]">bolt</span>
-      </div>
-      <div>
-        <div class="font-display font-black text-sm sm:text-base text-slate-900 leading-tight">Proses 1 Detik</div>
-        <div class="text-[11px] text-slate-500 font-semibold mt-0.5">Koin Langsung Masuk</div>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex items-center gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all">
-      <div class="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-glow-blue">
-        <span class="material-symbols-outlined text-[22px]">verified_user</span>
-      </div>
-      <div>
-        <div class="font-display font-black text-sm sm:text-base text-slate-900 leading-tight">100% Legal &amp; Aman</div>
-        <div class="text-[11px] text-slate-500 font-semibold mt-0.5">Garansi Bebas Banned</div>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex items-center gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all">
-      <div class="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-glow-emerald">
-        <span class="material-symbols-outlined text-[22px]">savings</span>
-      </div>
-      <div>
-        <div class="font-display font-black text-sm sm:text-base text-slate-900 leading-tight">Harga Termurah</div>
-        <div class="text-[11px] text-slate-500 font-semibold mt-0.5">Rp0 Biaya Admin</div>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-xs flex items-center gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all">
-      <div class="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-[22px]">support_agent</span>
-      </div>
-      <div>
-        <div class="font-display font-black text-sm sm:text-base text-slate-900 leading-tight">Garansi Selesai</div>
-        <div class="text-[11px] text-slate-500 font-semibold mt-0.5">CS WA Siaga 24 Jam</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- UNIVERSAL FAQ ACCORDION SECTION -->
-<section class="mt-6 mb-8">
-  <div class="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-100">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-200">
-          <span class="material-symbols-outlined text-[20px]">help_outline</span>
-        </div>
-        <div>
-          <h3 class="font-display font-bold text-base text-slate-900 leading-tight">Pertanyaan Sering Diajukan (FAQ)</h3>
-          <p class="text-xs text-slate-500 mt-0.5">Informasi penting seputar transaksi top up dan bongkar koin</p>
-        </div>
-      </div>
-      <a class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition-all border border-emerald-200 shrink-0 self-start sm:self-auto" href="<?= esc($waUrl) ?>" rel="noopener noreferrer" target="_blank">
-        <span class="material-symbols-outlined text-[16px]">chat</span>
-        <span>Tanya CS WhatsApp</span>
-      </a>
-    </div>
-
-    <div class="space-y-2.5" id="faq-accordion">
-      <?php foreach ($faqs as $index => $faq): ?>
-        <details class="group bg-slate-50/70 rounded-xl border border-slate-200/80 transition-all [&_summary::-webkit-details-marker]:hidden" <?= $index === 0 ? 'open' : '' ?>>
-          <summary class="flex items-center justify-between p-3.5 text-xs sm:text-sm font-bold text-slate-800 cursor-pointer select-none group-open:text-blue-700 group-open:bg-blue-50/50 rounded-xl transition-colors">
-            <span class="flex items-center gap-2.5">
-              <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[11px] font-bold flex items-center justify-center shrink-0"><?= $index + 1 ?></span>
-              <span><?= esc($faq['q']) ?></span>
-            </span>
-            <span class="material-symbols-outlined text-[20px] text-slate-400 transition-transform duration-200 group-open:rotate-180 group-open:text-blue-600 shrink-0">expand_more</span>
-          </summary>
-          <div class="px-4 pb-4 pt-2 text-xs text-slate-600 leading-relaxed border-t border-slate-200/60 mt-1 pl-11">
-            <?= esc($faq['a']) ?>
+    <!-- Right: steps, then FAQ -->
+    <div class="order-2 min-w-0 lg:col-span-8 lg:order-none">
+      <ol>
+        <li class="ruled grid grid-cols-[3.5rem_1fr] gap-x-4 py-7 sm:grid-cols-[5.5rem_1fr]" data-reveal style="--rd: 0ms">
+          <span class="step-num font-display text-4xl font-black leading-none tabular-nums text-blue-700 sm:text-5xl" aria-hidden="true">01</span>
+          <div>
+            <h3 class="font-display text-xl font-bold text-slate-900">Pilih nominal produk</h3>
+            <p class="mt-1.5 max-w-prose text-base leading-relaxed text-slate-600">Tentukan paket koin emas atau kartu yang Anda butuhkan.</p>
+            <a class="mt-3 inline-flex min-h-11 items-center gap-1 text-sm <?= $linkClass ?>" href="#katalog-section">Mulai dari katalog <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_downward</span></a>
           </div>
-        </details>
-      <?php endforeach; ?>
+        </li>
+
+        <li class="ruled grid grid-cols-[3.5rem_1fr] gap-x-4 py-7 sm:grid-cols-[5.5rem_1fr]" data-reveal style="--rd: 120ms">
+          <span class="step-num font-display text-4xl font-black leading-none tabular-nums text-blue-700 sm:text-5xl" aria-hidden="true">02</span>
+          <div>
+            <h3 class="font-display text-xl font-bold text-slate-900">Isi ID game &amp; WhatsApp</h3>
+            <p class="mt-1.5 max-w-prose text-base leading-relaxed text-slate-600">Cukup dua data itu. Password akun game tidak pernah diminta.</p>
+          </div>
+        </li>
+
+        <li class="ruled grid grid-cols-[3.5rem_1fr] gap-x-4 py-7 sm:grid-cols-[5.5rem_1fr]" data-reveal style="--rd: 240ms">
+          <span class="step-num font-display text-4xl font-black leading-none tabular-nums text-blue-700 sm:text-5xl" aria-hidden="true">03</span>
+          <div>
+            <h3 class="font-display text-xl font-bold text-slate-900">Bayar dan unggah bukti</h3>
+            <p class="mt-1.5 max-w-prose text-base leading-relaxed text-slate-600">Transfer atau scan QRIS, lalu unggah bukti pembayaran di halaman invoice.</p>
+          </div>
+        </li>
+
+        <li class="ruled grid grid-cols-[3.5rem_1fr] gap-x-4 border-b border-slate-300 py-7 sm:grid-cols-[5.5rem_1fr]" data-reveal style="--rd: 360ms">
+          <span class="step-num font-display text-4xl font-black leading-none tabular-nums text-blue-700 sm:text-5xl" aria-hidden="true">04</span>
+          <div>
+            <h3 class="font-display text-xl font-bold text-slate-900">Admin memproses</h3>
+            <p class="mt-1.5 max-w-prose text-base leading-relaxed text-slate-600">Bukti diverifikasi, lalu pesanan diproses. Pantau statusnya di <a class="<?= $linkClass ?>" href="<?= esc($checkUrl) ?>">Cek Pesanan</a>.</p>
+          </div>
+        </li>
+      </ol>
+
+      <!-- FAQ -->
+      <h3 id="faq-title" class="mt-16 font-display text-2xl font-extrabold tracking-tight text-slate-950" data-reveal>Pertanyaan yang sering muncul</h3>
+      <div class="mt-6 border-b border-slate-300" id="faq-accordion">
+        <?php foreach ($faqs as $index => $faq): ?>
+          <details class="ruled group" data-reveal style="--rd: <?= $index * 70 ?>ms" <?= $index === 0 ? 'open' : '' ?>>
+            <summary class="flex min-h-14 cursor-pointer select-none items-center justify-between gap-4 py-4 font-display text-base font-bold text-slate-900 transition-colors hover:text-blue-700 group-open:text-blue-700 sm:text-lg [&::-webkit-details-marker]:hidden <?= $focusRing ?>">
+              <span><?= esc($faq['q']) ?></span>
+              <span class="material-symbols-outlined shrink-0 text-[26px] text-slate-600 transition-transform duration-300 group-open:rotate-45 group-open:text-blue-700" aria-hidden="true">add</span>
+            </summary>
+            <div class="faq-body max-w-prose pb-5 pr-10 text-base leading-relaxed text-slate-700">
+              <?= $faq['a'] ?>
+            </div>
+          </details>
+        <?php endforeach; ?>
+      </div>
     </div>
+
   </div>
 </section>
