@@ -1,232 +1,228 @@
-# Ayong Store
+# Ayong Store - Platform Top-Up Game & Gateway Operasional
 
-Ayong Store adalah aplikasi web top-up Higgs Games Island berbasis CodeIgniter 4. Aplikasi menyediakan katalog produk publik, checkout tanpa akun, pembayaran manual melalui transfer bank atau QRIS, upload bukti pembayaran, pengecekan status pesanan, panel admin, pengelolaan katalog, laporan, backup database, dan pengajuan bongkar kartu.
+**Ayong Store** adalah aplikasi web top-up game (khususnya koin dan item Higgs Games Island) berbasis **CodeIgniter 4** yang dirancang dengan prinsip *frictionless transaction*, keamanan tinggi, dan otomasi operasional. Aplikasi ini dilengkapi dengan **WhatsApp Gateway self-hosted berbasis Baileys Node.js**, **Bot Telegram Operasional Admin**, serta halaman publik tanpa login untuk checkout dan pengecekan transaksi.
 
-## Fitur Utama
+---
 
-- Katalog produk dan kategori publik.
-- Checkout tanpa login dengan validasi ID game dan nomor WhatsApp.
-- Voucher dengan reservasi, commit, dan release.
-- Pembayaran manual melalui kanal bank atau QRIS.
-- Invoice lengkap bersifat privat: hanya bisa dibuka dengan token akses yang terpisah dari nomor invoice.
-- Cek Pesanan cukup dengan nomor invoice dan hanya menampilkan status (tanpa ID game, WhatsApp, atau rekening).
-- Upload bukti pembayaran dan verifikasi atau penolakan oleh admin.
-- Notifikasi WhatsApp melalui Wablas.
-- Panel admin dengan role `owner` dan `admin`.
-- Manajemen produk, kategori, banner, voucher, pengumuman, halaman statis, dan pengaturan toko.
-- Laporan penjualan, export PDF/Excel, activity log, dan backup database.
+## 🚀 Tech Stack & Arsitektur Sistem
 
-## Persyaratan
+### Backend & Core Framework
+- **Framework**: CodeIgniter 4 (PHP 8.2+)
+- **Database**: MySQL / MariaDB (InnoDB dengan Foreign Key constraints & indeks optimasi laporan)
+- **Ekspor Dokumen**: `PhpSpreadsheet` (Spreadsheet Excel `.xlsx`) & `Dompdf` (Dokumen `.pdf`)
+- **Keamanan & Kriptografi**: Enkripsi token 64-karakter acak, sanitasi input, proteksi CSRF, proteksi idempotensi transaksi, & hashing password Argon2id/Bcrypt.
 
-- PHP `8.2` atau lebih baru.
-- Ekstensi PHP `intl`, `mbstring`, `mysqli`, `curl`, `fileinfo`, dan `dom`.
-- MySQL/MariaDB pada port default `3306`.
-- Composer, Node.js, dan npm.
-- Web server dengan document root menunjuk ke direktori `public/`.
+### Frontend & Visual System
+- **Styling**: Tailwind CSS (Minified Production Build) & Custom Micro-Animations
+- **Design System**: *Direct Gaming Trust* (Corporate Modernism & Tactile Simplicity)
+- **Typography**: Plus Jakarta Sans (Headings & Identitas) & Inter (UI Data, Form, & Tabel)
+- **Icons**: Material Symbols Outlined (Google Fonts)
 
-## Setup Lokal
+### Sub-Sistem Integrasi
+1. **WhatsApp Gateway Service (`wa-gateway/`)**:
+   - Engine Node.js 20+ Express server menggunakan `@whiskeysockets/baileys` (Multi-Device WhatsApp Web API).
+   - Mendukung otentikasi API Key (`x-api-key`), auto-reconnect, QR code generator API, & routing kompatibel cPanel.
+   - Sistem antrean publik berbasis database (`wa_outbox`) dengan mekanis worker retry (exponential backoff).
+2. **Telegram Bot Operasional**:
+   - Memanfaatkan Telegram Bot API (Webhook & Long-polling Outbox) untuk operasional admin via grup/chat Telegram.
+   - Fitur inline keyboard interaktif untuk verifikasi/penolakan pembayaran langsung dari obrolan Telegram.
 
-1. Clone repository lalu masuk ke direktori proyek.
+### Testing & CI/CD
+- **Testing Framework**: PHPUnit 11 & PCOV Code Coverage driver.
+- **CI/CD Pipeline**: GitHub Actions (Automated Syntax Check, PHPUnit Test, Tailwind Build, & FTP Deployment to Production Hosting).
 
-   ```bash
-   git clone <repository-url> topup-hgi
-   cd topup-hgi
-   ```
+---
 
-2. Install dependency PHP dan frontend.
+## ✨ Fitur Utama Sistem
 
-   ```bash
-   composer install
-   npm ci
-   ```
+### 1. Modul Publik (Customer Experience)
+- **Katalog Dual-Mode tanpa Login**: Memisahkan alur **Beli Koin (Top Up)** dan **Jual Kartu (Bongkar)** dalam 1 halaman tanpa perlu muat ulang halaman (*zero-reload*).
+- **Wizard Checkout 4-Langkah**:
+  1. Pilih Kategori Produk (Koin Gold, Koin MD, Kartu Ungu, dll).
+  2. Pilih Nominal (dilengkapi filter pencarian cepat `1B`, `200M`).
+  3. Masukkan Data Game (ID Game dengan masking otomatis & Nomor WhatsApp).
+  4. Pilih Kanal Pembayaran Manual (Transfer Bank / QRIS).
+- **Invoice Privat Berbasis Token**:
+  - Halaman invoice hanya dapat dibuka dengan URL khusus yang memuat token akses privat 64-karakter (`/pesanan/INV-xxx?token=yyy`).
+  - Dilengkapi fitur upload bukti pembayaran (mendukung foto hingga 10MB JPG/PNG/WEBP).
+- **Cek Pesanan Terenkripsi (`/cek-pesanan`)**:
+  - Customer dapat mengecek status pesanan hanya dengan nomor invoice.
+  - Halaman publik ini menyamarkan ID Game, Nomor WhatsApp, dan detail rekening demi privasi customer.
 
-3. Buat database kosong, misalnya `topup_hgi`, lalu salin konfigurasi environment.
+### 2. WhatsApp Gateway (Baileys Node.js & Outbox Engine)
+- **Dual Driver**: Pilihan driver **Baileys** (Self-hosted Node.js gratis) atau **Wablas** (Layanan berbayar) yang dapat ditukar kapan saja dari admin panel.
+- **Notifikasi Otomatis Customer**:
+  - 🔔 *Pesanan Dibuat*: Instruksi transfer & tautan invoice privat.
+  - 📥 *Bukti Pembayaran Diterima*: Konfirmasi bukti sedang diperiksa admin.
+  - ✅ *Pembayaran Diverifikasi*: Notifikasi pembayaran sah.
+  - ❌ *Pembayaran Ditolak*: Notifikasi penolakan beserta alasan resmi dari admin.
+  - 🎉 *Pesanan Selesai*: Konfirmasi koin/item telah berhasil dikirim ke ID Game.
+  - 🔄 *Status Bongkar*: Pembaruan status pengajuan bongkar kartu customer.
+- **Masking Sensitif**: ID Game otomatis disamarkan (contoh: `98****32`) pada pesan WhatsApp demi keamanan akun customer.
+- **Panel Admin WhatsApp (`/admin/whatsapp`)**:
+  - Khusus role `owner`.
+  - Tampilan status koneksi real-time & QR Code scanner otomatis.
+  - Form pengubahan Gateway URL & API Key.
+  - Pengirim pesan uji coba.
+  - Tabel riwayat outbox 50 pesan terakhir dengan tombol *Retry* (kirim ulang manual).
 
-   ```bash
-   copy env .env
-   ```
+### 3. Bot Telegram Operasional Admin (`@ayongstore_bot`)
+- **Otentikasi Admin Terikat Session**:
+  - `/login <email> <password>` untuk otentikasi akun admin via Telegram.
+  - `/logout` untuk keluar dan `/sesi` untuk mengecek status login.
+- **Notifikasi & Verifikasi Instant**:
+  - Mengirim foto bukti pembayaran terbaru secara otomatis ke chat Telegram admin.
+  - Dilengkapi tombol inline `✅ Verifikasi` dan `❌ Tolak` (dengan prompt instruksi alasan penolakan).
+- **Unduh Laporan Penjualan (`/laporan`)**:
+  - Prompt interaktif pemilihan format file (**Excel XLSX** atau **PDF**).
+  - Pilihan periode: *Hari Ini*, *7 Hari Terakhir*, *Bulan Ini*, atau *Kustom*.
+- **Manajemen Toko & Pesanan**:
+  - `/tutup [alasan]` & `/buka`: Mengubah mode operasional toko secara instant dari Telegram.
+  - `/status`: Cek status buka/tutup toko.
+  - `/pending`: Menampilkan daftar pesanan yang menanti verifikasi pembayaran.
+  - `/pesanan <invoice>`: Cek detail pesanan spesifik.
+  - `/selesai <invoice>`: Menandai pesanan selesai dari Telegram.
 
-   Pada macOS/Linux gunakan `cp env .env`.
+### 4. Tampilan Toko Tutup (Interactive Store Closed Page)
+- **Desain Modern non-AI Slop**: Mengikuti pedoman *Direct Gaming Trust* dengan animasi papan gantung toko (`swing-sign`) & kartu ber-elevasi bersih.
+- **Jam Server Realtime**: Jam digital WIB live update tiap detik.
+- **Form Lacak Invoice**: Customer tetap dapat melacak status pesanan yang telah dibayar sebelum toko tutup (route `/cek-pesanan` dibypass oleh `MaintenanceFilter`).
+- **Pesan Pengelola & Contact CS**: Menampilkan catatan alasan penolakan/toko tutup dari admin dan tombol langsung ke WhatsApp CS.
+- **Aksesibilitas Keyboard**: Shortcut tombol `R` (refresh status toko) dan `W` (buka WhatsApp CS).
 
-4. Isi konfigurasi minimal di `.env`:
+### 5. Panel Admin & Manajemen Owner
+- **Manajemen Role**: Access Control List (ACL) memisahkan hak akses `owner` dan `admin`.
+- **Katalog & Banner**: Kelola produk, kategori (dengan ikon custom), banner hero carousel, & pengumuman toko.
+- **Voucher & Diskon**: Sistem reservasi voucher saat checkout dengan proteksi otomatis release jika pesanan dibatalkan/expired.
+- **Manajemen Bongkar Kartu**: Katalog kartu bongkar & metode pencairan dana customer.
+- **Laporan & Audit**: Laporan penjualan dengan grafik, export Excel/PDF, audit log aktivitas admin, & fitur backup database (khusus owner).
 
-   ```dotenv
-   CI_ENVIRONMENT = development
-   app.baseURL = 'http://localhost/topup-hgi/'
+---
 
-   database.default.hostname = localhost
-   database.default.database = topup_hgi
-   database.default.username = root
-   database.default.password =
-   database.default.DBDriver = MySQLi
-   database.default.port = 3306
+## 🛠️ Persyaratan Sistem
 
-   encryption.key = hex2bin:<random-64-character-hex-key>
-   ```
+- **PHP**: `8.2` atau lebih baru
+- **Ekstensi PHP**: `intl`, `mbstring`, `mysqli`, `curl`, `fileinfo`, `dom`, `gd` / `exif`
+- **Database**: MySQL `8.0+` atau MariaDB `10.4+` (Port 3306)
+- **Node.js**: `v20.x` atau lebih baru (untuk frontend build & Baileys WA gateway)
+- **Composer**: `v2.x`
 
-   Jangan commit `.env`. Gunakan `encryption.key` berbeda untuk setiap environment. Jika menggunakan Wablas, tambahkan domain, token, dan nomor tujuan admin sesuai deployment.
+---
 
-5. Jalankan migration dan seed akun owner.
+## 📦 Panduan Instalasi Lokal
 
-   ```bash
-   php spark migrate --all
-   php spark db:seed AdminSeeder
-   ```
+### 1. Clone Repository & Install Dependency
+```bash
+git clone https://github.com/synectra-jasa-digital/topup-hgi.git
+cd topup-hgi
 
-6. Build asset CSS dan jalankan server development.
+# Install dependency PHP & Node.js
+composer install
+npm ci
+```
 
-   ```bash
-   npm run build:css
-   php spark serve
-   ```
+### 2. Konfigurasi Environment (`.env`)
+Salin file `.env.example` atau `env` menjadi `.env`:
+```bash
+cp env .env
+```
+Sesuaikan variabel environment minimal:
+```dotenv
+CI_ENVIRONMENT = development
+app.baseURL = 'http://localhost/topup-hgi/'
 
-   Buka URL yang ditampilkan Spark, biasanya `http://localhost:8080/`.
+database.default.hostname = localhost
+database.default.database = topup_hgi
+database.default.username = root
+database.default.password =
+database.default.DBDriver = MySQLi
+database.default.port = 3306
 
-## Akun Admin Awal
+encryption.key = hex2bin:6989601dcf9f9840f399bdc5fe67e1420fd570ff9decf0ed0d95b10f6ad739bb
+```
 
-`AdminSeeder` membuat akun owner berikut untuk instalasi awal:
+### 3. Migrasi Database & Seeder Admin Initial
+```bash
+php spark migrate --all
+php spark db:seed AdminSeeder
+```
+*Akun bawaan seeder:*
+- **Email**: `owner@gmail.com`
+- **Password**: `password`
+- **Role**: `owner`
 
-| Field | Nilai awal |
-| --- | --- |
-| Email | `owner@gmail.com` |
-| Password | `password` |
-| Role | `owner` |
+### 4. Setup Service WhatsApp Gateway (`wa-gateway/`)
+```bash
+cd wa-gateway
+npm install
+node server.js
+```
+*Service akan berjalan di `http://127.0.0.1:3000`.*
 
-Segera ganti password setelah login pertama. Jangan gunakan credential default di production. Jangan menjalankan seeder berulang kali pada database berisi akun tanpa memeriksa potensi duplikasi.
+### 5. Build CSS & Jalankan Local Development Server
+```bash
+# Compile Tailwind CSS
+npm run build:css
 
-## Role dan Akses
+# Jalankan server lokal CodeIgniter
+php spark serve
+```
+Buka browser pada `http://localhost:8080/`.
 
-- `owner`: seluruh akses admin, termasuk akun admin, laporan, backup database, activity log, pengaturan toko, dan kanal pembayaran.
-- `admin`: operasional harian seperti dashboard, katalog, banner, voucher, pengumuman, halaman statis, pesanan, verifikasi pembayaran, dan workflow bongkar sesuai route.
-- Pengunjung publik tidak perlu akun untuk melihat katalog, membuat pesanan, upload bukti dengan tautan invoice pribadi, atau mengecek status dengan nomor invoice.
+---
 
-## Perintah Pengembangan
+## ⚙️ Cron Workers & CLI Commands
 
-| Perintah | Kegunaan |
-| --- | --- |
-| `php spark serve` | Menjalankan server development |
-| `php spark migrate --all` | Menjalankan seluruh migration |
-| `php spark db:seed AdminSeeder` | Membuat akun owner awal |
-| `npm run build:css` | Build CSS Tailwind minified |
-| `npm run watch:css` | Watch perubahan CSS |
-| `composer test` | Menjalankan seluruh PHPUnit test |
-| `vendor/bin/phpunit tests/Feature` | Menjalankan feature test |
-| `composer validate --strict --no-check-publish` | Validasi metadata Composer |
-| `composer audit --locked` | Audit dependency sesuai lockfile |
-| `php spark uploads:audit` | Mencari orphan upload |
-| `php spark uploads:audit --delete` | Menghapus orphan upload yang ditemukan |
-| `php spark bongkar:notifications` | Retry notifikasi bongkar gagal |
+Sistem memerlukan beberapa background worker yang dapat dikonfigurasi via Cron Job server (tiap 1 menit):
 
-## Struktur Aplikasi
+| Perintah CLI Spark | Kegunaan / Deskripsi | Frekuensi Rekomendasi |
+| :--- | :--- | :--- |
+| `php spark wa:outbox` | Memproses antrean pesan WhatsApp (`wa_outbox`) dengan retry backoff | Setiap 1 menit |
+| `php spark telegram:outbox` | Memproses antrean pesan & foto bukti bayar ke Telegram admin | Setiap 1 menit |
+| `php spark bongkar:notifications` | Mengirim ulang notifikasi pengajuan bongkar yang sempat gagal | Setiap 5 menit |
+| `php spark uploads:audit` | Audit file upload yatim (tidak terdaftar di DB) | Mingguan / Manual |
+| `php spark uploads:audit --delete` | Menghapus file upload yatim yang terdeteksi | Manual |
+
+---
+
+## 📁 Struktur Direktori Utama
 
 ```text
-public/                 Front controller dan asset publik
-app/Config/              Route, filter, database, cache, session, security
-app/Controllers/         Controller publik dan panel admin
-app/Models/              Akses data dan aturan domain
-app/Libraries/           Money, integration settings, dan gateway Wablas
-app/Database/Migrations/ Evolusi skema database
-app/Database/Seeds/      Data awal, termasuk AdminSeeder
-app/Views/               Template publik dan admin
-resources/css/           Sumber CSS Tailwind
-writable/                Session, cache, log, upload bukti, backup runtime
-tests/                   Unit, database, dan feature tests
+topup-hgi/
+├── app/
+│   ├── Commands/            # Perintah Spark CLI (wa:outbox, telegram:outbox, dll)
+│   ├── Config/              # Konfigurasi aplikasi, database, route, & filter
+│   ├── Controllers/         # Controller Publik, Checkout, & Admin Panel
+│   ├── Database/            # Migrasi database & Seeder awal
+│   ├── Filters/             # Auth filter, Maintenance filter, Role filter
+│   ├── Helpers/             # Helper phone_helper, activity_helper, upload_helper
+│   ├── Libraries/           # TelegramBot, TelegramNotifier, WhatsAppNotifier, BaileysGateway, ReportExporter
+│   ├── Models/              # Model data CodeIgniter 4
+│   └── Views/               # Template tampilan UI (Catalog, Checkout, Admin, Errors)
+├── docs/                    # Dokumentasi spesifikasi & SQL schema
+├── public/                  # Document root web (index.php, CSS, JS, asset publik)
+├── resources/               # Sumber Tailwind CSS (resources/css/public.css)
+├── stitch/                  # Panduan Design System (DESIGN.md)
+├── tests/                   # Suite pengujian otomatis (Unit & Feature Tests)
+├── wa-gateway/              # Service Node.js WhatsApp Baileys Gateway (server.js, package.json)
+└── writable/                # File runtime, upload bukti bayar, log, & backup database
 ```
 
-Invoice publik memakai token akses acak dan menyamarkan ID game serta nomor WhatsApp. Bukti pembayaran disimpan di `writable/uploads/payment-proofs/`, bukan direktori publik. Banner, logo, avatar, dan ikon kategori yang harus tampil publik berada di `public/assets/uploads/`.
+---
 
-## Alur Operasional
+## 🧪 Pengujian Otomatis (Testing)
 
-### Checkout dan Pembayaran
+Proyek ini dilengkapi dengan 93+ pengujian otomatis (Unit Test & Feature Test) untuk menjamin stabilitas aplikasi.
 
-1. Customer memilih produk dari katalog.
-2. Customer mengisi ID game, nomor WhatsApp, voucher opsional, dan kanal pembayaran.
-3. Sistem membuat invoice, menyimpan snapshot produk dan kanal pembayaran, serta memberikan token akses privat.
-4. Customer membuka invoice dan mengunggah bukti pembayaran melalui token tersebut.
-5. Admin memeriksa bukti, lalu memilih **Verifikasi** atau **Tolak** dengan alasan.
-6. Pesanan yang diverifikasi masuk status diproses; admin menandainya selesai setelah top-up berhasil.
-7. Sistem mencoba mengirim notifikasi WhatsApp setelah pesanan selesai.
-
-Customer dapat mengecek status melalui halaman `cek-pesanan` cukup dengan nomor invoice. Halaman itu (`cek-pesanan/{invoice}`) hanya menampilkan status dan tahapan pesanan, sedangkan rekening pembayaran, unggah bukti, dan rincian pesanan hanya ada di tautan invoice pribadi yang memuat token akses. Token dan tautan invoice harus diperlakukan sebagai rahasia.
-
-### Pengajuan Bongkar
-
-Customer mengirim pengajuan bongkar dari halaman publik menggunakan katalog kartu dan metode pencairan yang aktif. Admin memproses perubahan status dari panel admin. Notifikasi yang gagal dapat diproses ulang:
-
+Jalankan seluruh pengujian PHPUnit:
 ```bash
-php spark bongkar:notifications
+vendor/bin/phpunit
+# atau via composer
+composer test
 ```
 
-### Backup dan Maintenance
+---
 
-Fitur backup berada di panel owner. Backup disimpan di `writable/backups/`, dibatasi retention maksimal oleh aplikasi, dan hanya bisa diakses oleh owner. Sebelum migration production:
+## 🔒 Lisensi & Hak Cipta
 
-1. Buat dan verifikasi backup.
-2. Periksa migration history.
-3. Jalankan `php spark migrate --all`.
-4. Jalankan smoke test checkout, invoice, upload bukti, verifikasi, dan halaman admin.
-
-Untuk membersihkan upload yang tidak lagi direferensikan, jalankan audit tanpa `--delete` terlebih dahulu. Gunakan `--delete` hanya setelah daftar orphan diverifikasi.
-
-## Konfigurasi Production
-
-Production harus menggunakan `.env` terpisah dan tidak boleh memakai nilai contoh atau credential default.
-
-```dotenv
-CI_ENVIRONMENT = production
-app.baseURL = 'https://your-domain.example/'
-app.allowedHostnames = 'your-domain.example,www.your-domain.example'
-app.proxyIPs = '10.0.0.10'
-security.CSPEnabled = true
-database.default.encrypt = true
-cache.handler = redis
-cache.backupHandler = file
-redis.host = 127.0.0.1
-redis.port = 6379
-redis.password = 'replace-with-secret'
-```
-
-Pastikan `encryption.key`, kredensial database, Wablas, dan Redis berasal dari environment atau secret manager. Pastikan document root web server menunjuk ke `public/`, bukan root repository. Folder `writable/` harus dapat ditulis aplikasi tetapi tidak boleh diakses sebagai source publik.
-
-## Checklist Deployment
-
-- [ ] Set `CI_ENVIRONMENT=production` dan HTTPS `app.baseURL`.
-- [ ] Isi hostname/proxy allowlist dan secret production.
-- [ ] Buat backup sebelum migration.
-- [ ] Jalankan `php spark migrate --all` pada database target.
-- [ ] Jalankan `php spark uploads:audit` dan pastikan folder upload menolak eksekusi script.
-- [ ] Uji checkout, upload bukti, verifikasi/tolak, invoice dengan token salah, cek status, bongkar, dan retry notifikasi.
-- [ ] Uji backup create/download/delete dengan akun owner.
-- [ ] Jalankan test dan build sebelum rilis.
-
-## Troubleshooting
-
-### Database gagal tersambung
-
-Periksa service MySQL/MariaDB aktif, nama database, username, password, port, dan `database.default.DBDriver` di `.env`. Pastikan database sudah dibuat sebelum menjalankan migration.
-
-### Halaman menampilkan error base URL atau asset tidak ditemukan
-
-Sesuaikan `app.baseURL` dengan URL sebenarnya, termasuk trailing slash. Untuk server Apache/Nginx, gunakan `public/` sebagai document root.
-
-### Session, cache, atau upload gagal ditulis
-
-Pastikan direktori `writable/cache`, `writable/session`, `writable/logs`, `writable/uploads`, dan `writable/backups` ada dan dapat ditulis oleh user proses PHP.
-
-### CSRF gagal saat submit form
-
-Pastikan form memakai helper/form token CSRF yang disediakan layout dan halaman dibuka dari host yang sama dengan `app.baseURL`. Jangan mencampur hostname, port, atau scheme HTTP/HTTPS.
-
-### Notifikasi WhatsApp tidak terkirim
-
-Periksa `wablas.domain`, token, nomor admin, koneksi outbound server, dan log aplikasi. Untuk pengajuan bongkar, jalankan `php spark bongkar:notifications` setelah konfigurasi diperbaiki.
-
-### Upload ditolak
-
-Bukti pembayaran harus berupa JPG, JPEG, PNG, atau WebP dengan ukuran maksimal 5 MB dan dimensi gambar yang valid. Asset publik mengikuti validasi upload pada controller admin.
-
-## Dokumentasi Tambahan
-
-- Rencana pekerjaan berada di `TODO.md`.
-- Spesifikasi dan rencana implementasi berada di `docs/superpowers/`.
-- Test terkait berada di `tests/`.
+© 2026 **Ayong Store**. Dikelola oleh Synectra Jasa Digital. Seluruh hak cipta dilindungi undang-undang.
