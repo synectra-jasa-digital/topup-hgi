@@ -37,7 +37,6 @@ app.use((req, res, next) => {
 
 const router = express.Router();
 
-// GET /health & GET /status
 const healthHandler = (req, res) => {
     res.json({
         connected: isConnected,
@@ -49,14 +48,12 @@ const healthHandler = (req, res) => {
 router.get('/health', healthHandler);
 router.get('/status', healthHandler);
 
-// GET /qr
 router.get('/qr', (req, res) => {
     res.json({
         qr: qrCodeString,
     });
 });
 
-// POST /send
 router.post('/send', async (req, res) => {
     if (!isConnected || !sock) {
         return res.status(503).json({ success: false, code: 'not_connected', error: 'WhatsApp Gateway tidak terhubung' });
@@ -87,7 +84,6 @@ router.post('/send', async (req, res) => {
     }
 });
 
-// POST /logout
 router.post('/logout', async (req, res) => {
     try {
         if (sock) {
@@ -106,12 +102,73 @@ router.post('/logout', async (req, res) => {
     }
 });
 
-// Mount router under root and /wa-api for cPanel compatibility
+// Mount router under /, /api, and /wa-api for cPanel compatibility
 app.use('/', router);
+app.use('/api', router);
 app.use('/wa-api', router);
+
+async function connectToWhatsApp() {
+    try {
+        if (!fs.existsSync(AUTH_DIR)) {
+            fs.mkdirSync(AUTH_DIR, { recursive: true, mode: 0o700 });
+        }
+
+        const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+
+        let version = [2, 3000, 1015901307];
+        try {
+            const fetched = await fetchLatestBaileysVersion();
+            if (fetched && fetched.version) {
+                version = fetched.version;
+            }
+        } catch (e) {
+            console.log('Bypass fetch version, menggunakan default versi Baileys');
+        }
+
+        console.log('Menghubungkan ke WhatsApp Baileys...');
+
+        sock = makeWASocket({
+            version,
+            auth: state,
+            logger: pino({ level: 'silent' }),
+            printQRInTerminal: true,
+        });
+
+        sock.ev.on('creds.update', saveCreds);
+
+        sock.ev.on('connection.update', (update) => {
+            const { connection, lastDisconnect, qr } = update;
+
+            if (qr) {
+                qrCodeString = qr;
+                isConnected = false;
+                console.log('QR Code WhatsApp baru siap discan!');
+            }
+
+            if (connection === 'close') {
+                isConnected = false;
+                qrCodeString = null;
+                const shouldReconnect = (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut);
+                console.log('Koneksi WA terputus. Reconnect dalam 5s:', shouldReconnect);
+                if (shouldReconnect) {
+                    setTimeout(connectToWhatsApp, 5000);
+                }
+            } else if (connection === 'open') {
+                isConnected = true;
+                qrCodeString = null;
+                lastSeen = new Date().toISOString();
+                pairedPhone = sock.user?.id ? sock.user.id.split(':')[0] : null;
+                console.log('✓ WhatsApp Gateway BERHASIL Terhubung! Nomor:', pairedPhone);
+            }
+        });
+    } catch (err) {
+        console.error('Error saat inisialisasi WA:', err);
+        setTimeout(connectToWhatsApp, 5000);
+    }
+}
 
 connectToWhatsApp();
 
 app.listen(PORT, () => {
-    console.log(`WhatsApp Gateway berjalan di port ${PORT}`);
+    console.log(`✓ WhatsApp Gateway berjalan di port ${PORT}`);
 });
