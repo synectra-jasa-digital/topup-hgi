@@ -48,7 +48,14 @@ class TelegramNotifier
                 ],
             ];
 
-            $photoPath = WRITEPATH . 'uploads/' . ($order['payment_proof_path'] ?? '');
+            $filename  = basename((string) ($order['payment_proof_path'] ?? ''));
+            $photoPath = WRITEPATH . 'uploads/payment-proofs/' . $filename;
+            if (! is_file($photoPath)) {
+                $altPath = WRITEPATH . 'uploads/' . ($order['payment_proof_path'] ?? '');
+                if (is_file($altPath)) {
+                    $photoPath = $altPath;
+                }
+            }
 
             $outbox = new TelegramOutboxModel();
             $bot    = new TelegramBot();

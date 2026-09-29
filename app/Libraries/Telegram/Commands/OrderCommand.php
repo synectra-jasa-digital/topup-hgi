@@ -58,7 +58,12 @@ class OrderCommand extends BaseCommand
             ];
         }
 
-        $proofPath = WRITEPATH . 'uploads/' . $order['payment_proof_path'];
+        $filename  = basename((string) ($order['payment_proof_path'] ?? ''));
+        $proofPath = WRITEPATH . 'uploads/payment-proofs/' . $filename;
+        if (! is_file($proofPath)) {
+            $proofPath = WRITEPATH . 'uploads/' . ($order['payment_proof_path'] ?? '');
+        }
+
         if (! empty($order['payment_proof_path']) && file_exists($proofPath)) {
             $this->bot->sendPhoto($chatId, $proofPath, $text, $markup);
         } else {

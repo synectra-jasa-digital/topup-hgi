@@ -45,7 +45,12 @@ class PendingCommand extends BaseCommand
                 ],
             ];
 
-            $proofPath = WRITEPATH . 'uploads/' . $o['payment_proof_path'];
+            $filename  = basename((string) ($o['payment_proof_path'] ?? ''));
+            $proofPath = WRITEPATH . 'uploads/payment-proofs/' . $filename;
+            if (! is_file($proofPath)) {
+                $proofPath = WRITEPATH . 'uploads/' . ($o['payment_proof_path'] ?? '');
+            }
+
             if (! empty($o['payment_proof_path']) && file_exists($proofPath)) {
                 $this->bot->sendPhoto($chatId, $proofPath, $text, $markup);
             } else {
