@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($storeName) ?> - Toko Sedang Tutup</title>
     
+    <!-- Open Graph & Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?= current_url() ?>">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:title" content="<?= esc($storeName) ?> - Toko Sedang Tutup Sementara">
+    <meta property="og:description" content="Toko sedang tutup sementara. Pesanan yang sudah masuk tetap diproses. Cek status invoice Anda atau hubungi Customer Service WhatsApp.">
+    <meta property="og:site_name" content="<?= esc($storeName) ?>">
+    <meta property="og:image" content="<?= base_url('assets/img/og-image.png') ?>">
+    <meta property="og:image:secure_url" content="<?= base_url('assets/img/og-image.png') ?>">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= esc($storeName) ?> - Toko Sedang Tutup Sementara">
+    <meta name="twitter:description" content="Toko sedang tutup sementara. Pesanan yang sudah masuk tetap diproses. Cek status invoice Anda atau hubungi Customer Service WhatsApp.">
+    <meta name="twitter:image" content="<?= base_url('assets/img/og-image.png') ?>">
+    
     <!-- Direct Gaming Trust Design System Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

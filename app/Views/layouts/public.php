@@ -11,6 +11,7 @@
         (new \App\Models\PaymentChannelModel())->listActive()
     );
     $logoUrl = ! empty($storeLogo) ? base_url($storeLogo) : base_url('assets/img/logo.png');
+    $ogImageUrl = base_url('assets/img/og-image.png');
 ?>
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
@@ -43,17 +44,18 @@
     <meta property="og:title" content="<?= esc($metaTitle) ?>">
     <meta property="og:description" content="<?= esc($metaDesc) ?>">
     <meta property="og:site_name" content="<?= esc($storeName) ?>">
-    <meta property="og:image" content="<?= esc($logoUrl) ?>">
-    <meta property="og:image:secure_url" content="<?= esc($logoUrl) ?>">
+    <meta property="og:image" content="<?= esc($ogImageUrl) ?>">
+    <meta property="og:image:secure_url" content="<?= esc($ogImageUrl) ?>">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="512">
-    <meta property="og:image:height" content="512">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="<?= esc($storeName) ?> - Top Up Koin Emas & Bongkar Chip">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= esc($metaTitle) ?>">
     <meta name="twitter:description" content="<?= esc($metaDesc) ?>">
-    <meta name="twitter:image" content="<?= esc($logoUrl) ?>">
+    <meta name="twitter:image" content="<?= esc($ogImageUrl) ?>">
 
     <!-- Structured Data (Google Rich Results & Favicon Schema) -->
     <script type="application/ld+json">
