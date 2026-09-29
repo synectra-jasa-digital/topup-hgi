@@ -49,14 +49,7 @@
       to   { opacity: 1; transform: none; }
     }
 
-    /* A value in the summary lights up when it changes, tying the choice on the left to the receipt on the right. */
-    .value-flash {
-      animation: value-flash 1000ms ease-out;
-    }
-    @keyframes value-flash {
-      0%   { background-color: rgba(250, 204, 21, 0.5); box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.5); }
-      100% { background-color: rgba(250, 204, 21, 0); box-shadow: 0 0 0 4px rgba(250, 204, 21, 0); }
-    }
+
 
     /* Check marks and step badges pop when they change state. */
     .pop-in {

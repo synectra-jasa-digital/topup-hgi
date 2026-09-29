@@ -35,11 +35,10 @@
       el.classList.add(className);
     }
 
-    // Sets text; a value that changed lights up briefly so the eye can follow it.
+    // Sets text without yellow flash animation.
     function setText(el, text) {
       if (!el || el.textContent === text) return;
       el.textContent = text;
-      if (ready) replay(el, 'value-flash');
     }
 
     // Counts a rupiah figure from its old value to the new one.
