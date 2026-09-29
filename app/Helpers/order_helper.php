@@ -7,18 +7,12 @@ if (! function_exists('whatsapp_url')) {
      */
     function whatsapp_url(?string $contact, string $text = ''): string
     {
-        $digits = preg_replace('/\D+/', '', (string) $contact);
-
-        if (str_starts_with($digits, '00')) {
-            $digits = substr($digits, 2);
-        }
-        if (str_starts_with($digits, '0')) {
-            $digits = '62' . substr($digits, 1);
-        } elseif (str_starts_with($digits, '8')) {
-            $digits = '62' . $digits;
+        if (! function_exists('normalize_phone')) {
+            helper('phone');
         }
 
-        if (strlen($digits) < 9 || strlen($digits) > 15) {
+        $digits = normalize_phone($contact);
+        if ($digits === '') {
             return '';
         }
 

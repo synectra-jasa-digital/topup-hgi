@@ -60,7 +60,7 @@ class CallbackHandler
             return;
         }
 
-        if (str_starts_with($data, 'laporan:')) {
+        if (str_starts_with($data, 'laporan:') || str_starts_with($data, 'laporan_fmt:')) {
             (new Commands\ReportCommand($this->bot, $this->sessions))->handle($update, $session);
             return;
         }
@@ -95,6 +95,12 @@ class CallbackHandler
 
         // Log aktivitas
         (new ActivityLogModel())->log($adminId, 'telegram_verifikasi_pembayaran', "Verifikasi pesanan ID {$orderId} via Telegram");
+
+        // Kirim notifikasi WhatsApp ke customer
+        $order = $orderModel->find($orderId);
+        if ($order) {
+            (new \App\Libraries\WhatsApp\WhatsAppNotifier())->paymentVerified($order);
+        }
 
         // Beritahu admin lain via edit pesan mereka
         $this->broadcastStatusUpdate($orderId, 'order_payment_proof', $caption);
@@ -158,6 +164,11 @@ class CallbackHandler
         }
 
         (new ActivityLogModel())->log($adminId, 'telegram_tolak_pembayaran', "Menolak pesanan ID {$orderId} alasan: {$reason}");
+
+        $order = $orderModel->find($orderId);
+        if ($order) {
+            (new \App\Libraries\WhatsApp\WhatsAppNotifier())->paymentRejected($order, $reason);
+        }
 
         $caption = "❌ <b>Ditolak oleh {$adminName}</b>\nAlasan: " . htmlspecialchars($reason);
 

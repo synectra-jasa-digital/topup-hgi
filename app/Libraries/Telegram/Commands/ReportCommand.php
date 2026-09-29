@@ -13,39 +13,74 @@ class ReportCommand extends BaseCommand
         }
 
         $chatId = $this->getChatId($update);
-        $text   = strtolower(trim($this->getText($update)));
 
-        // Cek apakah ada callback_query untuk pemilihan periode laporan
+        // Callback dari tombol inline
         if (isset($update['callback_query'])) {
-            $data = $update['callback_query']['data'] ?? '';
+            $data  = $update['callback_query']['data'] ?? '';
+            $cbqId = $update['callback_query']['id'];
+
+            // Langkah 2: pilih periode → generate
             if (str_starts_with($data, 'laporan:')) {
                 // format: laporan:<format>:<period>
-                [$prefix, $format, $period] = explode(':', $data);
-                $this->generateAndSendReport($chatId, $session, $format, $period, $update['callback_query']['id']);
+                $parts  = explode(':', $data, 3);
+                $format = $parts[1] ?? 'excel';
+                $period = $parts[2] ?? 'this_month';
+                $this->generateAndSendReport($chatId, $session, $format, $period, $cbqId);
+                return;
             }
+
+            // Langkah 1: pilih format → tampilkan pilihan periode
+            if (str_starts_with($data, 'laporan_fmt:')) {
+                $format = substr($data, strlen('laporan_fmt:'));
+                $this->bot->answerCallbackQuery($cbqId);
+                $this->sendPeriodPicker($chatId, $format);
+                return;
+            }
+
             return;
         }
 
-        $format = str_contains($text, 'pdf') ? 'pdf' : 'excel';
+        // Command /laporan — langsung tampilkan pilihan format terlebih dahulu
+        $this->sendFormatPicker($chatId);
+    }
 
-        // Tampilkan tombol pilihan periode
+    private function sendFormatPicker(int $chatId): void
+    {
         $markup = [
             'inline_keyboard' => [
                 [
-                    ['text' => '📅 Hari Ini', 'callback_data' => "laporan:{$format}:today"],
-                    ['text' => '📊 7 Hari Terakhir', 'callback_data' => "laporan:{$format}:7days"],
-                ],
-                [
-                    ['text' => '📈 Bulan Ini', 'callback_data' => "laporan:{$format}:this_month"],
-                    ['text' => '📉 Bulan Lalu', 'callback_data' => "laporan:{$format}:last_month"],
+                    ['text' => '📊 Excel (.xlsx)', 'callback_data' => 'laporan_fmt:excel'],
+                    ['text' => '📄 PDF (.pdf)',    'callback_data' => 'laporan_fmt:pdf'],
                 ],
             ],
         ];
 
-        $formatLabel = strtoupper($format);
         $this->bot->sendMessage(
             $chatId,
-            "📊 <b>Unduh Laporan Penjualan ({$formatLabel})</b>\n\nPilih rentang waktu laporan yang ingin diunduh:",
+            "<b>Unduh Laporan Penjualan</b>\n\nPilih format file yang ingin diunduh:",
+            $markup
+        );
+    }
+
+    private function sendPeriodPicker(int $chatId, string $format): void
+    {
+        $label  = strtoupper($format);
+        $markup = [
+            'inline_keyboard' => [
+                [
+                    ['text' => 'Hari Ini',        'callback_data' => "laporan:{$format}:today"],
+                    ['text' => '7 Hari Terakhir', 'callback_data' => "laporan:{$format}:7days"],
+                ],
+                [
+                    ['text' => 'Bulan Ini',  'callback_data' => "laporan:{$format}:this_month"],
+                    ['text' => 'Bulan Lalu', 'callback_data' => "laporan:{$format}:last_month"],
+                ],
+            ],
+        ];
+
+        $this->bot->sendMessage(
+            $chatId,
+            "Format: <b>{$label}</b>\n\nPilih rentang waktu laporan:",
             $markup
         );
     }
@@ -74,17 +109,16 @@ class ReportCommand extends BaseCommand
             $this->bot->sendDocument(
                 $chatId,
                 $filePath,
-                "📊 Laporan Penjualan ({$period})",
+                "Laporan Penjualan — {$period} ({$format})",
                 $filename
             );
 
-            // Log activity sesuai PRD
             $this->logActivity($adminId, 'telegram_unduh_laporan', "Mengunduh laporan {$format} periode {$period}");
 
             @unlink($filePath);
         } catch (\Throwable $e) {
             log_message('error', "Gagal membuat laporan telegram: " . $e->getMessage());
-            $this->bot->sendMessage($chatId, "❌ Gagal membuat laporan: " . $e->getMessage());
+            $this->bot->sendMessage($chatId, "Gagal membuat laporan: " . $e->getMessage());
         }
     }
 }

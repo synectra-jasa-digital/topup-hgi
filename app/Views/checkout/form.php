@@ -79,7 +79,7 @@
                     <?php if (isset($errors['whatsapp_number'])): ?>
                         <p class="text-danger text-xs flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">error</span> <?= esc($errors['whatsapp_number']) ?></p>
                     <?php else: ?>
-                        <p class="text-xs text-neutral-500 flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">info</span> Bukti pembayaran dan kwitansi akan dikirim ke nomor WA ini.</p>
+                        <p class="text-xs text-neutral-500 flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">info</span> Kami mengirim update pesanan ke nomor WhatsApp ini.</p>
                     <?php endif; ?>
                 </div>
             </div>

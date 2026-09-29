@@ -123,6 +123,9 @@ class OrderController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Pesanan gagal disimpan. Silakan coba lagi.');
         }
 
+        $createdOrder = array_merge($data, ['id' => $this->orders->getInsertID()]);
+        (new \App\Libraries\WhatsApp\WhatsAppNotifier())->orderCreated($createdOrder);
+
         return $this->redirectToInvoice($data['invoice_number'], $data['public_access_token']);
     }
 
@@ -233,8 +236,9 @@ class OrderController extends BaseController
             @unlink(self::PROOF_PATH . basename($oldPath));
         }
 
-        // Kirim notifikasi ke admin via Telegram (tidak boleh gagal checkout)
+        // Kirim notifikasi ke admin via Telegram & customer via WhatsApp (tidak boleh gagal checkout)
         \App\Libraries\TelegramNotifier::notifyNewPaymentProof((int) $order['id']);
+        (new \App\Libraries\WhatsApp\WhatsAppNotifier())->paymentReceived($order);
 
         return $this->redirectToInvoice($invoiceNumber, $token)->with('success', 'Bukti pembayaran berhasil dikirim dan menunggu verifikasi.');
     }

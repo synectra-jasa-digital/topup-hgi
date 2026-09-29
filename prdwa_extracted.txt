@@ -1,0 +1,414 @@
+--- PAGE 1 ---
+PRD Integrasi WhatsApp Gateway Ayong
+Store
+ Sep 30, 2026  ·  @Khairul Huda
+Ayong Store akan mengganti Wablas berbayar dengan gateway WhatsApp buatan sendiri
+berbasis Baileys. Gateway memakai satu nomor WhatsApp Business toko yang ditautkan
+lewat scan QR, seperti WhatsApp Web. Aplikasi CodeIgniter mengirim pesan lewat
+antrean, jadi checkout dan verifikasi tidak menunggu WhatsApp.
+Kondisi saat ini
+Aplikasi berjalan di CodeIgniter 4 dan PHP 8.2. Deploy memakai GitHub Actions lewat FTP
+ke /public_html/ . Notifikasi WhatsApp memakai kelas WablasGateway , dan empat titik
+kode memanggilnya.
+Temuan lain dari repo:
+Token Wablas tersimpan terenkripsi di tabel store_settings  (kunci wablas_key ).
+Domain dan nomor admin dibaca dari .env .
+Metode sendToAdminNewOrder  sudah ada dan punya test, tetapi tidak ada kode
+aplikasi yang memanggilnya. Admin menerima pesanan baru lewat bot Telegram.
+Customer tidak menerima WhatsApp saat pesanan dibuat, bukti bayar diterima,
+pembayaran diverifikasi, atau bukti ditolak.
+Titik pemakaian File Perilaku sekarang
+Pesanan selesai
+(panel web)
+Admin/OrderController::complete Kirim langsung dengan timeout
+5 detik. Jika gagal, admin hanya
+melihat peringatan. Tidak ada
+retry.
+Pesanan selesai
+(Telegram)
+Telegram/Commands/CompleteCommand Kirim langsung. Hasil kirim tidak
+dicek. Admin tidak tahu jika
+gagal.
+Status pengajuan
+bongkar (panel
+web)
+Admin/BongkarRequestController::updateStatu
+s
+Kirim langsung dengan klaim
+atomik. Status kirim tersimpan
+di tabel bongkar_requests .
+Retry bongkar Commands/ProcessBongkarNotifications php spark
+bongkar:notifications .
+Maksimal 5 percobaan dengan
+jeda yang naik.
+Untitled
+Page 1 of 11
+
+--- PAGE 2 ---
+Telegram sudah punya antrean ( telegram_outbox  dan php spark telegram:outbox ).
+WhatsApp belum punya antrean umum.
+Tujuan dan metrik
+Tujuan:
+1. Hapus biaya langganan Wablas.
+2. Customer menerima WhatsApp pada setiap kejadian penting di pesanan dan
+pengajuan bongkar.
+3. Kegagalan WhatsApp tidak pernah menggagalkan checkout, upload bukti, verifikasi,
+atau penyelesaian pesanan.
+4. Owner melihat status gateway dan menautkan ulang nomor dari panel web.
+Bukan tujuan pada fase ini:
+Pesan promosi massal.
+Chatbot atau balasan otomatis untuk pesan masuk.
+Pengganti bot Telegram untuk admin.
+Gateway untuk lebih dari satu nomor atau satu toko.
+Metrik keberhasilan (target usulan):
+Pesan yang dikirim
+Sistem mengirim enam jenis pesan ke customer dan satu jenis ke admin. Empat jenis
+pesan customer belum ada di kode saat ini.
+Metrik Target
+Biaya langganan gateway Rp0 per bulan setelah Wablas
+dihentikan
+Pesan antrean yang berstatus terkirim 95% atau lebih dalam 7 hari pertama
+Waktu dari kejadian sampai pesan terkirim 95% pesan kurang dari 60 detik
+Aksi web atau Telegram yang gagal karena
+WhatsApp
+0
+Pesan gagal yang tidak tercatat 0
+Nomor toko diblokir WhatsApp 0 dalam 30 hari
+Untitled
+Page 2 of 11
+
+--- PAGE 3 ---
+Aturan isi pesan:
+Bahasa Indonesia formal, singkat, satu topik per pesan.
+Pesan customer memuat tautan cek status cek-pesanan/{invoice} . Pesan tidak
+memuat tautan invoice pribadi yang berisi token akses.
+ID game tampil tersamar, misalnya 98****32 , mengikuti aturan halaman publik.
+Pesan tidak memuat nomor rekening dan tidak memuat data pesanan lain.
+Teks pesan disimpan di satu kelas template, bukan tersebar di controller.
+Kebutuhan fungsional
+F1. Driver gateway
+1. Buat WhatsAppGatewayInterface  dengan metode send(phone, message)  dan
+status() .
+2. Buat BaileysGateway  sebagai driver baru. WablasGateway  tetap ada selama masa
+transisi.
+3. Pilihan driver disimpan di store_settings  dengan kunci wa_driver . Nilainya
+baileys , wablas , atau off .
+4. Semua titik pemanggil memakai satu layanan WhatsAppNotifier . Tidak ada controller
+yang memanggil gateway langsung.
+Kejadian Penerima Status di kode Isi pesan
+Pesanan dibuat Customer Baru Nomor invoice, total bayar, tautan
+cek status
+Bukti bayar diterima Customer Baru Bukti masuk dan menunggu
+verifikasi, tautan cek status
+Pembayaran diverifikasi Customer Baru Pesanan masuk status diproses
+Bukti bayar ditolak Customer Baru Alasan penolakan dan
+permintaan unggah ulang
+Pesanan selesai Customer Ada, diubah Teks sama dengan sekarang. ID
+game disamarkan
+Status bongkar berubah Customer Ada Teks sama dengan sekarang
+Pesanan baru menunggu
+verifikasi
+Admin Ada, tidak
+dipanggil
+Nonaktif secara default. Telegram
+sudah menangani ini
+Untitled
+Page 3 of 11
+
+--- PAGE 4 ---
+5. Setelah Baileys stabil 14 hari, hapus WablasGateway , kunci wablas_key , kolom
+orders.wablas_notification_claimed , dan variabel wablas.*  di .env .
+F2. Antrean pesan
+1. Setiap kejadian menulis satu baris ke tabel wa_outbox , lalu langsung memicu satu kali
+pengiriman.
+2. php spark wa:outbox  berjalan lewat cron setiap menit. Perintah ini mengirim pesan
+pending  dan mengulang pesan gagal.
+3. Retry maksimal 5 kali. Jeda naik dua kali lipat, mulai 2 menit, mengikuti pola
+markNotificationResult  pada bongkar.
+4. Klaim baris bersifat atomik, seperti claimNotification . Cron dan pemicu langsung
+tidak pernah mengirim pesan yang sama dua kali.
+5. Kolom dedupe_key  bersifat unik, misalnya order_completed:123 . Kejadian yang
+terjadi dua kali tidak membuat pesan ganda.
+6. Satu eksekusi cron mengirim maksimal 10 pesan dengan jeda acak 3 sampai 10 detik.
+7. Notifikasi bongkar pindah ke wa_outbox . Command bongkar:notifications  dihapus
+setelah pemindahan selesai.
+F3. Halaman admin WhatsApp Gateway
+Halaman /admin/whatsapp  hanya untuk role owner.
+Status koneksi: terhubung, menunggu scan, atau terputus. Halaman juga menampilkan
+nomor tertaut dan waktu terakhir terhubung.
+QR tampil di halaman ini. Server CodeIgniter mengambil QR dari gateway. Tidak ada
+URL QR publik.
+Halaman menyegarkan QR setiap 15 detik selama status menunggu scan.
+Tombol Putuskan dan tautkan ulang.
+Tombol Kirim pesan uji ke nomor owner.
+Daftar 50 pesan terakhir dengan status. Pesan gagal punya tombol Kirim ulang.
+Pengaturan: URL gateway, API key (terenkripsi lewat IntegrationSettings ), driver,
+dan saklar per jenis pesan.
+F4. Format nomor
+1. Satu helper normalize_phone()  mengubah 08xx , 8xx , 628xx , dan +628xx  menjadi
+628xx .
+2. Gateway, whatsapp_url() , dan view bongkar memakai helper itu. Saat ini ada tiga
+salinan logika yang berbeda.
+Untitled
+Page 4 of 11
+
+--- PAGE 5 ---
+3. Aturan validasi checkout tetap ^(08|628)[0-9]{7,12}$ .
+4. Sebelum mengirim, gateway memeriksa apakah nomor terdaftar di WhatsApp. Nomor
+yang tidak terdaftar ditandai invalid_number  dan tidak diulang.
+F5. Pemberitahuan ke customer
+Form checkout dan form bongkar menampilkan satu kalimat: "Kami mengirim update
+pesanan ke nomor WhatsApp ini." Sistem hanya mengirim pesan transaksi. Tidak ada
+pesan promosi.
+F6. Layanan gateway Baileys (Node.js)
+Layanan memakai @whiskeysockets/baileys , Express, dan folder sesi auth/ . Layanan
+menyambung ulang otomatis kecuali akun keluar dari perangkat tertaut.
+POST /send  mengembalikan messageId  jika berhasil. Jika gagal, respons memuat code
+yang membedakan not_connected , invalid_number , dan send_failed .
+Arsitektur teknis
+Aplikasi CodeIgniter tetap di shared hosting. Layanan Baileys berjalan sebagai aplikasi
+Node.js terpisah di hosting yang sama, jika cPanel menyediakan Node.js App. Keduanya
+berbicara lewat HTTPS. Koneksi WhatsApp tidak pernah hidup di dalam proses PHP.
+Endpoint Fungsi Autentikasi
+GET /health Status koneksi dan nomor tertaut API key
+GET /qr Teks QR saat menunggu scan API key
+POST /send Kirim pesan. Isi: phone , message , ref API key
+POST /logout Putuskan perangkat tertaut API key
+Untitled
+Page 5 of 11
+
+--- PAGE 6 ---
+Kejadian hanya menulis satu baris antrean. Pengiriman yang lambat atau gagal tidak
+menahan request web.
+Titik pemanggilan
+alur pengiriman WhatsApp · 4 langkah
+Kejadian Tempat pemicu
+Pesanan dibuat OrderController::store , setelah transaksi
+berhasil
+Bukti bayar diterima OrderController::uploadPaymentProof , di
+samping TelegramNotifier
+Pembayaran diverifikasi Admin/OrderController::verify  dan
+Telegram/CallbackHandler::handleVerify
+Bukti bayar ditolak Admin/OrderController::reject  dan
+Telegram/CallbackHandler::handleRejectReaso
+n
+Pesanan selesai Admin/OrderController::complete  dan
+Telegram/Commands/CompleteCommand
+Status bongkar berubah Admin/BongkarRequestController::updateStatu
+s
+Untitled
+Page 6 of 11
+
+--- PAGE 7 ---
+Tabel dan pengaturan baru
+Nilai status  pada wa_outbox : pending , processing , sent , failed , invalid_number .
+Komponen kode baru
+app/Libraries/WhatsApp/WhatsAppGatewayInterface.php  dan
+BaileysGateway.php . Klien HTTP memakai curlrequest  dengan timeout 5 detik.
+app/Libraries/WhatsApp/WhatsAppNotifier.php . Pintu tunggal untuk semua
+kejadian. Kelas ini menulis antrean, memicu kirim, dan menelan semua exception.
+app/Libraries/WhatsApp/MessageTemplates.php . Semua teks pesan.
+app/Models/WaOutboxModel.php . Metode enqueue , claim , markSent , dan
+markFailed , mengikuti TelegramOutboxModel .
+app/Commands/WaOutbox.php . Perintah php spark wa:outbox .
+app/Controllers/Admin/WhatsAppController.php  dan view
+admin/whatsapp/index.php .
+app/Helpers/phone_helper.php . Fungsi normalize_phone() .
+wa-gateway/ . Folder layanan Node.js ( server.js , package.json ). Tambahkan wa-
+gateway/**  ke daftar exclude  di deploy.yml  agar folder ini tidak terunggah ke
+/public_html/ .
+Kode yang dipakai ulang: OrderModel::complete , verifyPayment , dan rejectPayment ,
+IntegrationSettings , log_activity , TelegramBot  untuk peringatan ke owner, dan
+pola klaim atomik dari claimNotification .
+Objek Kolom atau kunci Fungsi
+wa_outbox id , recipient , type , message ,
+ref_type , ref_id , dedupe_key
+(unik), status , attempts ,
+next_retry_at ,
+gateway_message_id ,
+error_message , created_at ,
+sent_at
+Antrean, retry, dan riwayat
+kirim
+store_settings wa_driver , wa_gateway_url ,
+wa_gateway_key  (terenkripsi),
+wa_enable_{jenis}
+Pilihan driver, alamat
+gateway, dan saklar per
+jenis pesan
+bongkar_requests notification_status ,
+notification_retry_count ,
+next_retry_at
+Dihapus di fase 4 setelah
+notifikasi pindah ke
+wa_outbox
+Untitled
+Page 7 of 11
+
+--- PAGE 8 ---
+Keamanan dan kepatuhan WhatsApp
+Proteksi API gateway:
+Setiap request wajib membawa header x-api-key . Gateway membandingkan nilainya
+dengan fungsi yang tahan serangan waktu. Request tanpa key mendapat 401.
+Key berisi 32 byte acak. Di CodeIgniter, key tersimpan terenkripsi lewat
+IntegrationSettings . Di gateway, key berasal dari variabel environment aplikasi
+Node.js.
+Gateway hanya menerima HTTPS. Alamatnya subdomain terpisah, misalnya
+wa.domainanda.com . Jika hosting mengizinkan, batasi akses ke alamat IP server
+CodeIgniter.
+Tidak ada URL QR publik. Hanya halaman /admin/whatsapp  yang menampilkan QR,
+dan hanya untuk owner.
+Perlindungan sesi dan data:
+Folder auth/  berisi kunci sesi WhatsApp. Siapa pun yang memegang folder ini dapat
+mengambil alih nomor toko. Letakkan folder ini di luar /public_html/ , beri izin 0700 ,
+dan jangan masukkan ke git.
+Gateway berada di direktori sendiri, misalnya ~/wa-gateway/ . Workflow deploy FTP
+tidak menyentuh direktori ini.
+Log gateway hanya mencatat ref , status, dan waktu. Log tidak mencatat isi pesan.
+Tabel wa_outbox  menyimpan isi pesan. Sistem mengosongkan kolom message  pada
+baris yang berusia lebih dari 30 hari.
+Aturan kirim untuk menekan risiko blokir:
+Pakai nomor WhatsApp Business khusus toko. Jangan pakai nomor pribadi.
+Kirim hanya ke nomor yang customer isi sendiri saat checkout atau pengajuan bongkar.
+Batasi 200 pesan per hari (usulan, sesuaikan dengan volume pesanan). Pesan lebih dari
+batas menunggu hari berikutnya dan owner mendapat peringatan.
+Jeda acak 3 sampai 10 detik antar pesan.
+Jika sesi terputus 3 kali dalam 1 jam, gateway berhenti mengirim dan owner mendapat
+peringatan Telegram.
+Owner juga mendapat peringatan Telegram saat status terputus lebih dari 5 menit.
+Kepatuhan: Baileys adalah library tidak resmi. Penggunaannya melanggar ketentuan
+layanan WhatsApp. WhatsApp dapat memblokir nomor toko tanpa pemberitahuan, dan
+tidak ada pengaturan yang menjamin nomor aman. Karena itu sistem tetap menyediakan
+tautan wa.me  di halaman status dan notifikasi Telegram untuk admin sebagai jalur
+cadangan.
+Untitled
+Page 8 of 11
+
+--- PAGE 9 ---
+Semua aksi di halaman /admin/whatsapp  memakai filter role:owner , token CSRF, dan
+tercatat di activity_logs .
+Non-fungsional dan rencana rilis
+Kebutuhan non-fungsional:
+Checkout, upload bukti, verifikasi, dan penyelesaian tidak menunggu WhatsApp.
+Setiap percobaan kirim punya timeout 5 detik.
+Kegagalan WhatsApp tidak menggagalkan aksi apa pun di web atau Telegram.
+Baileys tidak memakai browser, jadi kebutuhan RAM lebih kecil dari whatsapp-web.js.
+Batas RAM hosting perlu dicek sebelum fase 1.
+Cron wa:outbox  memanggil GET /health  setiap menit. Panggilan ini membangunkan
+aplikasi Node.js jika hosting mematikannya saat idle.
+Migration bersifat additive. down()  menghapus tabel wa_outbox .
+Setiap kelas baru punya test PHPUnit dengan curlrequest  yang di-mock, mengikuti
+WablasTest . Test mencakup dedupe, klaim atomik, retry, nomor tidak valid, dan
+WhatsApp gagal saat pesanan selesai.
+README dan contoh .env  diperbarui: variabel gateway, cron, dan langkah scan QR.
+Rencana rilis:
+Setiap fase rilis ke pesanan owner dulu selama 3 hari, lalu ke semua customer. Rollback
+tidak butuh deploy: owner mengubah wa_driver  ke wablas  atau off  di halaman admin.
+Fase Isi Kriteria lulus
+1 Layanan Baileys di hosting, halaman
+/admin/whatsapp  (status, QR, pesan uji).
+Driver off  di produksi.
+Nomor tertaut. Pesan uji sampai. Sesi
+bertahan 24 jam tanpa scan ulang.
+2 WhatsAppNotifier , BaileysGateway ,
+wa_outbox , wa:outbox ,
+normalize_phone() . Pesanan selesai
+(web dan Telegram) pindah ke antrean.
+20 pesanan selesai terkirim tanpa
+duplikat.
+3 Pesan baru: pesanan dibuat, bukti
+diterima, diverifikasi, ditolak. Notifikasi
+bongkar pindah ke antrean.
+7 hari dengan angka terkirim 95% atau
+lebih.
+4 Hentikan Wablas setelah 14 hari stabil.
+Hapus kode, kunci, dan kolom lama.
+Berhenti berlangganan.
+Tidak ada pemanggilan WablasGateway
+di kode.
+Untitled
+Page 9 of 11
+
+--- PAGE 10 ---
+Risiko dan mitigasi
+Pertanyaan terbuka dan temuan repo
+Pertanyaan terbuka:
+Apakah cPanel Anda punya menu Setup Node.js App? Versi Node berapa, dan berapa
+batas RAM? Jawaban ini menentukan apakah gateway hidup di hosting.
+Apakah cPanel mengizinkan cron setiap menit?
+Risiko Dampak Mitigasi
+Hosting tidak punya menu
+Setup Node.js App, atau
+mematikan proses Node.js
+Gateway tidak
+berjalan
+Cek cPanel sebelum fase 1. Jika
+gagal, jalankan gateway di HP
+Android (Termux) atau PC
+rumah dengan Cloudflare
+Tunnel. Kode CodeIgniter tidak
+berubah, hanya URL gateway.
+WhatsApp memblokir nomor
+toko
+Customer tidak
+menerima notifikasi
+Aturan kirim di bagian
+keamanan, nomor khusus toko,
+tautan wa.me  dan Telegram
+sebagai cadangan
+Sesi terputus dan perlu scan
+ulang
+Pesan tertahan Peringatan Telegram ke owner.
+Pesan gagal bisa dikirim ulang
+dari halaman admin setelah
+nomor tertaut lagi.
+Baileys berubah mengikuti
+pembaruan WhatsApp
+Pengiriman rusak
+setelah update
+Kunci versi paket di package-
+lock.json . Uji pembaruan di
+lokal sebelum produksi. Pantau
+rilis di GitHub Baileys.
+Customer salah mengetik
+nomor
+Pesan sampai ke orang
+lain
+Pesan tidak memuat tautan
+token. ID game tersamar.
+Gateway memeriksa nomor
+terdaftar di WhatsApp.
+Hosting tidak menyediakan
+cron tiap menit
+Retry terlambat Pengiriman langsung setelah
+kejadian tetap jalan. Cron 5
+menit tetap berfungsi.
+Folder auth/  bocor Nomor toko diambil
+alih
+Simpan di luar /public_html/ ,
+izin 0700 , tidak masuk git
+Untitled
+Page 10 of 11
+
+--- PAGE 11 ---
+Apakah nomor WhatsApp Business toko sudah aktif di HP? WhatsApp memutus
+perangkat tertaut jika HP utama tidak terhubung ke internet sekitar 14 hari.
+Apakah pesan "pesanan dibuat" perlu dikirim, atau cukup mulai dari "bukti diterima"?
+Apakah pesan WhatsApp ke admin ( sendToAdminNewOrder ) dihapus, karena Telegram
+sudah menggantikannya?
+Siapa yang mendeploy layanan Node.js? Workflow GitHub Actions saat ini hanya
+mengirim aplikasi CodeIgniter ke /public_html/  lewat FTP.
+Temuan dari analisis repo yang sebaiknya beres bersama PRD ini:
+WablasGateway::sendToAdminNewOrder  tidak dipanggil dari kode aplikasi. Kolom
+orders.wablas_notification_claimed  juga tidak dipakai lagi.
+Telegram/Commands/CompleteCommand  mengabaikan hasil pengiriman WhatsApp.
+Admin melihat "berhasil" walau pesan gagal.
+Admin/OrderController::complete  meminta admin "kirim ulang secara manual",
+tetapi tidak ada route atau tombol kirim ulang.
+Logika format nomor ada di tiga tempat: WablasGateway::sendMessage  (hanya
+mengubah awalan 0 ), helper whatsapp_url() , dan view detail bongkar.
+Domain Wablas dan nomor admin hanya bisa diatur lewat .env . Halaman Pengaturan
+Toko hanya menyimpan token.
+Untitled
+Page 11 of 11
+

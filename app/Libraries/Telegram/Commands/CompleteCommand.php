@@ -42,13 +42,10 @@ class CompleteCommand extends BaseCommand
         if ($success) {
             $this->logActivity($adminId, 'telegram_selesai_pesanan', "Menyelesaikan pesanan {$invoice}");
 
-            // Pemicu WA ke customer via WablasGateway
-            try {
-                $wablas = new WablasGateway();
-                $updatedOrder = $orderModel->find($order['id']);
-                $wablas->sendToCustomerOrderCompleted($updatedOrder);
-            } catch (\Throwable $e) {
-                log_message('error', "Wablas complete notification failed: " . $e->getMessage());
+            // Pemicu WA ke customer via WhatsAppNotifier
+            $updatedOrder = $orderModel->find($order['id']);
+            if ($updatedOrder) {
+                (new \App\Libraries\WhatsApp\WhatsAppNotifier())->orderCompleted($updatedOrder);
             }
 
             $this->bot->sendMessage($chatId, "✅ Pesanan <code>{$invoice}</code> berhasil ditandai <b>SELESAI</b>.");

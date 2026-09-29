@@ -95,6 +95,10 @@
                     <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'pengaturan-toko') ? 'text-primary' : 'text-neutral-400' ?>">settings</span>
                     <span>Pengaturan Toko</span>
                 </a>
+                <a href="<?= base_url('admin/whatsapp') ?>" class="sidebar-link <?= str_contains($currentUrl, 'admin/whatsapp') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
+                    <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'admin/whatsapp') ? 'text-primary' : 'text-neutral-400' ?>">chat</span>
+                    <span>WhatsApp Gateway</span>
+                </a>
                 <a href="<?= base_url('admin/akun-admin') ?>" class="sidebar-link <?= str_contains($currentUrl, 'akun-admin') ? 'sidebar-link-active font-medium text-neutral-900' : '' ?>">
                     <span class="material-symbols-outlined text-[20px] <?= str_contains($currentUrl, 'akun-admin') ? 'text-primary' : 'text-neutral-400' ?>">manage_accounts</span>
                     <span>Akun Admin</span>

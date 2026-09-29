@@ -95,6 +95,7 @@
               <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-emerald-700" aria-hidden="true">chat</span>
               <input id="input-sell-wa" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" class="<?= $sellInput ?> pl-9 font-mono font-bold">
             </div>
+            <p class="text-xs text-slate-600">Kami mengirim update pesanan ke nomor WhatsApp ini.</p>
           </div>
         </div>
       </fieldset>

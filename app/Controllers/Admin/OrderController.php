@@ -48,10 +48,11 @@ class OrderController extends BaseController
         }
 
         $order = $this->orders->find($id);
-        if ($order && $this->wablas->sendToCustomerOrderCompleted($order)) {
-            return redirect()->to('/admin/pesanan/' . $id)->with('success', 'Pesanan selesai dan notifikasi WhatsApp terkirim.');
+        if ($order) {
+            (new \App\Libraries\WhatsApp\WhatsAppNotifier())->orderCompleted($order);
         }
-        return redirect()->to('/admin/pesanan/' . $id)->with('warning', 'Pesanan selesai, tetapi notifikasi WhatsApp gagal terkirim. Silakan kirim ulang secara manual.');
+
+        return redirect()->to('/admin/pesanan/' . $id)->with('success', 'Pesanan diselesaikan.');
     }
 
     public function proof(int $id)
@@ -70,6 +71,12 @@ class OrderController extends BaseController
         if (! $this->orders->verifyPayment($id, (int) session()->get('admin_id'))) {
             return redirect()->back()->with('error', 'Bukti pembayaran tidak dapat diverifikasi.');
         }
+
+        $order = $this->orders->find($id);
+        if ($order) {
+            (new \App\Libraries\WhatsApp\WhatsAppNotifier())->paymentVerified($order);
+        }
+
         return redirect()->to('/admin/pesanan/' . $id)->with('success', 'Pembayaran diverifikasi dan pesanan siap diproses.');
     }
 
@@ -82,6 +89,12 @@ class OrderController extends BaseController
         if (! $this->orders->rejectPayment($id, (int) session()->get('admin_id'), $reason)) {
             return redirect()->back()->with('error', 'Bukti pembayaran tidak dapat ditolak.');
         }
+
+        $order = $this->orders->find($id);
+        if ($order) {
+            (new \App\Libraries\WhatsApp\WhatsAppNotifier())->paymentRejected($order, $reason);
+        }
+
         return redirect()->to('/admin/pesanan/' . $id)->with('success', 'Bukti ditolak. Customer dapat mengunggah bukti baru.');
     }
 

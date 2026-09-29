@@ -144,5 +144,13 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     // Fase 13 - Pengaturan Toko (Owner only)
     $routes->get('pengaturan-toko', 'Admin\StoreSettingController::index', ['filter' => 'role:owner']);
     $routes->post('pengaturan-toko', 'Admin\StoreSettingController::update', ['filter' => 'role:owner']);
+
+    // WhatsApp Gateway (Owner only)
+    $routes->get('whatsapp', 'Admin\WhatsAppController::index', ['filter' => 'role:owner']);
+    $routes->post('whatsapp/settings', 'Admin\WhatsAppController::updateSettings', ['filter' => 'role:owner']);
+    $routes->post('whatsapp/test', 'Admin\WhatsAppController::sendTest', ['filter' => 'role:owner']);
+    $routes->post('whatsapp/logout', 'Admin\WhatsAppController::logout', ['filter' => 'role:owner']);
+    $routes->post('whatsapp/retry/(:num)', 'Admin\WhatsAppController::retry/$1', ['filter' => 'role:owner']);
+    $routes->get('whatsapp/qr', 'Admin\WhatsAppController::getQr', ['filter' => 'role:owner']);
 });
 

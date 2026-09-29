@@ -33,6 +33,7 @@ final class MaintenanceFilter implements FilterInterface
 
         $html = view('errors/html/maintenance', [
             'storeName' => $settings->getVal('store_name', 'Ayong Store'),
+            'storeLogo' => $settings->getVal('store_logo'),
             'reason'    => $settings->getVal('maintenance_reason'),
             'waUrl'     => $waUrl,
         ]);

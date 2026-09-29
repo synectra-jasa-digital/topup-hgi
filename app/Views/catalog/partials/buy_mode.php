@@ -186,7 +186,7 @@
         <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-emerald-700" aria-hidden="true">chat</span>
         <input class="<?= $inputBase ?> pl-9 font-mono font-bold" id="input-whatsapp" placeholder="08xxxxxxxxxx" type="tel" inputmode="tel" autocomplete="tel" aria-describedby="hint-whatsapp" value="<?= old('whatsapp_number') ?>">
       </div>
-      <p class="text-xs text-slate-600" id="hint-whatsapp">Awali dengan 08 atau 628, tanpa spasi. Invoice dikirim ke nomor ini.</p>
+      <p class="text-xs text-slate-600" id="hint-whatsapp">Kami mengirim update pesanan ke nomor WhatsApp ini.</p>
     </div>
   </div>
 </section>

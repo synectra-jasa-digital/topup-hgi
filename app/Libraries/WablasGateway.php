@@ -2,9 +2,10 @@
 
 namespace App\Libraries;
 
+use App\Libraries\WhatsApp\WhatsAppGatewayInterface;
 use CodeIgniter\Config\Services;
 
-class WablasGateway
+class WablasGateway implements WhatsAppGatewayInterface
 {
     protected string $domain;
     protected string $token;
@@ -12,9 +13,42 @@ class WablasGateway
 
     public function __construct()
     {
-        $this->domain = getenv('wablas.domain') ?: $_ENV['wablas.domain'] ?? '';
-        $this->token = (new IntegrationSettings())->get('wablas_key', 'wablas.token');
+        $this->domain     = getenv('wablas.domain') ?: $_ENV['wablas.domain'] ?? '';
+        $this->token      = (new IntegrationSettings())->get('wablas_key', 'wablas.token');
         $this->adminPhone = getenv('wablas.adminPhone') ?: $_ENV['wablas.adminPhone'] ?? '';
+    }
+
+    public function send(string $phone, string $message): array
+    {
+        if (empty($this->token)) {
+            return [
+                'success'    => false,
+                'message_id' => null,
+                'code'       => 'not_configured',
+                'error'      => 'Wablas token not configured',
+            ];
+        }
+
+        $success = $this->sendMessage($phone, $message);
+
+        return [
+            'success'    => $success,
+            'message_id' => null,
+            'code'       => $success ? null : 'send_failed',
+            'error'      => $success ? null : 'Wablas request failed',
+        ];
+    }
+
+    public function status(): array
+    {
+        $hasToken = ! empty($this->token);
+
+        return [
+            'connected' => $hasToken,
+            'status'    => $hasToken ? 'connected' : 'disconnected',
+            'phone'     => $this->adminPhone ?: null,
+            'last_seen' => null,
+        ];
     }
 
     public function sendToAdminNewOrder(array $order): bool
@@ -23,14 +57,14 @@ class WablasGateway
             return false;
         }
 
-        $message = "Halo Admin!\n\n";
-        $message .= "Ada pesanan baru yang sudah DIBAYAR.\n";
-        $message .= "No. Invoice: " . $order['invoice_number'] . "\n";
-        $message .= "Produk: " . $order['product_name_snapshot'] . " (" . $order['nominal_snapshot'] . ")\n";
-        $message .= "Total Bayar: Rp" . number_format($order['total_amount'], 0, ',', '.') . "\n";
-        $message .= "ID Game Tujuan: " . $order['game_id'] . "\n";
-        $message .= "WA Customer: " . $order['whatsapp_number'] . "\n\n";
-        $message .= "Mohon segera proses dan update status pesanan.";
+        $message = "Halo Admin!\n\n"
+            . "Ada pesanan baru yang sudah DIBAYAR.\n"
+            . "No. Invoice: " . $order['invoice_number'] . "\n"
+            . "Produk: " . $order['product_name_snapshot'] . " (" . $order['nominal_snapshot'] . ")\n"
+            . "Total Bayar: Rp" . number_format($order['total_amount'], 0, ',', '.') . "\n"
+            . "ID Game Tujuan: " . $order['game_id'] . "\n"
+            . "WA Customer: " . $order['whatsapp_number'] . "\n\n"
+            . "Mohon segera proses dan update status pesanan.";
 
         return $this->sendMessage($this->adminPhone, $message);
     }
@@ -41,10 +75,10 @@ class WablasGateway
             return false;
         }
 
-        $message = "Halo!\n\n";
-        $message .= "Pesanan Anda di Ayong Store dengan No. Invoice " . $order['invoice_number'] . " telah SELESAI diproses.\n";
-        $message .= "Produk " . $order['product_name_snapshot'] . " (" . $order['nominal_snapshot'] . ") sudah dikirimkan ke ID Game: " . $order['game_id'] . ".\n\n";
-        $message .= "Terima kasih telah berbelanja di Ayong Store!";
+        $message = "Halo!\n\n"
+            . "Pesanan Anda di Ayong Store dengan No. Invoice " . $order['invoice_number'] . " telah SELESAI diproses.\n"
+            . "Produk " . $order['product_name_snapshot'] . " (" . $order['nominal_snapshot'] . ") sudah dikirimkan ke ID Game: " . $order['game_id'] . ".\n\n"
+            . "Terima kasih telah berbelanja di Ayong Store!";
 
         return $this->sendMessage($order['whatsapp_number'], $message);
     }
@@ -53,23 +87,24 @@ class WablasGateway
     {
         try {
             $client = Services::curlrequest();
-            $url = rtrim($this->domain, '/') . '/api/send-message';
-            
-            if (strpos($phone, '0') === 0) {
-                $phone = '62' . substr($phone, 1);
+            $url    = rtrim($this->domain, '/') . '/api/send-message';
+
+            if (! function_exists('normalize_phone')) {
+                helper('phone');
             }
+            $formattedPhone = normalize_phone($phone);
 
             $response = $client->post($url, [
                 'headers' => [
                     'Authorization' => $this->token,
-                    'Accept' => 'application/json',
+                    'Accept'        => 'application/json',
                 ],
                 'form_params' => [
-                    'phone'   => $phone,
+                    'phone'   => $formattedPhone,
                     'message' => $message,
                 ],
                 'http_errors' => false,
-                'timeout' => 5
+                'timeout'     => 5,
             ]);
 
             $statusCode = $response->getStatusCode();
@@ -78,9 +113,11 @@ class WablasGateway
             }
 
             log_message('error', 'Wablas Error: ' . $response->getBody());
+
             return false;
         } catch (\Exception $e) {
             log_message('error', 'Wablas Exception: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -93,25 +130,11 @@ class WablasGateway
 
         $label = bongkar_status_label($request['status'] ?? 'pending');
 
-        $message = "Halo!\n\n";
-        $message .= "Pengajuan bongkar Anda dengan No. " . $request['request_number'] . " telah diperbarui menjadi status: " . $label . ".\n\n";
-        $message .= "Item: " . $request['catalog_name_snapshot'] . " (" . $request['unit_label_snapshot'] . ")\n";
-        $message .= "Jumlah: " . $request['quantity'] . "\n";
-        $message .= "Perkiraan Dana: Rp" . number_format($request['estimated_amount'], 0, ',', '.') . "\n";
-        $message .= "Metode Pencairan: " . $request['payout_method'];
-        if (! empty($request['payout_account_number'])) {
-            $message .= " - " . $request['payout_account_number'];
-        }
-        if (! empty($request['payout_account_name'])) {
-            $message .= " a/n " . $request['payout_account_name'];
-        }
-        $message .= "\n\n";
-
-        if ($label == 'Ditolak') {
-            $message .= "Mohon maaf, pengajuan bongkar Anda ditolak. Silakan hubungi admin untuk informasi lebih lanjut.";
-        } else {
-            $message .= "Terima kasih. Tim kami akan segera memproses pengajuana Anda.";
-        }
+        $message = "Halo!\n\n"
+            . "Pengajuan bongkar Anda dengan No. " . $request['request_number'] . " telah diperbarui menjadi status: " . $label . ".\n\n"
+            . "Item: " . $request['catalog_name_snapshot'] . " (" . $request['unit_label_snapshot'] . ")\n"
+            . "Jumlah: " . $request['quantity'] . "\n"
+            . "Perkiraan Dana: Rp" . number_format($request['estimated_amount'], 0, ',', '.') . "\n";
 
         return $this->sendMessage($request['customer_whatsapp'], $message);
     }

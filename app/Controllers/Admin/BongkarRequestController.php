@@ -82,6 +82,10 @@ class BongkarRequestController extends BaseController
                 $notificationSent = false;
             }
             $this->requests->markNotificationResult($id, $notificationSent);
+
+            if ($updatedRequest) {
+                (new \App\Libraries\WhatsApp\WhatsAppNotifier())->bongkarStatusChanged($updatedRequest);
+            }
         }
 
         log_activity(
