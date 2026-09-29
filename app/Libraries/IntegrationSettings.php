@@ -27,6 +27,12 @@ final class IntegrationSettings
             : '';
     }
 
+    public function set(string $key, string $value): void
+    {
+        $encrypted = service('encrypter')->encrypt($value);
+        $this->settings->setVal($key, $encrypted);
+    }
+
     public function encrypt(string $value): string
     {
         return service('encrypter')->encrypt($value);
