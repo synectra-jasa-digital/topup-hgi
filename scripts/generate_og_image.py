@@ -146,7 +146,7 @@ draw.text(
 # --- 6. Feature Pill Cards ---
 pill_y = sub_y + 55
 pills = [
-    {"label": "⚡ Proses 1-3 Menit", "border": (56, 189, 248, 160), "bg": (15, 23, 42, 180), "txt": (56, 189, 248, 255)},
+    {"label": "⚡ Transaksi Otomatis", "border": (56, 189, 248, 160), "bg": (15, 23, 42, 180), "txt": (56, 189, 248, 255)},
     {"label": "🛡️ Tanpa Password", "border": (52, 211, 153, 160), "bg": (15, 23, 42, 180), "txt": (52, 211, 153, 255)},
     {"label": "💎 Rate Terbaik", "border": (251, 191, 36, 160), "bg": (15, 23, 42, 180), "txt": (251, 191, 36, 255)},
 ]
@@ -178,7 +178,7 @@ pay_layer = Image.new('RGBA', (WIDTH, HEIGHT), (0,0,0,0))
 p_draw = ImageDraw.Draw(pay_layer)
 
 p_draw.rounded_rectangle(
-    [(LEFT_X, pay_y), (LEFT_X + 560, pay_y + 48)],
+    [(LEFT_X, pay_y), (LEFT_X + 575, pay_y + 48)],
     radius=10,
     fill=(15, 23, 42, 160),
     outline=(51, 65, 85, 200),
@@ -189,7 +189,7 @@ draw = ImageDraw.Draw(im)
 
 draw.text(
     (LEFT_X + 20, pay_y + 12),
-    "Metode Bayar: QRIS Instant  •  BCA  •  BRI  •  Mandiri  •  BNI",
+    "Pembayaran: QRIS All Payment & Transfer Bank Resmi",
     font=font_payment,
     fill=(226, 232, 240, 255)
 )
