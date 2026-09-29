@@ -211,9 +211,28 @@ class OrderController extends BaseController
         }
 
         $proof = $this->request->getFile('payment_proof');
-        $rules = ['payment_proof' => 'uploaded[payment_proof]|max_size[payment_proof,5120]|is_image[payment_proof]|mime_in[payment_proof,image/jpeg,image/png,image/webp]|ext_in[payment_proof,jpg,jpeg,png,webp]'];
-        if (! $this->validate($rules) || ! validate_uploaded_image_dimensions($proof)) {
-            return $this->redirectToInvoice($invoiceNumber, $token)->with('errors', $this->validator?->getErrors() ?: ['payment_proof' => 'Bukti pembayaran tidak valid.']);
+        if (! $proof || ! $proof->isValid()) {
+            $err = ($proof && $proof->getError() === UPLOAD_ERR_INI_SIZE)
+                ? 'Ukuran foto bukti pembayaran terlalu besar (Maksimal 10 MB).'
+                : 'File bukti pembayaran belum dipilih atau gagal diunggah.';
+            return $this->redirectToInvoice($invoiceNumber, $token)->with('errors', ['payment_proof' => $err]);
+        }
+
+        $rules = [
+            'payment_proof' => 'uploaded[payment_proof]|max_size[payment_proof,10240]|is_image[payment_proof]|mime_in[payment_proof,image/jpeg,image/png,image/webp]|ext_in[payment_proof,jpg,jpeg,png,webp]',
+        ];
+        $messages = [
+            'payment_proof' => [
+                'uploaded' => 'File bukti pembayaran belum dipilih atau gagal terunggah.',
+                'max_size' => 'Ukuran foto bukti pembayaran terlalu besar (Maksimal 10 MB).',
+                'is_image' => 'File bukti pembayaran harus berupa gambar (JPG, PNG, atau WEBP).',
+                'mime_in'  => 'Format file bukti pembayaran tidak didukung (Gunakan JPG, PNG, atau WEBP).',
+                'ext_in'   => 'Ekstensi file bukti pembayaran tidak didukung (Gunakan JPG, PNG, atau WEBP).',
+            ],
+        ];
+
+        if (! $this->validate($rules, $messages) || ! validate_uploaded_image_dimensions($proof)) {
+            return $this->redirectToInvoice($invoiceNumber, $token)->with('errors', $this->validator?->getErrors() ?: ['payment_proof' => 'Foto bukti pembayaran tidak valid atau resolusi melebihi batas.']);
         }
 
         if (! is_dir(self::PROOF_PATH)) {
