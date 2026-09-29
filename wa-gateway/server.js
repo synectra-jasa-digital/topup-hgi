@@ -35,68 +35,29 @@ app.use((req, res, next) => {
     next();
 });
 
-async function connectToWhatsApp() {
-    if (!fs.existsSync(AUTH_DIR)) {
-        fs.mkdirSync(AUTH_DIR, { recursive: true, mode: 0o700 });
-    }
+const router = express.Router();
 
-    const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
-    const { version } = await fetchLatestBaileysVersion();
-
-    sock = makeWASocket({
-        version,
-        auth: state,
-        logger: pino({ level: 'silent' }),
-        printQRInTerminal: true,
-    });
-
-    sock.ev.on('creds.update', saveCreds);
-
-    sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect, qr } = update;
-
-        if (qr) {
-            qrCodeString = qr;
-            isConnected = false;
-        }
-
-        if (connection === 'close') {
-            isConnected = false;
-            qrCodeString = null;
-            const shouldReconnect = (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut);
-            console.log('Koneksi WA terputus. Reconnect:', shouldReconnect);
-            if (shouldReconnect) {
-                setTimeout(connectToWhatsApp, 5000);
-            }
-        } else if (connection === 'open') {
-            isConnected = true;
-            qrCodeString = null;
-            lastSeen = new Date().toISOString();
-            pairedPhone = sock.user?.id ? sock.user.id.split(':')[0] : null;
-            console.log('WhatsApp Gateway terhubung. Nomor:', pairedPhone);
-        }
-    });
-}
-
-// GET /health
-app.get('/health', (req, res) => {
+// GET /health & GET /status
+const healthHandler = (req, res) => {
     res.json({
         connected: isConnected,
         status: isConnected ? 'connected' : (qrCodeString ? 'waiting_qr' : 'disconnected'),
         phone: pairedPhone,
         last_seen: lastSeen,
     });
-});
+};
+router.get('/health', healthHandler);
+router.get('/status', healthHandler);
 
 // GET /qr
-app.get('/qr', (req, res) => {
+router.get('/qr', (req, res) => {
     res.json({
         qr: qrCodeString,
     });
 });
 
 // POST /send
-app.post('/send', async (req, res) => {
+router.post('/send', async (req, res) => {
     if (!isConnected || !sock) {
         return res.status(503).json({ success: false, code: 'not_connected', error: 'WhatsApp Gateway tidak terhubung' });
     }
@@ -127,7 +88,7 @@ app.post('/send', async (req, res) => {
 });
 
 // POST /logout
-app.post('/logout', async (req, res) => {
+router.post('/logout', async (req, res) => {
     try {
         if (sock) {
             await sock.logout();
@@ -144,6 +105,10 @@ app.post('/logout', async (req, res) => {
         return res.status(500).json({ success: false, error: err.message });
     }
 });
+
+// Mount router under root and /wa-api for cPanel compatibility
+app.use('/', router);
+app.use('/wa-api', router);
 
 connectToWhatsApp();
 
