@@ -147,6 +147,7 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
 
     // WhatsApp Gateway (Owner only)
     $routes->get('whatsapp', 'Admin\WhatsAppController::index', ['filter' => 'role:owner']);
+    $routes->get('whatsapp/settings', static fn() => redirect()->to('admin/whatsapp'), ['filter' => 'role:owner']);
     $routes->post('whatsapp/settings', 'Admin\WhatsAppController::updateSettings', ['filter' => 'role:owner']);
     $routes->post('whatsapp/test', 'Admin\WhatsAppController::sendTest', ['filter' => 'role:owner']);
     $routes->post('whatsapp/logout', 'Admin\WhatsAppController::logout', ['filter' => 'role:owner']);

@@ -17,6 +17,7 @@ class WhatsAppController extends BaseController
 
     public function __construct()
     {
+        helper(['activity', 'url', 'form']);
         $this->settings    = new StoreSettingModel();
         $this->outbox      = new WaOutboxModel();
         $this->integration = new IntegrationSettings();
