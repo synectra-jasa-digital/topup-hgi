@@ -24,19 +24,10 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-6px); }
         }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.15); opacity: 0.3; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
 
         .swing-sign {
             transform-origin: top center;
             animation: swing-gentle 4s ease-in-out infinite;
-        }
-
-        .float-badge {
-            animation: float-subtle 3.5s ease-in-out infinite;
         }
 
         .bg-mesh-dark {
