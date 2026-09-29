@@ -20,7 +20,7 @@ class StatusCommand extends BaseCommand
         $updatedAt   = $settings->getVal('maintenance_updated_at', '-');
         $reason      = $settings->getVal('maintenance_reason', '');
 
-        $statusText = $maintenance === '1' ? '🔴 <b>Toko TUTUP (Maintenance)</b>' : '🟢 <b>Toko BUKA</b>';
+        $statusText = $maintenance === '1' ? '🔴 <b>Toko TUTUP</b>' : '🟢 <b>Toko BUKA</b>';
 
         $text = "🏪 <b>Status Toko Saat Ini</b>\n\n"
             . "Status: {$statusText}\n";

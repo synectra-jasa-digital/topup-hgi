@@ -25,9 +25,9 @@ class CloseCommand extends BaseCommand
             return;
         }
 
-        // Parse alasan dari command: /tutup Alasan maintenance
+        // Parse alasan dari command: /tutup Alasan toko tutup
         $parts  = explode(' ', trim($text), 2);
-        $reason = count($parts) > 1 ? trim($parts[1]) : 'Maintenance rutin';
+        $reason = count($parts) > 1 ? trim($parts[1]) : 'Toko tutup';
 
         // Tampilkan konfirmasi tombol sebelum menutup
         $markup = [
