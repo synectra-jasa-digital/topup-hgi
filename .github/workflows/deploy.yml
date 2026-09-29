@@ -89,6 +89,7 @@ jobs:
           port: 21
           protocol: ftp
           server-dir: /public_html/
+          timeout: 60000
           # dangerous-clean-slate is deliberately left at its default (false):
           # a "true" here mirrors the local build exactly, deleting anything on
           # the server not present locally - that would wipe writable/ runtime
@@ -112,3 +113,7 @@ jobs:
             .env
             writable/**
             writable/**/*
+            wa-gateway/**
+            wa-gateway/**/*
+            docs/**
+            docs/**/*
