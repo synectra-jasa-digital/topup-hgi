@@ -135,7 +135,7 @@
                 <?php endif; ?>
             </a>
 
-            <nav class="hidden md:flex" aria-label="Menu utama">
+            <nav class="hidden md:flex flex-1 justify-center" aria-label="Menu utama">
                 <?php foreach ($navItems as $item): ?>
                     <a class="relative flex items-center px-4 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 aria-[current=page]:text-slate-950 after:absolute after:inset-x-4 after:-bottom-px after:h-0.5 after:bg-blue-600 after:opacity-0 aria-[current=page]:after:opacity-100"
                        href="<?= esc($item['href']) ?>"

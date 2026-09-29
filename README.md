@@ -199,10 +199,10 @@ topup-hgi/
 │   ├── Libraries/           # TelegramBot, TelegramNotifier, WhatsAppNotifier, BaileysGateway, ReportExporter
 │   ├── Models/              # Model data CodeIgniter 4
 │   └── Views/               # Template tampilan UI (Catalog, Checkout, Admin, Errors)
-├── docs/                    # Dokumentasi spesifikasi & SQL schema
+├── docs/                    # Dokumentasi spesifikasi, DESIGN.md, TODO.md, & SQL schema
 ├── public/                  # Document root web (index.php, CSS, JS, asset publik)
 ├── resources/               # Sumber Tailwind CSS (resources/css/public.css)
-├── stitch/                  # Panduan Design System (DESIGN.md)
+├── stitch/                  # Assets & UI screen references
 ├── tests/                   # Suite pengujian otomatis (Unit & Feature Tests)
 ├── wa-gateway/              # Service Node.js WhatsApp Baileys Gateway (server.js, package.json)
 └── writable/                # File runtime, upload bukti bayar, log, & backup database
