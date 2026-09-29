@@ -70,31 +70,31 @@ class WhatsAppController extends BaseController
 
         log_activity('ubah_pengaturan_wa', 'Memperbarui pengaturan WhatsApp Gateway');
 
-        return redirect()->back()->with('success', 'Pengaturan WhatsApp Gateway berhasil disimpan.');
+        return redirect()->to(base_url('admin/whatsapp'))->with('success', 'Pengaturan WhatsApp Gateway berhasil disimpan.');
     }
 
     public function sendTest()
     {
         $phone = trim((string) $this->request->getPost('phone'));
         if (empty($phone)) {
-            return redirect()->back()->with('error', 'Nomor telepon wajib diisi.');
+            return redirect()->to(base_url('admin/whatsapp'))->with('error', 'Nomor telepon wajib diisi.');
         }
 
         $notifier = new WhatsAppNotifier();
         $gateway  = $notifier->getDriver();
 
         if (! $gateway) {
-            return redirect()->back()->with('error', 'Driver WhatsApp Gateway sedang non-aktif.');
+            return redirect()->to(base_url('admin/whatsapp'))->with('error', 'Driver WhatsApp Gateway sedang non-aktif.');
         }
 
         $res = $gateway->send($phone, "Pesan Uji WhatsApp Gateway Ayong Store.\nWaktu: " . date('Y-m-d H:i:s'));
 
         if ($res['success']) {
             log_activity('tes_whatsapp', "Mengirim pesan tes WA ke {$phone}");
-            return redirect()->back()->with('success', 'Pesan uji berhasil dikirim.');
+            return redirect()->to(base_url('admin/whatsapp'))->with('success', 'Pesan uji berhasil dikirim.');
         }
 
-        return redirect()->back()->with('error', 'Gagal mengirim pesan uji: ' . ($res['error'] ?? 'Gagal'));
+        return redirect()->to(base_url('admin/whatsapp'))->with('error', 'Gagal mengirim pesan uji: ' . ($res['error'] ?? 'Gagal'));
     }
 
     public function logout()
@@ -105,17 +105,17 @@ class WhatsAppController extends BaseController
         log_activity('logout_whatsapp', 'Memutuskan sesi WhatsApp Business');
 
         if ($ok) {
-            return redirect()->back()->with('success', 'Sesi WhatsApp berhasil diputuskan.');
+            return redirect()->to(base_url('admin/whatsapp'))->with('success', 'Sesi WhatsApp berhasil diputuskan.');
         }
 
-        return redirect()->back()->with('error', 'Gagal memutuskan sesi WhatsApp.');
+        return redirect()->to(base_url('admin/whatsapp'))->with('error', 'Gagal memutuskan sesi WhatsApp.');
     }
 
     public function retry(int $id)
     {
         $row = $this->outbox->find($id);
         if (! $row) {
-            return redirect()->back()->with('error', 'Pesan tidak ditemukan.');
+            return redirect()->to(base_url('admin/whatsapp'))->with('error', 'Pesan tidak ditemukan.');
         }
 
         $this->outbox->update($id, [
@@ -130,10 +130,10 @@ class WhatsAppController extends BaseController
 
         if ($sent) {
             log_activity('retry_wa_outbox', "Mengirim ulang pesan WA #{$id}");
-            return redirect()->back()->with('success', "Pesan #{$id} berhasil dikirim ulang.");
+            return redirect()->to(base_url('admin/whatsapp'))->with('success', "Pesan #{$id} berhasil dikirim ulang.");
         }
 
-        return redirect()->back()->with('warning', "Pesan #{$id} dimasukkan ke antrean kirim ulang.");
+        return redirect()->to(base_url('admin/whatsapp'))->with('warning', "Pesan #{$id} dimasukkan ke antrean kirim ulang.");
     }
 
     public function getQr()

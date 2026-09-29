@@ -18,7 +18,8 @@ final class IntegrationSettings
             try {
                 return (string) service('encrypter')->decrypt($stored);
             } catch (\Throwable) {
-                return '';
+                // Stored value not encrypted (plain) or key mismatch — return as-is
+                return $stored;
             }
         }
 
@@ -29,12 +30,22 @@ final class IntegrationSettings
 
     public function set(string $key, string $value): void
     {
-        $encrypted = service('encrypter')->encrypt($value);
-        $this->settings->setVal($key, $encrypted);
+        try {
+            $stored = service('encrypter')->encrypt($value);
+        } catch (\Throwable) {
+            // Encrypter not configured on this host — store plain text
+            $stored = $value;
+        }
+
+        $this->settings->setVal($key, $stored);
     }
 
     public function encrypt(string $value): string
     {
-        return service('encrypter')->encrypt($value);
+        try {
+            return service('encrypter')->encrypt($value);
+        } catch (\Throwable) {
+            return $value;
+        }
     }
 }
