@@ -40,6 +40,7 @@
 
         <form method="post" action="<?= base_url('checkout/' . $product['id']) ?>" class="space-y-5">
             <?= csrf_field() ?>
+            <input type="hidden" name="idempotency_token" value="<?= esc(session()->get('checkout_idempotency_token') ?? '') ?>">
 
             <!-- Step 1: Account Info -->
             <div class="space-y-4">

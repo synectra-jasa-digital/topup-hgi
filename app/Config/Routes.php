@@ -22,6 +22,9 @@ $routes->post('login', 'Admin\AuthController::login', ['filter' => 'ratelimit:10
 $routes->get('admin/login', 'Admin\AuthController::loginForm');
 $routes->post('admin/login', 'Admin\AuthController::login', ['filter' => 'ratelimit:10:60']);
 
+// Telegram Bot Webhook — di luar CSRF dan maintenance filter
+$routes->post('telegram/webhook', 'TelegramWebhookController::handle');
+
 $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->post('logout', 'Admin\AuthController::logout');
     $routes->get('dashboard', 'Admin\DashboardController::index');
@@ -89,12 +92,12 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->post('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::update/$1');
     $routes->post('bongkar-metode-pencairan/(:num)/hapus', 'Admin\BongkarPayoutMethodController::delete/$1');
 
-    $routes->get('metode-bayar', 'Admin\PaymentChannelController::index');
-    $routes->get('metode-bayar/tambah', 'Admin\PaymentChannelController::create');
-    $routes->post('metode-bayar/tambah', 'Admin\PaymentChannelController::store');
-    $routes->get('metode-bayar/(:num)/ubah', 'Admin\PaymentChannelController::edit/$1');
-    $routes->post('metode-bayar/(:num)/ubah', 'Admin\PaymentChannelController::update/$1');
-    $routes->post('metode-bayar/(:num)/hapus', 'Admin\PaymentChannelController::delete/$1');
+    $routes->get('metode-bayar', 'Admin\PaymentChannelController::index', ['filter' => 'role:owner']);
+    $routes->get('metode-bayar/tambah', 'Admin\PaymentChannelController::create', ['filter' => 'role:owner']);
+    $routes->post('metode-bayar/tambah', 'Admin\PaymentChannelController::store', ['filter' => 'role:owner']);
+    $routes->get('metode-bayar/(:num)/ubah', 'Admin\PaymentChannelController::edit/$1', ['filter' => 'role:owner']);
+    $routes->post('metode-bayar/(:num)/ubah', 'Admin\PaymentChannelController::update/$1', ['filter' => 'role:owner']);
+    $routes->post('metode-bayar/(:num)/hapus', 'Admin\PaymentChannelController::delete/$1', ['filter' => 'role:owner']);
 
     $routes->get('bongkar-pesanan', 'Admin\BongkarRequestController::index');
     $routes->get('bongkar-pesanan/(:num)', 'Admin\BongkarRequestController::show/$1');

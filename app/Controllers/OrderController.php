@@ -233,6 +233,9 @@ class OrderController extends BaseController
             @unlink(self::PROOF_PATH . basename($oldPath));
         }
 
+        // Kirim notifikasi ke admin via Telegram (tidak boleh gagal checkout)
+        \App\Libraries\TelegramNotifier::notifyNewPaymentProof((int) $order['id']);
+
         return $this->redirectToInvoice($invoiceNumber, $token)->with('success', 'Bukti pembayaran berhasil dikirim dan menunggu verifikasi.');
     }
 

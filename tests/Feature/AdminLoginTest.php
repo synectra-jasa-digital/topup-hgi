@@ -45,32 +45,16 @@ final class AdminLoginTest extends CIUnitTestCase
         self::assertStringNotContainsString('onload=', $body);
     }
 
-    public function testLoginPageShowsTheStoresActivePromoBannerOnLargeScreensOnly(): void
-    {
-        $categories = new \App\Models\BannerCategoryModel();
-        $categories->db->query('PRAGMA foreign_keys = OFF');
-        $categories->insert(['name' => 'Promo', 'is_active' => 1]);
-        (new \App\Models\BannerModel())->insert([
-            'banner_category_id' => $categories->getInsertID(),
-            'image_path' => 'assets/uploads/banners/promo-test.jpg',
-            'sort_order' => 1, 'is_active' => 1,
-        ]);
-
-        $body = $this->get('/admin/login')->getBody();
-
-        self::assertStringContainsString('alt="Banner promo toko"', $body);
-        self::assertStringContainsString('assets/uploads/banners/promo-test.jpg', $body);
-        // On a phone the form must stay right under the heading, so the banner is desktop only.
-        self::assertMatchesRegularExpression('/class="hidden [^"]*lg:block"[^>]*>\s*<picture>/', $body);
-    }
-
-    public function testLoginPageWithoutABannerCentersTheHeadingInsteadOfLeavingAGap(): void
+    public function testLoginPageIsOneSimpleColumn(): void
     {
         $body = $this->get('/admin/login')->getBody();
 
-        self::assertStringNotContainsString('alt="Banner promo toko"', $body);
-        self::assertStringContainsString('lg:justify-center', $body);
-        self::assertStringNotContainsString('lg:justify-between', $body);
+        self::assertSame(1, substr_count($body, '<main'));
+        self::assertStringContainsString('max-w-sm', $body);
+        // No multi-column layout and no promo artwork: only the heading, the form and a way back to the store.
+        self::assertStringNotContainsString('lg:grid-cols', $body);
+        self::assertStringNotContainsString('Banner promo toko', $body);
+        self::assertStringContainsString('Kembali ke halaman toko', $body);
     }
 
     public function testRejectedSignInIsShownInlineWithoutSayingWhichFieldWasWrong(): void

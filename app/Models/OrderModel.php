@@ -55,13 +55,25 @@ class OrderModel extends Model
 
     public function verifyPayment(int $orderId, int $adminId): bool
     {
-        $now = date('Y-m-d H:i:s');
+        $now   = date('Y-m-d H:i:s');
+        $order = $this->find($orderId);
+
         $this->builder()->where('id', $orderId)->where('status', 'menunggu_verifikasi')->update([
-            'status' => 'diproses', 'payment_verified_by' => $adminId,
-            'payment_verified_at' => $now, 'payment_rejection_reason' => null, 'updated_at' => $now,
+            'status'                   => 'diproses',
+            'payment_verified_by'      => $adminId,
+            'payment_verified_at'      => $now,
+            'payment_rejection_reason' => null,
+            'voucher_committed'        => 1,
+            'updated_at'               => $now,
         ]);
 
-        return $this->db->affectedRows() === 1;
+        $affected = $this->db->affectedRows() === 1;
+
+        if ($affected && $order && ! empty($order['voucher_id']) && ! empty($order['voucher_reserved'])) {
+            (new VoucherModel())->commitReservation((int) $order['voucher_id']);
+        }
+
+        return $affected;
     }
 
     public function rejectPayment(int $orderId, int $adminId, string $reason): bool
