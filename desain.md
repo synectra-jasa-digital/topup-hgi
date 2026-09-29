@@ -315,7 +315,7 @@ Semua tombol punya `active:scale-[0.98]` atau `active:scale-95` sebagai umpan ba
 
 - Satu kartu form di kiri, ringkasan amber di kanan.
 - Langkah memakai `fieldset` dan `legend` bernomor "1.", "2.", "3.".
-- Kartu jenis bongkar: `min-h-[76px] rounded-2xl`, rate `font-mono text-amber-700` dengan satuan ("misalnya "Rp5.000 / kartu"").
+- Kartu jenis bongkar: `min-h-[76px] rounded-2xl`, rate `font-mono text-amber-700` dengan satuan, misalnya "Rp5.000 / kartu".
 - Jumlah: stepper minus/plus 44px dengan input angka 1 sampai 1000.
 - Metode pencairan: tombol pill radio.
 - Ringkasan menghitung "Estimasi Dana Diterima" = jumlah x rate patokan.
