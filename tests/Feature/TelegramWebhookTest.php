@@ -39,8 +39,13 @@ final class TelegramWebhookTest extends CIUnitTestCase
 
     private function webhook(array $update): \CodeIgniter\Test\TestResponse
     {
+        $secret = (new \App\Libraries\IntegrationSettings())->get('telegram_webhook_secret', 'TELEGRAM_WEBHOOK_SECRET');
+
         return $this->withBody(json_encode($update))
-                    ->withHeaders(['Content-Type' => 'application/json'])
+                    ->withHeaders([
+                        'Content-Type'                      => 'application/json',
+                        'X-Telegram-Bot-Api-Secret-Token'   => $secret,
+                    ])
                     ->post('/telegram/webhook');
     }
 

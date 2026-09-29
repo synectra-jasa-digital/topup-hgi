@@ -20,14 +20,28 @@ final class MaintenanceFilter implements FilterInterface
             return null;
         }
 
-        $maintenance = (new StoreSettingModel())->getVal('maintenance', '0');
-        if ($maintenance !== '1') {
+        $settings = new StoreSettingModel();
+
+        if ($settings->getVal('maintenance', '0') !== '1') {
             return null;
         }
 
-        return service('response')->setStatusCode(503)->setHeader('Retry-After', '3600')->setBody(
-            '<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Pemeliharaan</title></head><body><h1>Situs sedang dalam pemeliharaan</h1><p>Silakan coba lagi nanti.</p></body></html>'
-        );
+        helper(['order', 'url']);
+
+        $contact = $settings->getVal('store_contact');
+        $waUrl   = ! empty($contact) ? whatsapp_url($contact) : '';
+
+        $html = view('errors/html/maintenance', [
+            'storeName' => $settings->getVal('store_name', 'Ayong Store'),
+            'reason'    => $settings->getVal('maintenance_reason'),
+            'waUrl'     => $waUrl,
+        ]);
+
+        return service('response')
+            ->setStatusCode(503)
+            ->setHeader('Retry-After', '3600')
+            ->setHeader('Content-Type', 'text/html; charset=UTF-8')
+            ->setBody($html);
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null): void
