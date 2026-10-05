@@ -8,7 +8,9 @@ class OpenCommand extends BaseCommand
 {
     public function handle(array $update, ?array $session): void
     {
-        if ($this->requireLogin($update, $session)) {
+        // Membuka toko adalah pengaturan tingkat toko, dibatasi owner agar
+        // konsisten dengan /admin/pengaturan-toko di panel web.
+        if ($this->requireRole($update, $session, ['owner'])) {
             return;
         }
 

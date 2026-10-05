@@ -8,7 +8,9 @@ class ReportCommand extends BaseCommand
 {
     public function handle(array $update, ?array $session): void
     {
-        if ($this->requireLogin($update, $session)) {
+        // Laporan penjualan dibatasi owner, sama seperti /admin/laporan
+        // di panel web.
+        if ($this->requireRole($update, $session, ['owner'])) {
             return;
         }
 
@@ -96,6 +98,10 @@ class ReportCommand extends BaseCommand
 
         $exporter = new ReportExporter();
         $adminId  = (int) $session['admin_id'];
+
+        // Callback data berasal dari Telegram, jadi period harus divalidasi
+        // sebelum dipakai pada nama file maupun query.
+        $period = $exporter->normalizePeriod($period);
 
         try {
             if ($format === 'pdf') {

@@ -8,6 +8,12 @@ use Dompdf\Options;
 
 class ReportExporter
 {
+    /** Periode yang boleh dipakai membentuk query dan nama file. */
+    public const PERIOD_KEYWORDS = ['today', '7days', 'this_month', 'last_month'];
+
+    /** Dipakai bila period dari input tidak dikenal. */
+    public const DEFAULT_PERIOD = 'this_month';
+
     protected ReportModel $report;
 
     public function __construct(?ReportModel $report = null)
@@ -16,11 +22,58 @@ class ReportExporter
     }
 
     /**
+     * Apakah `period` aman dipakai membentuk query dan nama file?
+     *
+     * Period datang dari dua sumber yang bisa dikendalikan penyerang:
+     * query string pada ReportController dan callback data pada
+     * ReportCommand Telegram. Karena itu allowlist ini harus ditegakkan
+     * di sini, bukan di pemanggil.
+     */
+    public function isValidPeriod(string $period): bool
+    {
+        if (in_array($period, self::PERIOD_KEYWORDS, true)) {
+            return true;
+        }
+
+        // Format YYYY-MM, dengan rentang bulan/tahun yang masuk akal.
+        if (preg_match('/^(\d{4})-(\d{2})$/', $period, $m) !== 1) {
+            return false;
+        }
+
+        $year  = (int) $m[1];
+        $month = (int) $m[2];
+
+        return $year >= 2000 && $year <= 2999 && $month >= 1 && $month <= 12;
+    }
+
+    /** Kembalikan period kalau aman, selain itu jatuhkan ke default. */
+    public function normalizePeriod(string $period): string
+    {
+        return $this->isValidPeriod($period) ? $period : self::DEFAULT_PERIOD;
+    }
+
+    /**
+     * Bangun path file temp untuk hasil export.
+     *
+     * Nama file dibuat dari nilai acak — `period` sengaja TIDAK ikut
+     * ke dalam nama file, karena string yang tidak tervalidasi di dalam
+     * path adalah awal dari path traversal.
+     */
+    public function tempFilePathFor(string $period, string $extension): string
+    {
+        $extension = preg_replace('/[^a-z0-9]/i', '', $extension) ?: 'dat';
+        $directory = rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR;
+
+        return $directory . 'laporan_' . bin2hex(random_bytes(8)) . '.' . $extension;
+    }
+
+    /**
      * Ambil data laporan berdasarkan periode.
      * Periode: 'today', '7days', 'this_month', 'last_month', atau 'YYYY-MM'
      */
     public function getReportData(string $period): array
     {
+        $period    = $this->normalizePeriod($period);
         $startDate = '';
         $endDate   = '';
         $title     = '';
@@ -100,7 +153,7 @@ class ReportExporter
     public function exportExcelFile(string $period): string
     {
         $data     = $this->getReportData($period);
-        $tempPath = sys_get_temp_dir() . '/laporan_' . $period . '_' . time() . '.xlsx';
+        $tempPath = $this->tempFilePathFor($period, 'xlsx');
 
         // Menghasilkan XML Spreadsheet 2003 yang didukung Microsoft Excel sebagai file .xlsx / .xml
         $xml = '<?xml version="1.0"?>' . "\n";
@@ -155,7 +208,7 @@ class ReportExporter
     public function exportPdfFile(string $period): string
     {
         $data     = $this->getReportData($period);
-        $tempPath = sys_get_temp_dir() . '/laporan_' . $period . '_' . time() . '.pdf';
+        $tempPath = $this->tempFilePathFor($period, 'pdf');
 
         $html = '<html><head><style>
             body { font-family: sans-serif; font-size: 12px; }

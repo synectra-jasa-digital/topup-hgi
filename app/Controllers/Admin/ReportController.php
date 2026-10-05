@@ -58,25 +58,42 @@ class ReportController extends BaseController
 
     public function exportExcel()
     {
-        $period = (string) $this->request->getGet('period') ?: 'this_month';
         $exporter = new \App\Libraries\ReportExporter($this->report);
-        $file = $exporter->exportExcelFile($period);
+        $period   = $exporter->normalizePeriod((string) $this->request->getGet('period'));
+        $file     = $exporter->exportExcelFile($period);
 
         return $this->response
             ->setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->setHeader('Content-Disposition', "attachment; filename=\"laporan-{$period}.xlsx\"")
-            ->setBody(file_get_contents($file));
+            ->setBody($this->downloadAndCleanup($file));
     }
 
     public function exportPdf()
     {
-        $period = (string) $this->request->getGet('period') ?: 'this_month';
         $exporter = new \App\Libraries\ReportExporter($this->report);
-        $file = $exporter->exportPdfFile($period);
+        $period   = $exporter->normalizePeriod((string) $this->request->getGet('period'));
+        $file     = $exporter->exportPdfFile($period);
 
         return $this->response
             ->setHeader('Content-Type', 'application/pdf')
             ->setHeader('Content-Disposition', "attachment; filename=\"laporan-{$period}.pdf\"")
-            ->setBody(file_get_contents($file));
+            ->setBody($this->downloadAndCleanup($file));
+    }
+
+    /**
+     * Baca file hasil export lalu hapus dari disk.
+     *
+     * Export menulis file temp di system temp dir. Kalau tidak dihapus,
+     * setiap unduhan laporan menyisakan file yang menumpuk di hosting.
+     */
+    private function downloadAndCleanup(string $file): string
+    {
+        try {
+            return (string) file_get_contents($file);
+        } finally {
+            if (is_file($file)) {
+                @unlink($file);
+            }
+        }
     }
 }
