@@ -23,7 +23,7 @@ Dikerjakan satu fase per satu, ditandai `[x]` setelah lulus uji manual (skenario
 - [x] Migration: activity_logs
 - [x] Migration: static_pages
 - [x] Migration: store_settings
-- [x] Seeder akun Owner default (owner@ayongstore.test / GantiPassword123! - wajib diganti)
+- [x] Seeder akun Owner default (owner@gmail.com / password - wajib diganti setelah login pertama)
 
 ## Fase 2 - Autentikasi & RBAC
 - [x] Model Admin + AuthController (login/logout)
@@ -54,6 +54,7 @@ Dikerjakan satu fase per satu, ditandai `[x]` setelah lulus uji manual (skenario
 - [x] Uji: checkout sukses, validasi gagal (label pesan disesuaikan), voucher valid diterapkan & used_count bertambah, voucher tidak ditemukan/kadaluarsa/kuota habis/di bawah min_purchase ditolak, invoice/produk tidak valid -> 404
 
 ## Fase 7 - Integrasi Midtrans Snap
+> ⚠️ Riwayat saja: Midtrans sudah **dihapus** dan diganti verifikasi pembayaran manual (bank/QRIS), lihat `docs/superpowers/specs/2026-09-15-manual-bank-payment-design.md`.
 - [x] Buat transaksi Snap dari order
 - [x] Endpoint callback/webhook + verifikasi signature key
 - [x] Update status order & isi order_payments dari callback

@@ -9,7 +9,7 @@
 ### Backend & Core Framework
 - **Framework**: CodeIgniter 4 (PHP 8.2+)
 - **Database**: MySQL / MariaDB (InnoDB dengan Foreign Key constraints & indeks optimasi laporan)
-- **Ekspor Dokumen**: `PhpSpreadsheet` (Spreadsheet Excel `.xlsx`) & `Dompdf` (Dokumen `.pdf`)
+- **Ekspor Dokumen**: XML Spreadsheet 2003 via `ReportExporter` (dibuka Excel sebagai laporan `.xlsx`) & `Dompdf` (Dokumen `.pdf`)
 - **Keamanan & Kriptografi**: Enkripsi token 64-karakter acak, sanitasi input, proteksi CSRF, proteksi idempotensi transaksi, & hashing password Argon2id/Bcrypt.
 
 ### Frontend & Visual System
@@ -138,18 +138,25 @@ database.default.password =
 database.default.DBDriver = MySQLi
 database.default.port = 3306
 
-encryption.key = hex2bin:6989601dcf9f9840f399bdc5fe67e1420fd570ff9decf0ed0d95b10f6ad739bb
+# Jangan pernah commit kunci asli ke version control.
+# Buat kunci baru (64 hex) dengan:
+#   php -r "echo 'hex2bin:' . bin2hex(random_bytes(32)) . PHP_EOL;"
+encryption.key = hex2bin:<64-karakter-hex-acak>
 ```
+
+> ⚠️ **Rotasi kunci**: kunci enkripsi lama pernah ter-commit ke repo. Jika repo pernah dipublikasikan, buat kunci baru, lalu simpan ulang kredensial terenkripsi di admin panel (WhatsApp Gateway API Key, dsb.) karena nilai lama tidak dapat didekripsi dengan kunci baru.
 
 ### 3. Migrasi Database & Seeder Admin Initial
 ```bash
 php spark migrate --all
 php spark db:seed AdminSeeder
 ```
-*Akun bawaan seeder:*
+*Akun bawaan seeder (hanya untuk instalasi lokal):*
 - **Email**: `owner@gmail.com`
 - **Password**: `password`
 - **Role**: `owner`
+
+> ⚠️ **Ganti password segera** setelah login pertama di lingkungan apa pun selain lokal. Jangan pernah biarkan kredensial bawaan ini aktif di produksi.
 
 ### 4. Setup Service WhatsApp Gateway (`wa-gateway/`)
 ```bash
