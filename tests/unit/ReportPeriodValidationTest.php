@@ -103,12 +103,18 @@ class ReportPeriodValidationTest extends CIUnitTestCase
         $path = $exporter->tempFilePathFor('this_month', 'xlsx');
 
         $this->assertStringEndsWith('.xlsx', $path);
-        // Nama file tidak boleh memuat input mentah dari period.
-        $this->assertStringNotContainsString('/', $path);
-        $this->assertSame(
-            1,
-            preg_match('#' . preg_quote(basename($path), '#') . '$#', $path),
-            'path harus berupa satu filename di dalam temp dir'
-        );
+
+        // Sisanya harus berupa satu filename: tanpa segmen direktori tambahan
+        // dan tanpa input mentah dari period. sys_get_temp_dir() sendiri boleh
+        // mengandung separator (mis. /tmp di Linux, C:\... di Windows), jadi
+        // yang diperiksa adalah bagian setelah temp dir.
+        $tempDir = rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR;
+        $this->assertStringStartsWith($tempDir, $path);
+        $filename = substr($path, strlen($tempDir));
+
+        $this->assertStringNotContainsString('/', $filename, 'filename tidak boleh berisi segmen path');
+        $this->assertStringNotContainsString('\\', $filename, 'filename tidak boleh berisi segmen path');
+        $this->assertStringNotContainsString('this_month', $filename, 'period tidak boleh masuk nama file');
+        $this->assertSame($filename, basename($filename), 'path harus berupa satu filename di dalam temp dir');
     }
 }

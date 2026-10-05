@@ -12,6 +12,7 @@ class AuthFilter implements FilterInterface
     public function before(RequestInterface $request, $arguments = null)
     {
         $adminId = (int) session()->get('admin_id');
+        fwrite(STDERR, 'DEBUG AuthFilter adminId=' . $adminId . ' sess=' . json_encode($_SESSION ?? null) . ' uri=' . $request->getUri()->getPath() . PHP_EOL);
 
         if ($adminId <= 0) {
             return redirect()->to('/admin/login')->with('error', 'Silakan login terlebih dahulu.');
