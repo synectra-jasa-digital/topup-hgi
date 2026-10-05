@@ -204,19 +204,27 @@ class WhatsAppNotifier
         }
     }
 
-    public function bongkarStatusChanged(array $request): void
+    /**
+     * Serahkan notifikasi perubahan status bongkar ke outbox (satu-satunya jalur kirim).
+     *
+     * @return bool true  = ditangani: diantre, duplikat dedupe (sudah terencana),
+     *                     atau sengaja dilewat (driver off / tipe dimatikan /
+     *                     tanpa nomor) — pemanggil boleh menandai selesai.
+     *              false = gagal — pemanggil boleh mencoba lagi.
+     */
+    public function bongkarStatusChanged(array $request): bool
     {
         try {
             $type = 'bongkar_status';
             if (! $this->isTypeEnabled($type)) {
-                return;
+                return true;
             }
 
             $reqId  = (int) ($request['id'] ?? 0);
             $phone  = (string) ($request['customer_whatsapp'] ?? '');
             $status = (string) ($request['status'] ?? 'pending');
             if (empty($phone)) {
-                return;
+                return true;
             }
 
             $message = MessageTemplates::bongkarStatusChanged($request);
@@ -229,11 +237,16 @@ class WhatsAppNotifier
                 'dedupe_key' => "bongkar_status:{$reqId}:{$status}",
             ]);
 
+            // $outboxId null = duplikat dedupe — pengiriman sudah terencana, tetap ditangani.
             if ($outboxId) {
                 $this->sendOutboxImmediately($outboxId);
             }
+
+            return true;
         } catch (\Throwable $e) {
             log_message('error', 'WhatsAppNotifier bongkarStatusChanged failed: ' . $e->getMessage());
+
+            return false;
         }
     }
 

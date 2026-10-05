@@ -3,18 +3,15 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Libraries\WablasGateway;
 use App\Models\OrderModel;
 
 class OrderController extends BaseController
 {
     protected OrderModel $orders;
-    protected WablasGateway $wablas;
 
-    public function __construct(?WablasGateway $wablas = null)
+    public function __construct()
     {
         $this->orders = new OrderModel();
-        $this->wablas = $wablas ?? new WablasGateway();
     }
 
     public function index()

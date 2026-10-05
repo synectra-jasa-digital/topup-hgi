@@ -3,7 +3,6 @@
 namespace App\Libraries\Telegram;
 
 use App\Libraries\TelegramBot;
-use App\Libraries\WablasGateway;
 use App\Models\ActivityLogModel;
 use App\Models\AdminModel;
 use App\Models\OrderModel;

@@ -2,7 +2,6 @@
 
 namespace App\Libraries\Telegram\Commands;
 
-use App\Libraries\WablasGateway;
 use App\Models\OrderModel;
 
 class CompleteCommand extends BaseCommand

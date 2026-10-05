@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Libraries\WablasGateway;
+use App\Libraries\WhatsApp\WhatsAppNotifier;
 use App\Models\BongkarRequestModel;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
@@ -16,7 +16,7 @@ class ProcessBongkarNotifications extends BaseCommand
     public function run(array $params)
     {
         $requests = new BongkarRequestModel();
-        $gateway = new WablasGateway();
+        $notifier = new WhatsAppNotifier();
         $processed = 0;
 
         foreach ($requests->findNotificationQueue() as $request) {
@@ -26,7 +26,7 @@ class ProcessBongkarNotifications extends BaseCommand
 
             $sent = false;
             try {
-                $sent = $gateway->sendToCustomerBongkarStatus($request);
+                $sent = $notifier->bongkarStatusChanged($request);
             } catch (\Throwable $e) {
                 log_message('error', 'Bongkar notification retry failed: ' . $e->getMessage());
             }

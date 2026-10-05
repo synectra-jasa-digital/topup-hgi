@@ -3,18 +3,16 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Libraries\WablasGateway;
+use App\Libraries\WhatsApp\WhatsAppNotifier;
 use App\Models\BongkarRequestModel;
 
 class BongkarRequestController extends BaseController
 {
     protected BongkarRequestModel $requests;
-    protected WablasGateway $wablas;
 
-    public function __construct(?WablasGateway $wablas = null)
+    public function __construct()
     {
         $this->requests = new BongkarRequestModel();
-        $this->wablas = $wablas ?? new WablasGateway();
         helper('activity');
     }
 
@@ -75,17 +73,10 @@ class BongkarRequestController extends BaseController
 
         if ($this->requests->claimNotification($id)) {
             $updatedRequest = $this->requests->find($id);
-            try {
-                $notificationSent = $this->wablas->sendToCustomerBongkarStatus($updatedRequest);
-            } catch (\Throwable $e) {
-                log_message('error', 'Failed to send bongkar notification: ' . $e->getMessage());
-                $notificationSent = false;
-            }
-            $this->requests->markNotificationResult($id, $notificationSent);
-
-            if ($updatedRequest) {
-                (new \App\Libraries\WhatsApp\WhatsAppNotifier())->bongkarStatusChanged($updatedRequest);
-            }
+            $notificationHandled = $updatedRequest
+                ? (new WhatsAppNotifier())->bongkarStatusChanged($updatedRequest)
+                : false;
+            $this->requests->markNotificationResult($id, $notificationHandled);
         }
 
         log_activity(
