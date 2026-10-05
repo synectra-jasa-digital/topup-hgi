@@ -1,5 +1,26 @@
-Options -ExecCGI
-RemoveHandler .cgi .pl .py .php .php3 .php4 .php5 .php7 .php8 .phtml
-<FilesMatch "\.(cgi|pl|py|php|php3|php4|php5|php7|php8|phtml)$">
+# Folder upload publik: gambar boleh disajikan, script tidak pernah dieksekusi.
+Options -ExecCGI -Indexes
+
+# Matikan engine PHP bila modul PHP aktif di level direktori.
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Lepas handler untuk semua tipe script yang dikenal.
+RemoveHandler .cgi .pl .py .rb .php .php3 .php4 .php5 .php6 .php7 .php8 .phtml .phar .pht .shtml
+RemoveType    .cgi .pl .py .rb .php .php3 .php4 .php5 .php6 .php7 .php8 .phtml .phar .pht .shtml
+
+<FilesMatch "\.(cgi|pl|py|rb|php[0-9]*|phtml|phar|pht|shtml)$">
+    Require all denied
+</FilesMatch>
+
+# Jangan pernah sajikan file konfigurasi server.
+<FilesMatch "^\.ht">
     Require all denied
 </FilesMatch>
