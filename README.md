@@ -122,9 +122,9 @@ npm ci
 ```
 
 ### 2. Konfigurasi Environment (`.env`)
-Salin file `.env.example` atau `env` menjadi `.env`:
+Salin file `.env.example` menjadi `.env`:
 ```bash
-cp env .env
+cp .env.example .env
 ```
 Sesuaikan variabel environment minimal:
 ```dotenv
@@ -149,14 +149,28 @@ encryption.key = hex2bin:<64-karakter-hex-acak>
 ### 3. Migrasi Database & Seeder Admin Initial
 ```bash
 php spark migrate --all
+```
+
+Membuat akun owner pertama: **tidak ada kredensial bawaan**. Seeder menolak
+berjalan tanpa kredensial yang Anda tentukan sendiri, supaya tidak pernah ada
+akun `owner` dengan password yang diketahui publik.
+
+```bash
+# PowerShell — password harus minimal 16 karakter
+$env:SEED_OWNER_EMAIL    = "owner@domain-anda.test"
+$env:SEED_OWNER_PASSWORD = php -r "echo bin2hex(random_bytes(16));"
 php spark db:seed AdminSeeder
 ```
-*Akun bawaan seeder (hanya untuk instalasi lokal):*
-- **Email**: `owner@gmail.com`
-- **Password**: `password`
-- **Role**: `owner`
 
-> ⚠️ **Ganti password segera** setelah login pertama di lingkungan apa pun selain lokal. Jangan pernah biarkan kredensial bawaan ini aktif di produksi.
+```bash
+# Bash / Linux
+export SEED_OWNER_EMAIL="owner@domain-anda.test"
+export SEED_OWNER_PASSWORD="$(php -r 'echo bin2hex(random_bytes(16));')"
+php spark db:seed AdminSeeder
+```
+
+Hapus kedua variabel dari environment setelah selesai. Akun yang dibuat akan
+berperan `owner`; jalankan ulang seeder tidak membuat akun kedua untuk email yang sama.
 
 ### 4. Setup Service WhatsApp Gateway (`wa-gateway/`)
 ```bash
