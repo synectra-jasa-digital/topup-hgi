@@ -34,7 +34,7 @@ class WhatsAppController extends BaseController
             'status'            => $status,
             'driver'            => $this->settings->getVal('wa_driver', 'off'),
             'gatewayUrl'        => $this->settings->getVal('wa_gateway_url', ''),
-            'gatewayKey'        => $this->integration->get('wa_gateway_key', 'WA_GATEWAY_KEY'),
+            'gatewayKeyState'   => $this->integration->state('wa_gateway_key', 'WA_GATEWAY_KEY'),
             'enableOrderCreated'  => $this->settings->getVal('wa_enable_order_created', '1'),
             'enablePaymentRecv'   => $this->settings->getVal('wa_enable_payment_received', '1'),
             'enablePaymentVerif'  => $this->settings->getVal('wa_enable_payment_verified', '1'),
@@ -59,7 +59,16 @@ class WhatsAppController extends BaseController
         $this->settings->setVal('wa_gateway_url', $gatewayUrl);
 
         if ($gatewayKey !== '') {
-            $this->integration->set('wa_gateway_key', $gatewayKey);
+            try {
+                $this->integration->set('wa_gateway_key', $gatewayKey);
+            } catch (\RuntimeException $e) {
+                log_message('error', $e->getMessage());
+
+                return redirect()->to(base_url('admin/whatsapp'))->with(
+                    'error',
+                    'Gagal menyimpan API key: enkripsi tidak terkonfigurasi. Set encryption.key di .env lalu coba lagi.'
+                );
+            }
         }
 
         $types = ['order_created', 'payment_received', 'payment_verified', 'payment_rejected', 'order_completed', 'bongkar_status'];

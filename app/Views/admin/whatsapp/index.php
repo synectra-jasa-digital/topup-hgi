@@ -109,7 +109,14 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-neutral-700 mb-1">API Key (x-api-key)</label>
-                    <input type="password" name="wa_gateway_key" value="<?= esc($gatewayKey) ?>" placeholder="Kosongkan jika tidak diubah" class="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-primary outline-none">
+                    <input type="password" name="wa_gateway_key" value="" autocomplete="new-password" placeholder="<?= $gatewayKeyState === 'encrypted' || $gatewayKeyState === 'env' ? 'Terpasang — kosongkan jika tidak diubah' : ($gatewayKeyState === 'unprotected' ? 'Tidak terlindungi — masukkan ulang' : 'Belum diatur') ?>" class="w-full rounded-xl border border-neutral-200 p-2.5 text-sm focus:border-primary outline-none">
+                    <?php if ($gatewayKeyState === 'encrypted'): ?>
+                        <span class="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Tersimpan terenkripsi</span>
+                    <?php elseif ($gatewayKeyState === 'env'): ?>
+                        <span class="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-slate-500"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Diambil dari environment</span>
+                    <?php elseif ($gatewayKeyState === 'unprotected'): ?>
+                        <span class="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Nilai lama tidak terlindungi — simpan ulang</span>
+                    <?php endif; ?>
                 </div>
             </div>
 
