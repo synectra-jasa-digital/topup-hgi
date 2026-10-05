@@ -6,6 +6,7 @@ use App\Models\BannerCategoryModel;
 use App\Models\BannerModel;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
+use CodeIgniter\Test\StreamFilterTrait;
 
 /**
  * Guard perintah `banner:permanen`.
@@ -20,14 +21,33 @@ use CodeIgniter\Test\DatabaseTestTrait;
 final class MakeBannerPermanentCommandTest extends CIUnitTestCase
 {
     use DatabaseTestTrait;
+    // CLI::write() menulis ke STDOUT. StreamFilterTrait menangkapnya supaya
+    // output perintah tidak bocor ke hasil PHPUnit.
+    use StreamFilterTrait;
 
     protected $refresh = true;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->setUpStreamFilterTrait();
         $this->db = db_connect('tests');
         \Config\Services::migrations()->setNamespace('App')->setGroup('tests')->latest();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownStreamFilterTrait();
+        parent::tearDown();
+    }
+
+    /** Jalankan perintah dan kembalikan output yang dibuangnya. */
+    private function runCommand(array $params = []): string
+    {
+        $this->resetStreamFilterBuffer();
+        service('commands')->run('banner:permanen', $params);
+
+        return $this->getStreamFilterBuffer();
     }
 
     private function categoryId(): int
@@ -75,7 +95,7 @@ final class MakeBannerPermanentCommandTest extends CIUnitTestCase
             'setup: banner kedaluwarsa harusnya tidak tampil sebelum perintah dijalankan'
         );
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
 
         $this->assertCount(
             1,
@@ -93,7 +113,7 @@ final class MakeBannerPermanentCommandTest extends CIUnitTestCase
     {
         $id = $this->makeBanner(['is_active' => 0]);
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
 
         $this->assertSame(1, (int) (new BannerModel())->find($id)['is_active']);
         $this->assertCount(1, (new BannerModel())->listActiveForDisplay());
@@ -106,7 +126,7 @@ final class MakeBannerPermanentCommandTest extends CIUnitTestCase
 
         $this->assertCount(0, (new BannerModel())->listActiveForDisplay());
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
 
         $this->assertCount(1, (new BannerModel())->listActiveForDisplay());
     }
@@ -120,7 +140,7 @@ final class MakeBannerPermanentCommandTest extends CIUnitTestCase
             'sort_order' => 7,
         ]);
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
 
         $banner = (new BannerModel())->find($id);
         $this->assertSame($image, $banner['image_path'], 'image_path tidak boleh berubah');
@@ -136,10 +156,10 @@ final class MakeBannerPermanentCommandTest extends CIUnitTestCase
             'end_date'   => '2026-02-01',
         ]);
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
         $first = (new BannerModel())->find($id);
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
         $second = (new BannerModel())->find($id);
 
         $this->assertSame($first['updated_at'], $second['updated_at'], 'jalankan kedua shouldn mengubah updated_at');
@@ -153,9 +173,38 @@ final class MakeBannerPermanentCommandTest extends CIUnitTestCase
         // Jangan biarkan perintah gagal quando tabel kosong.
         $this->assertCount(0, (new BannerModel())->findAll());
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
 
         $this->assertCount(0, (new BannerModel())->findAll());
+    }
+
+    public function testDryRunReportsChangesWithoutSaving(): void
+    {
+        $id = $this->makeBanner([
+            'start_date' => '2026-01-01',
+            'end_date'   => '2026-02-01',
+        ]);
+
+        $output = $this->runCommand(['--dry-run']);
+
+        $this->assertStringContainsString('dry-run', $output, 'perintah harus survive mode dry-run');
+        $this->assertStringContainsString('SUDAH KEDALUWARSA', $output, 'alasan harus disebutkan eksplisit');
+
+        $banner = (new BannerModel())->find($id);
+        $this->assertSame('2026-01-01', $banner['start_date'], 'dry-run tidak boleh menyimpan');
+        $this->assertSame('2026-02-01', $banner['end_date'], 'dry-run tidak boleh menyimpan');
+    }
+
+    public function testCommandReportsTheExpiredReasonForSilentFailures(): void
+    {
+        // Banner yang tanggalnya lewat hilang dari beranda tanpa error —
+        // output perintah harus menyebut penyebabnya secara eksplisit.
+        $this->makeBanner(['end_date' => '2026-02-01']);
+
+        $output = $this->runCommand();
+
+        $this->assertStringContainsString('SUDAH KEDALUWARSA', $output);
+        $this->assertStringContainsString('sekarang permanen', $output);
     }
 
     public function testSortOrderIsPreservedForDisplayOrder(): void
@@ -164,7 +213,7 @@ final class MakeBannerPermanentCommandTest extends CIUnitTestCase
         $this->makeBanner(['sort_order' => 2, 'end_date' => '2026-02-01']);
         $this->makeBanner(['sort_order' => 3, 'end_date' => '2026-02-01']);
 
-        service('commands')->run('banner:permanen', []);
+        $this->runCommand();
 
         $order = array_column((new BannerModel())->listActiveForDisplay(), 'sort_order');
         $this->assertSame([1, 2, 3], array_map('intval', $order));

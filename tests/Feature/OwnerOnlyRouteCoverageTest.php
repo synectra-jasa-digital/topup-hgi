@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AdminModel;
 use CodeIgniter\Test\CIUnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 
@@ -64,9 +65,7 @@ final class OwnerOnlyRouteCoverageTest extends CIUnitTestCase
         return $cases;
     }
 
-    /**
-     * @dataProvider ownerOnlyRoutes
-     */
+    #[DataProvider('ownerOnlyRoutes')]
     public function testPlainAdminIsRedirectedAwayFromOwnerOnlyPage(string $route): void
     {
         $response = $this->withSession(['admin_id' => $this->adminId, 'admin_role' => 'admin'])
@@ -83,9 +82,7 @@ final class OwnerOnlyRouteCoverageTest extends CIUnitTestCase
         );
     }
 
-    /**
-     * @dataProvider ownerOnlyRoutes
-     */
+    #[DataProvider('ownerOnlyRoutes')]
     public function testOwnerCanStillReachThePage(string $route): void
     {
         $response = $this->withSession(['admin_id' => $this->ownerId, 'admin_role' => 'owner'])

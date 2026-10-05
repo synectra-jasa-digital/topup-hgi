@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Libraries\ReportExporter;
 use CodeIgniter\Test\CIUnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Guard untuk path traversal lewat parameter `period` pada export laporan.
@@ -35,9 +36,7 @@ class ReportPeriodValidationTest extends CIUnitTestCase
         ];
     }
 
-    /**
-     * @dataProvider maliciousPeriods
-     */
+    #[DataProvider('maliciousPeriods')]
     public function testMaliciousPeriodNeverEscapesSystemTempDir(string $period): void
     {
         $exporter = new ReportExporter();
@@ -55,9 +54,7 @@ class ReportPeriodValidationTest extends CIUnitTestCase
         $this->assertStringNotContainsString('..', $path, "path masih mengandung '..': {$path}");
     }
 
-    /**
-     * @dataProvider maliciousPeriods
-     */
+    #[DataProvider('maliciousPeriods')]
     public function testMaliciousPeriodIsRejectedOutright(string $period): void
     {
         $exporter = new ReportExporter();
