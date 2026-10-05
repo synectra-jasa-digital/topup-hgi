@@ -210,6 +210,15 @@ Sistem memerlukan beberapa background worker yang dapat dikonfigurasi via Cron J
 | `php spark bongkar:notifications` | Mengirim ulang notifikasi pengajuan bongkar yang sempat gagal | Setiap 5 menit |
 | `php spark uploads:audit` | Audit file upload yatim (tidak terdaftar di DB) | Mingguan / Manual |
 | `php spark uploads:audit --delete` | Menghapus file upload yatim yang terdeteksi | Manual |
+| `php spark banner:permanen` | Menghapus jadwal tayang semua banner & mengaktifkannya | Sekali / Manual |
+| `php spark banner:permanen --dry-run` | Menampilkan banner yang akan diubah tanpa menyimpan | Manual |
+
+> **Banner hilang dari beranda?** Hero carousel hanya dirender bila ada banner
+> yang lolos filter `listActiveForDisplay()` (`is_active = 1`, `start_date` dan
+> `end_date` belum lewat). Banner yang jadwalnya habis tidak menghasilkan error,
+> hanya hilang. Kalau Anda ingin semua banner tayang terus-menerus, jalankan
+> `php spark banner:permanen` — setelah itu jadwal tayang tidak lagi dipakai dan
+> banner hanya bergantung pada `is_active`.
 
 ---
 
