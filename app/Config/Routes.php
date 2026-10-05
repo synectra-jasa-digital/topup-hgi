@@ -78,19 +78,24 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->post('info-berjalan/(:num)/hapus', 'Admin\AnnouncementController::delete/$1');
 
     // Bongkar / Jual Kartu
-    $routes->get('bongkar-katalog', 'Admin\BongkarCatalogController::index');
-    $routes->get('bongkar-katalog/tambah', 'Admin\BongkarCatalogController::create');
-    $routes->post('bongkar-katalog/tambah', 'Admin\BongkarCatalogController::store');
-    $routes->get('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::edit/$1');
-    $routes->post('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::update/$1');
-    $routes->post('bongkar-katalog/(:num)/hapus', 'Admin\BongkarCatalogController::delete/$1');
+    // base_rate menentukan penilaian kartu dan metode pencairan menentukan
+    // tujuan dana customer — keduanya Bennyata uang, jadi owner-only seperti
+    // metode-bayar di bawah.
+    $owner = ['filter' => 'role:owner'];
 
-    $routes->get('bongkar-metode-pencairan', 'Admin\BongkarPayoutMethodController::index');
-    $routes->get('bongkar-metode-pencairan/tambah', 'Admin\BongkarPayoutMethodController::create');
-    $routes->post('bongkar-metode-pencairan/tambah', 'Admin\BongkarPayoutMethodController::store');
-    $routes->get('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::edit/$1');
-    $routes->post('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::update/$1');
-    $routes->post('bongkar-metode-pencairan/(:num)/hapus', 'Admin\BongkarPayoutMethodController::delete/$1');
+    $routes->get('bongkar-katalog', 'Admin\BongkarCatalogController::index', $owner);
+    $routes->get('bongkar-katalog/tambah', 'Admin\BongkarCatalogController::create', $owner);
+    $routes->post('bongkar-katalog/tambah', 'Admin\BongkarCatalogController::store', $owner);
+    $routes->get('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::edit/$1', $owner);
+    $routes->post('bongkar-katalog/(:num)/ubah', 'Admin\BongkarCatalogController::update/$1', $owner);
+    $routes->post('bongkar-katalog/(:num)/hapus', 'Admin\BongkarCatalogController::delete/$1', $owner);
+
+    $routes->get('bongkar-metode-pencairan', 'Admin\BongkarPayoutMethodController::index', $owner);
+    $routes->get('bongkar-metode-pencairan/tambah', 'Admin\BongkarPayoutMethodController::create', $owner);
+    $routes->post('bongkar-metode-pencairan/tambah', 'Admin\BongkarPayoutMethodController::store', $owner);
+    $routes->get('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::edit/$1', $owner);
+    $routes->post('bongkar-metode-pencairan/(:num)/ubah', 'Admin\BongkarPayoutMethodController::update/$1', $owner);
+    $routes->post('bongkar-metode-pencairan/(:num)/hapus', 'Admin\BongkarPayoutMethodController::delete/$1', $owner);
 
     $routes->get('metode-bayar', 'Admin\PaymentChannelController::index', ['filter' => 'role:owner']);
     $routes->get('metode-bayar/tambah', 'Admin\PaymentChannelController::create', ['filter' => 'role:owner']);
@@ -103,13 +108,13 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('bongkar-pesanan/(:num)', 'Admin\BongkarRequestController::show/$1');
     $routes->post('bongkar-pesanan/(:num)/status', 'Admin\BongkarRequestController::updateStatus/$1');
 
-    // Fase 11a - Voucher
-    $routes->get('voucher', 'Admin\VoucherController::index');
-    $routes->get('voucher/tambah', 'Admin\VoucherController::create');
-    $routes->post('voucher/tambah', 'Admin\VoucherController::store');
-    $routes->get('voucher/(:num)/ubah', 'Admin\VoucherController::edit/$1');
-    $routes->post('voucher/(:num)/ubah', 'Admin\VoucherController::update/$1');
-    $routes->post('voucher/(:num)/hapus', 'Admin\VoucherController::delete/$1');
+    // Fase 11a - Voucher (owner only: nilai diskon & kuota memengaruhi uang)
+    $routes->get('voucher', 'Admin\VoucherController::index', ['filter' => 'role:owner']);
+    $routes->get('voucher/tambah', 'Admin\VoucherController::create', ['filter' => 'role:owner']);
+    $routes->post('voucher/tambah', 'Admin\VoucherController::store', ['filter' => 'role:owner']);
+    $routes->get('voucher/(:num)/ubah', 'Admin\VoucherController::edit/$1', ['filter' => 'role:owner']);
+    $routes->post('voucher/(:num)/ubah', 'Admin\VoucherController::update/$1', ['filter' => 'role:owner']);
+    $routes->post('voucher/(:num)/hapus', 'Admin\VoucherController::delete/$1', ['filter' => 'role:owner']);
 
     // Fase 11b - Log Aktivitas (Owner only)
     $routes->get('log-aktivitas', 'Admin\ActivityLogController::index', ['filter' => 'role:owner']);
