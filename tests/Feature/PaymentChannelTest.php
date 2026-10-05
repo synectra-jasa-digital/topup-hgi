@@ -41,8 +41,16 @@ final class PaymentChannelTest extends CIUnitTestCase
             'is_active'     => 1,
         ]);
 
+        $adminId = (int) (new \App\Models\AdminModel())->insert([
+            'name'      => 'Owner Uji Payment Channel',
+            'email'     => 'owner-channel-' . bin2hex(random_bytes(4)) . '@example.test',
+            'password'  => password_hash('tidak-dipakai', PASSWORD_BCRYPT),
+            'role'      => 'owner',
+            'is_active' => 1,
+        ]);
+
         $result = $this->withSession([
-            'admin_id'   => 1,
+            'admin_id'   => $adminId,
             'admin_role' => 'owner',
         ])->withHeaders([
             csrf_header() => csrf_hash(),

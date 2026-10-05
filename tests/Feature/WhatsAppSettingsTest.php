@@ -44,7 +44,18 @@ final class WhatsAppSettingsTest extends CIUnitTestCase
 
     private function ownerSession(): array
     {
-        return ['admin_id' => 1, 'admin_role' => 'owner'];
+        // AuthFilter membaca ulang tabel admins, jadi session harus menunjuk
+        // baris owner yang benar-benar ada.
+        $admins = new \App\Models\AdminModel();
+        $id     = (int) $admins->insert([
+            'name'      => 'Owner Uji WhatsApp',
+            'email'     => 'owner-whatsapp-' . bin2hex(random_bytes(4)) . '@example.test',
+            'password'  => password_hash('tidak-dipakai', PASSWORD_BCRYPT),
+            'role'      => 'owner',
+            'is_active' => 1,
+        ]);
+
+        return ['admin_id' => $id, 'admin_role' => 'owner'];
     }
 
     public function testSettingsPageNeverRendersTheStoredGatewayKey(): void

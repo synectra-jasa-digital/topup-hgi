@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AdminModel;
 use App\Models\OrderModel;
 use App\Models\VoucherModel;
 use CodeIgniter\Test\CIUnitTestCase;
@@ -22,11 +23,33 @@ final class AdminPaymentVerificationTest extends CIUnitTestCase
 
     private const TOKEN = 'b1b2c3d4e5f6a7b8c9d0a1b2c3d4e5f6a7b8c9d0a1b2c3d4e5f6a7b8c9d0abcd';
 
+    private int $ownerId;
+    private int $adminId;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->db = db_connect('tests');
         \Config\Services::migrations()->setNamespace('App')->setGroup('tests')->latest();
+
+        // AuthFilter membaca ulang tabel admins pada tiap request, jadi
+        // session harus menunjuk admin yang benar-benar ada di database.
+        // 'id' tidak di allowedFields, jadi ambil id hasil insert.
+        $admins           = new AdminModel();
+        $this->ownerId    = (int) $admins->insert([
+            'name'      => 'Owner Uji Verifikasi',
+            'email'     => 'owner-verifikasi@example.test',
+            'password'  => password_hash('tidak-dipakai', PASSWORD_BCRYPT),
+            'role'      => 'owner',
+            'is_active' => 1,
+        ]);
+        $this->adminId    = (int) $admins->insert([
+            'name'      => 'Admin Uji Verifikasi',
+            'email'     => 'admin-verifikasi@example.test',
+            'password'  => password_hash('tidak-dipakai', PASSWORD_BCRYPT),
+            'role'      => 'admin',
+            'is_active' => 1,
+        ]);
     }
 
     private function makeOrder(string $status, array $extra = []): int
@@ -50,8 +73,10 @@ final class AdminPaymentVerificationTest extends CIUnitTestCase
         ]);
     }
 
-    private function postAs(string $uri, array $body = [], int $adminId = 7)
+    private function postAs(string $uri, array $body = [], ?int $adminId = null)
     {
+        $adminId ??= $this->ownerId;
+
         return $this->withSession(['admin_id' => $adminId, 'admin_role' => 'owner'])
             ->withBodyFormat('form')
             ->withHeaders([csrf_header() => csrf_hash()])
@@ -66,7 +91,7 @@ final class AdminPaymentVerificationTest extends CIUnitTestCase
 
         $order = (new OrderModel())->find($id);
         self::assertSame('diproses', $order['status']);
-        self::assertSame(7, (int) $order['payment_verified_by']);
+        self::assertSame($this->ownerId, (int) $order['payment_verified_by']);
         self::assertNotEmpty($order['payment_verified_at']);
         self::assertNull($order['payment_rejection_reason']);
     }
@@ -82,18 +107,18 @@ final class AdminPaymentVerificationTest extends CIUnitTestCase
             'voucher_id' => $voucherId, 'voucher_reserved' => 1, 'discount_amount' => 1000,
         ]);
 
-        $this->postAs('/admin/pesanan/' . $id . '/verifikasi', [], 7)->assertRedirect();
+        $this->postAs('/admin/pesanan/' . $id . '/verifikasi')->assertRedirect();
 
         $afterFirst = (new VoucherModel())->find($voucherId);
         self::assertSame(1, (int) $afterFirst['used_count'], 'Verifikasi pertama harus commit reservasi voucher');
         self::assertSame(0, (int) $afterFirst['reserved_count']);
 
         // Verifikasi kedua oleh admin berbeda: guard harus menolak tanpa menyentuh apa pun.
-        $this->postAs('/admin/pesanan/' . $id . '/verifikasi', [], 8)->assertRedirect();
+        $this->postAs('/admin/pesanan/' . $id . '/verifikasi', [], $this->adminId)->assertRedirect();
 
         $order = (new OrderModel())->find($id);
         self::assertSame('diproses', $order['status']);
-        self::assertSame(7, (int) $order['payment_verified_by'], 'Admin kedua tidak boleh menimpa verifier');
+        self::assertSame($this->ownerId, (int) $order['payment_verified_by'], 'Admin kedua tidak boleh menimpa verifier');
 
         $afterSecond = (new VoucherModel())->find($voucherId);
         self::assertSame(1, (int) $afterSecond['used_count'], 'Verifikasi kedua tidak boleh menghitung voucher dua kali');
@@ -119,7 +144,7 @@ final class AdminPaymentVerificationTest extends CIUnitTestCase
         $order = (new OrderModel())->find($id);
         self::assertSame('menunggu_pembayaran', $order['status']);
         self::assertSame('Bukti tidak terbaca', $order['payment_rejection_reason']);
-        self::assertSame(7, (int) $order['payment_verified_by']);
+        self::assertSame($this->ownerId, (int) $order['payment_verified_by']);
     }
 
     public function testCompleteRequiresDiprosesAndThenMarksSelesai(): void
@@ -133,7 +158,7 @@ final class AdminPaymentVerificationTest extends CIUnitTestCase
 
         $order = (new OrderModel())->find($id);
         self::assertSame('selesai', $order['status']);
-        self::assertSame(7, (int) $order['processed_by']);
+        self::assertSame($this->ownerId, (int) $order['processed_by']);
         self::assertNotEmpty($order['completed_at']);
     }
 
