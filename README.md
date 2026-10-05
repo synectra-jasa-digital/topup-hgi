@@ -162,9 +162,16 @@ php spark db:seed AdminSeeder
 ```bash
 cd wa-gateway
 npm install
+
+# WAJIB: set API key (min. 16 karakter, bebas string acak) sebelum menjalankan
+# PowerShell:
+$env:WA_GATEWAY_KEY = "<acak-min-16-karakter>"
 node server.js
+
+# Bash:
+# export WA_GATEWAY_KEY="<acak-min-16-karakter>" && node server.js
 ```
-*Service akan berjalan di `http://127.0.0.1:3000`.*
+*Gateway gagal start (fail-fast) jika `WA_GATEWAY_KEY` tidak di-set — tidak ada rahasia default.* Service berjalan di `http://127.0.0.1:3000`; nilai key yang sama harus tercatat di panel admin (WhatsApp → API Key).
 
 ### 5. Build CSS & Jalankan Local Development Server
 ```bash

@@ -1,3 +1,13 @@
+// Fail-closed: tanpa API key yang kuat, gateway tidak boleh berjalan.
+// Fallback rahasia default membuat endpoint /send & /logout terbuka tebak-tebakan.
+// Diletakkan sebelum require apa pun supaya cek dieksekusi lebih dulu.
+const API_KEY = process.env.WA_GATEWAY_KEY;
+if (!API_KEY || API_KEY.length < 16) {
+    console.error('FATAL: WA_GATEWAY_KEY belum di-set atau terlalu pendek (min. 16 karakter).');
+    console.error('Contoh: $env:WA_GATEWAY_KEY="<acak-32-byte-base64>"; node server.js');
+    process.exit(1);
+}
+
 const express = require('express');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 const pino = require('pino');
@@ -9,7 +19,6 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
-const API_KEY = process.env.WA_GATEWAY_KEY || 'default-secret-key-change-me';
 const AUTH_DIR = path.join(__dirname, 'auth');
 
 let sock = null;
